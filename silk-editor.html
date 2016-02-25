@@ -64,7 +64,7 @@ Silk editor: [GitHub](https://github.com/woutervroege/silk-editor)
             <button on-tap="insertH4">h4</button>
             <button on-tap="insertH5">h5</button>
             <button on-tap="insertH6">h6</button>
-            <button on-tap="insertLink">&#60;a&#62;</button>
+            <button on-tap="toggleLink">&#60;a&#62;</button>
         </section>
         <article
             spellcheck$="[[checkSpelling]]"
@@ -98,7 +98,8 @@ Silk editor: [GitHub](https://github.com/woutervroege/silk-editor)
                 },
                 article: {
                     type: String,
-                    readOnly: true
+                    readOnly: true,
+                    notify: true
                 }
             },
 
@@ -174,9 +175,18 @@ Silk editor: [GitHub](https://github.com/woutervroege/silk-editor)
                 this.addHTML("h6");
             },
 
-            insertLink: function() {
-                var link = window.prompt("Please add a link", "http://");
-                document.execCommand("insertHTML", false, "<a href=\""+link+"\">"+this.selectedText+"</a>");
+            toggleLink: function() {
+                var url = window.prompt("Please add a link", "http://");
+                if(url.length === 0) return this.removeLink();
+                else this.insertLink(url);
+            },
+
+            insertLink: function(url) {
+                document.execCommand("insertHTML", false, "<a href=\""+url+"\">"+this.selectedText+"</a>");
+            },
+
+            removeLink: function() {
+                document.execCommand("unlink", false);
             },
 
             getSelection: function() {
