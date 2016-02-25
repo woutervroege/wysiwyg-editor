@@ -200,7 +200,7 @@ Silk editor: [GitHub](https://github.com/woutervroege/silk-editor)
                 if(!this.settings.link) return console.warn("link is disabled!");
                 var selectedElement = this._getSelectionRange().startContainer.parentElement;
                 var url = window.prompt("Please add a link", selectedElement.href || "http://");
-                if(url.length === 0) return this.removeLink();
+                if(!url || url.length === 0) return this.removeLink();
                 else this.insertLink(url);
             },
 
