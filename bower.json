@@ -1,7 +1,7 @@
 {
   "name": "silk-editor",
   "homepage": "https://github.com/woutervroege/silk-editor",
-  "description": "",
+  "description": "Polymer wysiwyg editor",
   "main": "",
   "moduleType": [],
   "authors": [
@@ -14,6 +14,15 @@
     "bower_components",
     "test",
     "tests"
+  ],
+  "keywords": [
+    "contenteditable",
+    "wysiwyg",
+    "medium",
+    "rich-text",
+    "editor",
+    "polymer",
+    "webcomponents"
   ],
   "dependencies": {
     "polymer": "Polymer/polymer#^1.2.0"
