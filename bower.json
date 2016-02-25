@@ -1,0 +1,24 @@
+{
+  "name": "silk-editor",
+  "homepage": "https://github.com/woutervroege/silk-editor",
+  "description": "",
+  "main": "",
+  "moduleType": [],
+  "authors": [
+    "Wouter Vroege"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "polymer": "Polymer/polymer#^1.2.0"
+  },
+  "devDependencies": {
+    "iron-component-page": "PolymerElements/iron-component-page#^1.1.4"
+  }
+}
