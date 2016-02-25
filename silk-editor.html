@@ -117,6 +117,8 @@ Silk editor: [GitHub](https://github.com/woutervroege/silk-editor)
             <button
                 on-tap="toggleLink"
                 hidden$="[[!settings.link]]">&#60;a&#62;</button>
+                hidden$="[[!settings.link]]"
+                selected$="[[_selectedTextHasLink(selectedText, article)]]">&#60;a&#62;</button>
         </section>
         <article
             spellcheck$="[[checkSpelling]]"
@@ -355,6 +357,11 @@ Silk editor: [GitHub](https://github.com/woutervroege/silk-editor)
             },
             _selectedTextIsStrikeThrough: function() {
                 return document.queryCommandState("StrikeThrough");                
+            },
+            _selectedTextHasLink: function() {
+                console.log("selectedTextHasLink");
+                var selectedElement = this._getSelectionRange().startContainer.parentElement;
+                return (selectedElement.href && selectedElement.href.length > 0);
             },
 
             _updateContent: function() {
