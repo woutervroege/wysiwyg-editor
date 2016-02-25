@@ -163,6 +163,9 @@ Silk editor: [GitHub](https://github.com/woutervroege/silk-editor)
                 }
             },
 
+            ready: function() {
+                window.onresize = this._mouseUpHandler.bind(this);
+            },
             _parseSettings: function(formattingOptions) {
                 var settings = {};
                 var options = formattingOptions.toLowerCase().replace(/\s/g, "").split(/,/g);
