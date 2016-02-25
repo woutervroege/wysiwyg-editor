@@ -377,7 +377,6 @@ Silk editor: [GitHub](https://github.com/woutervroege/silk-editor)
                 return document.queryCommandState("StrikeThrough");                
             },
             _selectedTextHasLink: function() {
-                console.log("selectedTextHasLink");
                 var selectedElement = this._getSelectionRange().startContainer.parentElement;
                 return (selectedElement.href && selectedElement.href.length > 0);
             },
