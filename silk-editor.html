@@ -176,7 +176,8 @@ Silk editor: [GitHub](https://github.com/woutervroege/silk-editor)
             },
 
             toggleLink: function() {
-                var url = window.prompt("Please add a link", "http://");
+                var selectedElement = this.getSelectionRange().startContainer.parentElement;
+                var url = window.prompt("Please add a link", selectedElement.href || "http://");
                 if(url.length === 0) return this.removeLink();
                 else this.insertLink(url);
             },
