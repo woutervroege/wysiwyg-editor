@@ -47,24 +47,42 @@ Silk editor: [GitHub](https://github.com/woutervroege/silk-editor)
         </style>
         <section class="formatting-bar" hidden$="[[!selectedText]]">
             <button
-                on-tap="_toggleBold"
+                on-tap="toggleBold"
+                hidden$="[[!settings.bold]]"
                 selected$="[[_selectedTextIsBold(selectedText, article)]]"><b>B</b></button>
             <button
-                on-tap="_toggleItalic"
+                on-tap="toggleItalics"
+                hidden$="[[!settings.italics]]"
                 selected$="[[_selectedTextIsItalic(selectedText, article)]]"><i>i</i></button>
             <button
-                on-tap="_toggleUnderline"
+                on-tap="toggleUnderline"
+                hidden$="[[!settings.underline]]"
                 selected$="[[_selectedTextIsUnderlined(selectedText, article)]]"><u>U</u></button>
             <button
-                on-tap="_toggleStrikeThrough"
+                on-tap="toggleStrikeThrough"
+                hidden$="[[!settings.strikethrough]]"
                 selected$="[[_selectedTextIsStrikedThrough(selectedText, article)]]"><s>S</s></button>
-            <button on-tap="insertH1">h1</button>
-            <button on-tap="insertH2">h2</button>
-            <button on-tap="insertH3">h3</button>
-            <button on-tap="insertH4">h4</button>
-            <button on-tap="insertH5">h5</button>
-            <button on-tap="insertH6">h6</button>
-            <button on-tap="toggleLink">&#60;a&#62;</button>
+            <button
+                on-tap="insertH1"
+                hidden$="[[!settings.h1]]">h1</button>
+            <button
+                on-tap="insertH2"
+                hidden$="[[!settings.h2]]">h2</button>
+            <button
+                on-tap="insertH3"
+                hidden$="[[!settings.h3]]">h3</button>
+            <button
+                on-tap="insertH4"
+                hidden$="[[!settings.h4]]">h4</button>
+            <button
+                on-tap="insertH5"
+                hidden$="[[!settings.h5]]">h5</button>
+            <button
+                on-tap="insertH6"
+                hidden$="[[!settings.h6]]">h6</button>
+            <button
+                on-tap="toggleLink"
+                hidden$="[[!settings.link]]">&#60;a&#62;</button>
         </section>
         <article
             spellcheck$="[[checkSpelling]]"
@@ -100,11 +118,145 @@ Silk editor: [GitHub](https://github.com/woutervroege/silk-editor)
                     type: String,
                     readOnly: true,
                     notify: true
+                },
+                formattingOptions: {
+                    type: String,
+                    value: "bold,italics,underline,strikethrough,h1,h2,h3,h4,h5,h6,link"
+                },
+                settings: {
+                    type: Object,
+                    computed: "_parseSettings(formattingOptions)"
+                }
+            },
+
+            _parseSettings: function(formattingOptions) {
+                var settings = {};
+                var options = formattingOptions.toLowerCase().replace(/\s/g, "").split(/,/g);
+                settings["bold"] = options.indexOf("bold") !== -1;
+                settings["italics"] = options.indexOf("italics") !== -1;
+                settings["underline"] = options.indexOf("underline") !== -1;
+                settings["strikethrough"] = options.indexOf("strikethrough") !== -1;
+                settings["h1"] = options.indexOf("h1") !== -1;
+                settings["h2"] = options.indexOf("h2") !== -1;
+                settings["h3"] = options.indexOf("h3") !== -1;
+                settings["h4"] = options.indexOf("h4") !== -1;
+                settings["h5"] = options.indexOf("h5") !== -1;
+                settings["h6"] = options.indexOf("h6") !== -1;
+                settings["link"] = options.indexOf("link") !== -1;
+                return settings;
+            },
+
+            toggleBold: function() {
+                if(!this.settings.bold) return console.warn("bold is disabled!");
+                document.execCommand("Bold")
+            },
+
+            toggleItalics: function() {
+                if(!this.settings.italics) return console.warn("italics is disabled!");
+                document.execCommand("Italic")
+            },
+
+            toggleUnderline: function() {
+                if(!this.settings.underline) return console.warn("underline is disabled!");
+                document.execCommand("Underline")
+            },
+
+            toggleStrikeThrough: function() {
+                if(!this.settings.strikethrough) return console.warn("strikethrough is disabled!");
+                document.execCommand("StrikeThrough")
+            },
+
+            insertH1: function() {
+                if(!this.settings.h1) return console.warn("h1 is disabled!");
+                this._addHTML("h1");
+            },
+
+            insertH2: function() {
+                if(!this.settings.h2) return console.warn("h2 is disabled!");
+                this._addHTML("h2");
+            },
+
+            insertH3: function() {
+                if(!this.settings.h3) return console.warn("h3 is disabled!");
+                this._addHTML("h3");
+            },
+
+            insertH4: function() {
+                if(!this.settings.h4) return console.warn("h4 is disabled!");
+                this._addHTML("h4");
+            },
+
+            insertH5: function() {
+                if(!this.settings.h5) return console.warn("h5 is disabled!");
+                this._addHTML("h5");
+            },
+
+            insertH6: function() {
+                if(!this.settings.h6) return console.warn("h6 is disabled!");
+                this._addHTML("h6");
+            },
+
+            toggleLink: function() {
+                if(!this.settings.link) return console.warn("link is disabled!");
+                var selectedElement = this._getSelectionRange().startContainer.parentElement;
+                var url = window.prompt("Please add a link", selectedElement.href || "http://");
+                if(url.length === 0) return this.removeLink();
+                else this.insertLink(url);
+            },
+
+            insertLink: function(url) {
+                if(!this.settings.link) return console.warn("link is disabled!");
+                document.execCommand("insertHTML", false, "<a href=\""+url+"\">"+this.selectedText+"</a>");
+            },
+
+            removeLink: function() {
+                if(!this.settings.link) return console.warn("link is disabled!");
+                document.execCommand("unlink", false);
+            },
+
+            _getSelection: function() {
+               var selection = "";
+
+                if (window.getSelection) {  // all browsers, except IE before version 9
+                    if (document.activeElement && (document.activeElement.tagName.toLowerCase() == "textarea" || document.activeElement.tagName.toLowerCase() == "input")) {
+                        var text = document.activeElement.value;
+                        selection = text.substring(document.activeElement.selectionStart, document.activeElement.selectionEnd);
+                    }
+                    else {
+                        selection = window.getSelection();
+                    }
+                }
+                else {
+                    if (document.selection.createRange) { // Internet Explorer
+                        selection = document.selection.createRange();
+                    }
+                }
+                this._setSelectedText(selection.toString() || selection.text);
+                return selection;
+            },
+
+            _getSelectionRange: function() {
+                return this._getSelection().getRangeAt(0);
+            },
+
+            _getFormattingBarPosition: function() {
+                var range = this._getSelectionRange();
+                if (range.getClientRects()[0].width === 0 && range.getClientRects()[1]) {
+                    var topPosition = range.getClientRects()[1].top + document.body.scrollTop;
+                    var leftPosition = range.startContainer.parentElement.offsetLeft;
+                } else {
+                    var topPosition = range.getClientRects()[0].top + document.body.scrollTop;
+                    var leftPosition = range.getClientRects()[0].left;                    
+                }
+                topPosition -= this._getArticleFontSize()*3;
+                return {
+                    top: topPosition,
+                    left: leftPosition
                 }
             },
 
             _mouseUpHandler: function() {
-                var formattingBarPosition = this.getFormattingBarPosition();
+                var formattingBarPosition = this._getFormattingBarPosition();
                 $formattingBar = this.$$(".formatting-bar");
                 $formattingBar.style.top = (formattingBarPosition.top) + "px";
                 $formattingBar.style.left = formattingBarPosition.left + "px";
@@ -135,110 +287,14 @@ Silk editor: [GitHub](https://github.com/woutervroege/silk-editor)
                 }
             },
 
-            _toggleBold: function() {
-                document.execCommand("Bold")
-            },
-
-            _toggleItalic: function() {
-                document.execCommand("Italic")
-            },
-
-            _toggleUnderline: function() {
-                document.execCommand("Underline")
-            },
-
-            _toggleStrikeThrough: function() {
-                document.execCommand("StrikeThrough")
-            },
-
-            insertH1: function() {
-                this.addHTML("h1");
-            },
-
-            insertH2: function() {
-                this.addHTML("h2");
-            },
-
-            insertH3: function() {
-                this.addHTML("h3");
-            },
-
-            insertH4: function() {
-                this.addHTML("h4");
-            },
-
-            insertH5: function() {
-                this.addHTML("h5");
-            },
-
-            insertH6: function() {
-                this.addHTML("h6");
-            },
-
-            toggleLink: function() {
-                var selectedElement = this.getSelectionRange().startContainer.parentElement;
-                var url = window.prompt("Please add a link", selectedElement.href || "http://");
-                if(url.length === 0) return this.removeLink();
-                else this.insertLink(url);
-            },
-
-            insertLink: function(url) {
-                document.execCommand("insertHTML", false, "<a href=\""+url+"\">"+this.selectedText+"</a>");
-            },
-
-            removeLink: function() {
-                document.execCommand("unlink", false);
-            },
-
-            getSelection: function() {
-               var selection = "";
-
-                if (window.getSelection) {  // all browsers, except IE before version 9
-                    if (document.activeElement && (document.activeElement.tagName.toLowerCase() == "textarea" || document.activeElement.tagName.toLowerCase() == "input")) {
-                        var text = document.activeElement.value;
-                        selection = text.substring(document.activeElement.selectionStart, document.activeElement.selectionEnd);
-                    }
-                    else {
-                        selection = window.getSelection();
-                    }
-                }
-                else {
-                    if (document.selection.createRange) { // Internet Explorer
-                        selection = document.selection.createRange();
-                    }
-                }
-                this._setSelectedText(selection.toString() || selection.text);
-                return selection;
-            },
-
-            getSelectionRange: function() {
-                return this.getSelection().getRangeAt(0);
-            },
-
-            getFormattingBarPosition: function() {
-                var range = this.getSelectionRange();
-                if (range.getClientRects()[0].width === 0 && range.getClientRects()[1]) {
-                    var topPosition = range.getClientRects()[1].top + document.body.scrollTop;
-                    var leftPosition = range.startContainer.parentElement.offsetLeft;
-                } else {
-                    var topPosition = range.getClientRects()[0].top + document.body.scrollTop;
-                    var leftPosition = range.getClientRects()[0].left;                    
-                }
-                topPosition -= this.getArticleFontSize()*3;
-                return {
-                    top: topPosition,
-                    left: leftPosition
-                }
-            },
-
-            getArticleFontSize: function() {
+            _getArticleFontSize: function() {
                 var getComputedStyles = window.getComputedStyle || document.defaultView.getComputedStyle;
                 var computedStylesForArticle = getComputedStyles(this.$$("article"));
                 var fontSize = computedStylesForArticle.getPropertyValue("font-size");
                 return parseInt(fontSize.replace("px", ""));
             },
 
-            addHTML: function(elementName) {
+            _addHTML: function(elementName) {
                 if(!this.selectedText || this.selectedText.length === 0) return;
                 document.execCommand("insertHTML", false, "<" + elementName + ">" + this.selectedText + "</" + elementName + ">")
             },
