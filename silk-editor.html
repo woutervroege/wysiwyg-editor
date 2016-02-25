@@ -30,11 +30,11 @@ Silk editor: [GitHub](https://github.com/woutervroege/silk-editor)
                 border:0;
                 background-color: transparent;
                 color: white;
-                text-transform: uppercase;
                 font-size:14px;
                 cursor: pointer;
                 width: 36px;
                 height: 36px;
+                outline: none;
             }
 
             button:hover {
@@ -58,12 +58,13 @@ Silk editor: [GitHub](https://github.com/woutervroege/silk-editor)
             <button
                 on-tap="_toggleStrikeThrough"
                 selected$="[[_selectedTextIsStrikedThrough(selectedText, article)]]"><s>S</s></button>
-            <button on-tap="_addH1">h1</button>
-            <button on-tap="_addH2">h2</button>
-            <button on-tap="_addH3">h3</button>
-            <button on-tap="_addH4">h4</button>
-            <button on-tap="_addH5">h5</button>
-            <button on-tap="_addH6">h6</button>
+            <button on-tap="insertH1">h1</button>
+            <button on-tap="insertH2">h2</button>
+            <button on-tap="insertH3">h3</button>
+            <button on-tap="insertH4">h4</button>
+            <button on-tap="insertH5">h5</button>
+            <button on-tap="insertH6">h6</button>
+            <button on-tap="insertLink">&#60;a&#62;</button>
         </section>
         <article
             spellcheck$="[[checkSpelling]]"
@@ -149,28 +150,33 @@ Silk editor: [GitHub](https://github.com/woutervroege/silk-editor)
                 document.execCommand("StrikeThrough")
             },
 
-            _addH1: function() {
+            insertH1: function() {
                 this.addHTML("h1");
             },
 
-            _addH2: function() {
+            insertH2: function() {
                 this.addHTML("h2");
             },
 
-            _addH3: function() {
+            insertH3: function() {
                 this.addHTML("h3");
             },
 
-            _addH4: function() {
+            insertH4: function() {
                 this.addHTML("h4");
             },
 
-            _addH5: function() {
+            insertH5: function() {
                 this.addHTML("h5");
             },
 
-            _addH6: function() {
+            insertH6: function() {
                 this.addHTML("h6");
+            },
+
+            insertLink: function() {
+                var link = window.prompt("Please add a link", "http://");
+                document.execCommand("insertHTML", false, "<a href=\""+link+"\">"+this.selectedText+"</a>");
             },
 
             getSelection: function() {
