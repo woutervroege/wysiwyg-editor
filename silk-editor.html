@@ -61,7 +61,6 @@ Silk editor: [GitHub](https://github.com/woutervroege/silk-editor)
             <button
                 on-tap="toggleStrikeThrough"
                 hidden$="[[!settings.strikethrough]]"
-                selected$="[[_selectedTextIsStrikedThrough(selectedText, article)]]"><s>S</s></button>
                 selected$="[[_selectedTextIsStrikeThrough(selectedText, article)]]"><s>S</s></button>
             <button
                 on-tap="insertH1"
@@ -250,7 +249,7 @@ Silk editor: [GitHub](https://github.com/woutervroege/silk-editor)
                     var topPosition = range.getClientRects()[0].top + document.body.scrollTop;
                     var leftPosition = range.getClientRects()[0].left;                    
                 }
-                topPosition -= this._getArticleFontSize()*3;
+                topPosition -= (this._getArticleFontSize()*2 + this._getArticleLineHeight());
                 return {
                     top: topPosition,
                     left: leftPosition
@@ -297,6 +296,13 @@ Silk editor: [GitHub](https://github.com/woutervroege/silk-editor)
                 return parseInt(fontSize.replace("px", ""));
             },
 
+            _getArticleLineHeight: function() {
+                var getComputedStyles = window.getComputedStyle || document.defaultView.getComputedStyle;
+                var computedStylesForArticle = getComputedStyles(this.$$("article"));
+                var lineHeight = computedStylesForArticle.getPropertyValue("line-height");
+                return parseInt(lineHeight.replace("px", ""));
+            },
+
             _addHTML: function(elementName) {
                 if(!this.selectedText || this.selectedText.length === 0) return;
                 document.execCommand("insertHTML", false, "<" + elementName + ">" + this.selectedText + "</" + elementName + ">")
@@ -310,7 +316,6 @@ Silk editor: [GitHub](https://github.com/woutervroege/silk-editor)
             _selectedTextIsUnderlined: function() {
                 return document.queryCommandState("Underline");                
             },
-            _selectedTextIsStrikedThrough: function() {
             _selectedTextIsStrikeThrough: function() {
                 return document.queryCommandState("StrikeThrough");                
             },
