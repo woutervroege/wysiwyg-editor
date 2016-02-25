@@ -241,6 +241,7 @@ Silk editor: [GitHub](https://github.com/woutervroege/silk-editor)
 
             _getFormattingBarPosition: function() {
                 var range = this._getSelectionRange();
+                if(!range.getClientRects()[0]) return;
                 if (range.getClientRects()[0].width === 0 && range.getClientRects()[1]) {
                     var topPosition = range.getClientRects()[1].top + document.body.scrollTop;
                     var leftPosition = range.startContainer.parentElement.offsetLeft;
@@ -257,6 +258,7 @@ Silk editor: [GitHub](https://github.com/woutervroege/silk-editor)
 
             _mouseUpHandler: function() {
                 var formattingBarPosition = this._getFormattingBarPosition();
+                if(! formattingBarPosition) return;
                 $formattingBar = this.$$(".formatting-bar");
                 $formattingBar.style.top = (formattingBarPosition.top) + "px";
                 $formattingBar.style.left = formattingBarPosition.left + "px";
