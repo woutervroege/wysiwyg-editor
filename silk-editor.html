@@ -141,7 +141,7 @@ Silk editor: [GitHub](https://github.com/woutervroege/silk-editor)
         <article
             spellcheck$="[[checkSpelling]]"
             on-focus="_disableSpellcheck"
-            on-paste="_stripHTML"
+            on-paste="_pasteHTML"
             on-mouseup="_mouseUpHandler"
             on-input="_updateContent"
             contenteditable$="[[!disabled]]"><content></content></article>
@@ -325,16 +325,16 @@ Silk editor: [GitHub](https://github.com/woutervroege/silk-editor)
                 if(!this.checkSpelling) document.body.spellcheck = false;
             },
 
-            _stripHTML: function(e) {
+            _pasteHTML: function(e) {
                 if (e.originalEvent && e.originalEvent.clipboardData && e.originalEvent.clipboardData.getData) {
                     e.preventDefault();
-                    var text = e.originalEvent.originalEvent.clipboardData.getData("text/plain");
-                    window.document.execCommand("insertText", false, text);
+                    var html = e.originalEvent.originalEvent.clipboardData.getData("text/html");
+                    window.document.execCommand("insertText", false, this._stripTags(html));
                 }
                 else if (e.clipboardData && e.clipboardData.getData) {
                     e.preventDefault();
-                    var text = e.clipboardData.getData("text/plain");
-                    window.document.execCommand("insertText", false, text);
+                    var html = this._stripTags(e.clipboardData.getData("text/html"));
+                    window.document.execCommand("insertHTML", false, this._stripTags(html));
                 }
                 else if (window.clipboardData && window.clipboardData.getData) {
                     if (!_onPaste_StripFormatting_IEPaste) {
@@ -344,6 +344,17 @@ Silk editor: [GitHub](https://github.com/woutervroege/silk-editor)
                     }
                     _onPaste_StripFormatting_IEPaste = false;
                 }
+            },
+
+            _stripTags: function(input, allowed) {
+                allowed = (((allowed || '') + '')
+                    .toLowerCase()
+                    .match(/<[a-z][a-z0-9]*>/g) || [])
+                    .join('');
+                var tags = /<\/?([a-z][a-z0-9]*)\b[^>]*>/gi;
+                return input.replace(tags, function($0, $1) {
+                    return allowed.indexOf('<' + $1.toLowerCase() + '>') > -1 ? $0 : '';
+                });
             },
 
             _getArticleFontSize: function() {
