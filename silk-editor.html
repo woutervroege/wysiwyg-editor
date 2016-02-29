@@ -399,8 +399,43 @@ Silk editor: [GitHub](https://github.com/woutervroege/silk-editor)
                 return document.queryCommandState("StrikeThrough");                
             },
             _selectedTextHasLink: function() {
+                if(!this._getSelectionRange()) return false;
                 var selectedElement = this._getSelectionRange().startContainer.parentElement;
                 return (selectedElement.href && selectedElement.href.length > 0);
+            },
+
+            _selectedTextHasTag: function(tagName) {
+                if(!this._getSelectionRange()) return false;
+                var selectedElement = this._getSelectionRange().startContainer.parentElement;
+                return selectedElement.nodeName.toLowerCase() === tagName;
+            },
+
+            _selectedTextHasHeading: function() {
+                return (this._selectedTextHasH1() || this._selectedTextHasH2() || this._selectedTextHasH3() || this._selectedTextHasH4() || this._selectedTextHasH5() || this._selectedTextHasH6())
+            },
+
+            _selectedTextHasH1: function() {
+                return this._selectedTextHasTag("h1");
+            },
+
+            _selectedTextHasH2: function() {
+                return this._selectedTextHasTag("h2");
+            },
+
+            _selectedTextHasH3: function() {
+                return this._selectedTextHasTag("h3");
+            },
+
+            _selectedTextHasH4: function() {
+                return this._selectedTextHasTag("h4");
+            },
+
+            _selectedTextHasH5: function() {
+                return this._selectedTextHasTag("h5");
+            },
+
+            _selectedTextHasH6: function() {
+                return this._selectedTextHasTag("h6");
             },
 
             _updateContent: function() {
