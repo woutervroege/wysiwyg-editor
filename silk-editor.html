@@ -56,6 +56,12 @@ Silk editor: [GitHub](https://github.com/woutervroege/silk-editor)
                 color: black;
             }
 
+            button[disabled] {
+                background-color: transparent;
+                opacity: 0.5;
+                color: white;
+            }
+
             @-webkit-keyframes formattingBarIn {
                 0%{
                     opacity: 0;
@@ -97,46 +103,62 @@ Silk editor: [GitHub](https://github.com/woutervroege/silk-editor)
                 }
             }
         </style>
-        <section class="formatting-bar" hidden$="[[!selectedText]]">
+        <section class="formatting-bar" hidden$="[[nothingSelected]]">
             <button
                 on-tap="toggleBold"
+                disabled$="[[selectedTextHasHeading]]"
                 hidden$="[[!settings.bold]]"
-                selected$="[[_selectedTextIsBold(selectedText, article)]]"><b>B</b></button>
+                selected$="[[selectedTextIsBold]]"><b>B</b></button>
             <button
                 on-tap="toggleItalics"
+                disabled$="[[selectedTextHasHeading]]"
                 hidden$="[[!settings.italics]]"
-                selected$="[[_selectedTextIsItalic(selectedText, article)]]"><i>i</i></button>
+                selected$="[[selectedTextIsItalic]]"><i>i</i></button>
             <button
                 on-tap="toggleUnderline"
+                disabled$="[[selectedTextHasHeading]]"
                 hidden$="[[!settings.underline]]"
-                selected$="[[_selectedTextIsUnderlined(selectedText, article)]]"><u>U</u></button>
+                selected$="[[selectedTextIsUnderlined]]"><u>U</u></button>
             <button
                 on-tap="toggleStrikeThrough"
+                disabled$="[[selectedTextHasHeading]]"
                 hidden$="[[!settings.strikethrough]]"
-                selected$="[[_selectedTextIsStrikeThrough(selectedText, article)]]"><s>S</s></button>
+                selected$="[[selectedTextIsStrikeThrough]]"><s>S</s></button>
             <button
-                on-tap="insertH1"
-                hidden$="[[!settings.h1]]">h1</button>
+                on-tap="toggleH1"
+                disabled$="[[nothingSelected]]"
+                hidden$="[[!settings.h1]]"
+                selected$="[[selectedTextHasH1]]">h1</button>
             <button
-                on-tap="insertH2"
-                hidden$="[[!settings.h2]]">h2</button>
+                on-tap="toggleH2"
+                disabled$="[[nothingSelected]]"
+                hidden$="[[!settings.h2]]"
+                selected$="[[selectedTextHasH2]]">h2</button>
             <button
-                on-tap="insertH3"
-                hidden$="[[!settings.h3]]">h3</button>
+                on-tap="toggleH3"
+                disabled$="[[nothingSelected]]"
+                hidden$="[[!settings.h3]]"
+                selected$="[[selectedTextHasH3]]">h3</button>
             <button
-                on-tap="insertH4"
-                hidden$="[[!settings.h4]]">h4</button>
+                on-tap="toggleH4"
+                disabled$="[[nothingSelected]]"
+                hidden$="[[!settings.h4]]"
+                selected$="[[selectedTextHasH4]]">h4</button>
             <button
-                on-tap="insertH5"
-                hidden$="[[!settings.h5]]">h5</button>
+                on-tap="toggleH5"
+                disabled$="[[nothingSelected]]"
+                hidden$="[[!settings.h5]]"
+                selected$="[[selectedTextHasH5]]">h5</button>
             <button
-                on-tap="insertH6"
-                hidden$="[[!settings.h6]]">h6</button>
+                on-tap="toggleH6"
+                disabled$="[[nothingSelected]]"
+                hidden$="[[!settings.h6]]"
+                selected$="[[selectedTextHasH6]]">h6</button>
             <button
                 on-tap="toggleLink"
+                disabled$="[[nothingSelected]]"
                 hidden$="[[!settings.link]]"
-                hidden$="[[!settings.link]]"
-                selected$="[[_selectedTextHasLink(selectedText, article)]]">&#60;a&#62;</button>
+                selected$="[[selectedTextHaslink]]">&#60;a&#62;</button>
         </section>
         <article
             spellcheck$="[[checkSpelling]]"
@@ -148,7 +170,9 @@ Silk editor: [GitHub](https://github.com/woutervroege/silk-editor)
     </template>
     <script>
         Polymer({
+            
             is: "silk-editor",
+            
             properties: {
                 disabled: {
                     type: Boolean,
@@ -166,12 +190,14 @@ Silk editor: [GitHub](https://github.com/woutervroege/silk-editor)
                     type: String,
                     value: null,
                     readOnly: true,
-                    notify: true
+                    notify: true,
+                    observer: "selectedTextChanged"
                 },
                 article: {
                     type: String,
                     readOnly: true,
-                    notify: true
+                    notify: true,
+                    observer: "_articleChanged"
                 },
                 formattingOptions: {
                     type: String,
@@ -180,12 +206,86 @@ Silk editor: [GitHub](https://github.com/woutervroege/silk-editor)
                 settings: {
                     type: Object,
                     computed: "_parseSettings(formattingOptions)"
+                },
+                allowedTags: {
+                    type: Array,
+                    computed: "_getAllowedTags(settings.*)"
+                },
+                selectedTextHasHeading: {
+                    type: Boolean,
+                    value: false,
+                    computed: "_selectedTextHasHeading(selectedText)"
+                },
+                selectedTextIsBold: {
+                    type: Boolean,
+                    value: false,
+                    computed: "_selectedTextIsBold(selectedText)"
+                },
+                selectedTextIsItalic: {
+                    type: Boolean,
+                    value: false,
+                    computed: "_selectedTextIsItalic(selectedText)"                    
+                },
+                selectedTextIsUnderlined: {
+                    type: Boolean,
+                    value: false,
+                    computed: "_selectedTextIsUnderlined(selectedText)"                    
+                },
+                selectedTextIsStrikeThrough: {
+                    type: Boolean,
+                    value: false,
+                    computed: "_selectedTextIsStrikeThrough(selectedText)"                    
+                },
+                selectedTextHasH1: {
+                    type: Boolean,
+                    value: false,
+                    computed: "_selectedTextHasH1(selectedText)"
+                },
+                selectedTextHasH2: {
+                    type: Boolean,
+                    value: false,
+                    computed: "_selectedTextHasH2(selectedText)"
+                },
+                selectedTextHasH3: {
+                    type: Boolean,
+                    value: false,
+                    computed: "_selectedTextHasH3(selectedText)"
+                },
+                selectedTextHasH4: {
+                    type: Boolean,
+                    value: false,
+                    computed: "_selectedTextHasH4(selectedText)"
+                },
+                selectedTextHasH5: {
+                    type: Boolean,
+                    value: false,
+                    computed: "_selectedTextHasH5(selectedText)"
+                },
+                selectedTextHasH6: {
+                    type: Boolean,
+                    value: false,
+                    computed: "_selectedTextHasH6(selectedText)"
+                },
+                selectedTextHaslink: {
+                    type: Boolean,
+                    value: false,
+                    computed: "_selectedTextHasLink(selectedText)"
+                },
+                nothingSelected: {
+                    type: Boolean,
+                    value: true,
+                    computed: "_getSelectedTextIsEmptyString(selectedText)"
                 }
             },
 
             ready: function() {
                 window.onresize = this._mouseUpHandler.bind(this);
             },
+
+            selectedTextChanged: function(newValue, oldValue) {
+
+            },
+
             _parseSettings: function(formattingOptions) {
                 var settings = {};
                 var options = formattingOptions.toLowerCase().replace(/\s/g, "").split(/,/g);
@@ -223,33 +323,39 @@ Silk editor: [GitHub](https://github.com/woutervroege/silk-editor)
                 document.execCommand("StrikeThrough")
             },
 
-            insertH1: function() {
+            toggleH1: function() {
                 if(!this.settings.h1) return console.warn("h1 is disabled!");
+                if(this._selectedTextHasH1()) return this.removeFormatting();
                 this._addHTML("h1");
             },
 
-            insertH2: function() {
+            toggleH2: function() {
                 if(!this.settings.h2) return console.warn("h2 is disabled!");
+                if(this._selectedTextHasH2()) return this.removeFormatting();
                 this._addHTML("h2");
             },
 
-            insertH3: function() {
+            toggleH3: function() {
                 if(!this.settings.h3) return console.warn("h3 is disabled!");
+                if(this._selectedTextHasH3()) return this.removeFormatting();
                 this._addHTML("h3");
             },
 
-            insertH4: function() {
+            toggleH4: function() {
                 if(!this.settings.h4) return console.warn("h4 is disabled!");
+                if(this._selectedTextHasH4()) return this.removeFormatting();
                 this._addHTML("h4");
             },
 
-            insertH5: function() {
+            toggleH5: function() {
                 if(!this.settings.h5) return console.warn("h5 is disabled!");
+                if(this._selectedTextHasH5()) return this.removeFormatting();
                 this._addHTML("h5");
             },
 
-            insertH6: function() {
+            toggleH6: function() {
                 if(!this.settings.h6) return console.warn("h6 is disabled!");
+                if(this._selectedTextHasH6()) return this.removeFormatting();
                 this._addHTML("h6");
             },
 
@@ -293,24 +399,46 @@ Silk editor: [GitHub](https://github.com/woutervroege/silk-editor)
             },
 
             _getSelectionRange: function() {
-                return this._getSelection().getRangeAt(0);
+                try {
+                    return this._getSelection().getRangeAt(0);
+                } catch(e) {
+                    return false;
+                }
+            },
+
+            _getSelectedElement: function() {
+                return this._getSelectionRange().startContainer.parentElement;   
             },
 
             _getFormattingBarPosition: function() {
                 var range = this._getSelectionRange();
                 if(!range.getClientRects()[0]) return;
                 if (range.getClientRects()[0].width === 0 && range.getClientRects()[1]) {
-                    var topPosition = range.getClientRects()[1].top + document.body.scrollTop;
+                    var topPosition = range.getClientRects()[1].top;
                     var leftPosition = range.startContainer.parentElement.offsetLeft;
                 } else {
-                    var topPosition = range.getClientRects()[0].top + document.body.scrollTop;
+                    var topPosition = range.getClientRects()[0].top;
                     var leftPosition = range.getClientRects()[0].left;                    
                 }
-                topPosition -= (this._getArticleFontSize()*2 + this._getArticleLineHeight());
+                topPosition += this._getScrollTop();
+                topPosition -= this._getComputedStylesForElement(this.$$(".formatting-bar")).getPropertyValue("height").replace("px", "");
+                // topPosition -= this._getSelectedFontSize();
+                topPosition -= this._getSelectedLineHeight();
+                leftPosition += this._getScrollLeft();
                 return {
                     top: topPosition,
                     left: leftPosition
                 }
+            },
+
+            _getScrollTop: function() {
+                var element = (navigator.userAgent.indexOf("Firefox") !== -1) ? document.documentElement : document.body;
+                return element.scrollTop;
+            },
+
+            _getScrollLeft: function() {
+                var element = (navigator.userAgent.indexOf("Firefox") !== -1) ? document.documentElement : document.body;
+                return element.scrollLeft;
             },
 
             _mouseUpHandler: function() {
@@ -328,12 +456,12 @@ Silk editor: [GitHub](https://github.com/woutervroege/silk-editor)
             _pasteHTML: function(e) {
                 if (e.originalEvent && e.originalEvent.clipboardData && e.originalEvent.clipboardData.getData) {
                     e.preventDefault();
-                    var html = e.originalEvent.originalEvent.clipboardData.getData("text/html");
+                    var html = this._stripTags(e.originalEvent.originalEvent.clipboardData.getData("text/html"));
                     window.document.execCommand("insertHTML", false, html);
                 }
                 else if (e.clipboardData && e.clipboardData.getData) {
                     e.preventDefault();
-                    var html = this._stripTags(e.clipboardData.getData("text/html"), "<a>");
+                    var html = this._stripTags(e.clipboardData.getData("text/html"));
                     window.document.execCommand("insertHTML", false, html);
                 }
                 else if (window.clipboardData && window.clipboardData.getData) {
@@ -346,11 +474,14 @@ Silk editor: [GitHub](https://github.com/woutervroege/silk-editor)
                 }
             },
 
+            removeFormatting: function() {
+                var selectedTag = this._getSelectionRange().startContainer.parentNode;
+                var text = selectedTag.innerHTML;
+                document.execCommand("formatBlock", false, 'p');
+            },
+
             _stripTags: function(input, allowed) {
-                allowed = (((allowed || '') + '')
-                    .toLowerCase()
-                    .match(/<[a-z][a-z0-9]*>/g) || [])
-                    .join('');
+                allowed = this.allowedTags.join(",");
                 var tags = /<\/?([a-z][a-z0-9]*)\b[^>]*>/gi;
                 return this._stripAttributes(input.replace(tags, function($0, $1) {
                     return allowed.indexOf('<' + $1.toLowerCase() + '>') > -1 ? $0 : '';
@@ -368,17 +499,18 @@ Silk editor: [GitHub](https://github.com/woutervroege/silk-editor)
                 });
             },
 
-            _getArticleFontSize: function() {
+            _getComputedStylesForElement: function(element) {
                 var getComputedStyles = window.getComputedStyle || document.defaultView.getComputedStyle;
-                var computedStylesForArticle = getComputedStyles(this.$$("article"));
-                var fontSize = computedStylesForArticle.getPropertyValue("font-size");
+                return getComputedStyles(element);
+            },
+
+            _getSelectedFontSize: function() {
+                var fontSize = this._getComputedStylesForElement(this._getSelectedElement()).getPropertyValue("font-size");
                 return parseInt(fontSize.replace("px", ""));
             },
 
-            _getArticleLineHeight: function() {
-                var getComputedStyles = window.getComputedStyle || document.defaultView.getComputedStyle;
-                var computedStylesForArticle = getComputedStyles(this.$$("article"));
-                var lineHeight = computedStylesForArticle.getPropertyValue("line-height");
+            _getSelectedLineHeight: function() {
+                var lineHeight = this._getComputedStylesForElement(this._getSelectedElement()).getPropertyValue("line-height");
                 return parseInt(lineHeight.replace("px", ""));
             },
 
@@ -386,18 +518,23 @@ Silk editor: [GitHub](https://github.com/woutervroege/silk-editor)
                 if(!this.selectedText || this.selectedText.length === 0) return;
                 document.execCommand("insertHTML", false, "<" + elementName + ">" + this.selectedText + "</" + elementName + ">")
             },
+
             _selectedTextIsBold: function() {
                 return document.queryCommandState("Bold");
             },
+
             _selectedTextIsItalic: function() {
                 return document.queryCommandState("Italic");                
             },
+
             _selectedTextIsUnderlined: function() {
                 return document.queryCommandState("Underline");                
             },
+
             _selectedTextIsStrikeThrough: function() {
                 return document.queryCommandState("StrikeThrough");                
             },
+
             _selectedTextHasLink: function() {
                 if(!this._getSelectionRange()) return false;
                 var selectedElement = this._getSelectionRange().startContainer.parentElement;
@@ -440,6 +577,31 @@ Silk editor: [GitHub](https://github.com/woutervroege/silk-editor)
 
             _updateContent: function() {
                 this._setArticle(this.$$("article").innerHTML);
+            },
+
+            _getAllowedTags: function() {
+                var allowedTags = [];
+                var settings = this.settings;
+                if(settings["bold"]) allowedTags.push("<b>", "<strong>");
+                if(settings["italics"]) allowedTags.push("<i>", "<em>");
+                if(settings["underline"]) allowedTags.push("<u>");
+                if(settings["strikethrough"]) allowedTags.push("<s>");
+                if(settings["h1"]) allowedTags.push("<h1>");
+                if(settings["h2"]) allowedTags.push("<h2>");
+                if(settings["h3"]) allowedTags.push("<h3>");
+                if(settings["h4"]) allowedTags.push("<h4>");
+                if(settings["h5"]) allowedTags.push("<h5>");
+                if(settings["h6"]) allowedTags.push("<h6>");
+                if(settings["link"]) allowedTags.push("<a>");
+                return allowedTags;
+            },
+
+            _articleChanged: function() {
+                this._setSelectedText(new String(this.selectedText));
+            },
+
+            _getSelectedTextIsEmptyString: function(selectedText) {
+                return (!selectedText || selectedText.length === 0);
             }
 
         })
