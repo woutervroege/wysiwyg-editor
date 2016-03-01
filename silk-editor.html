@@ -127,9 +127,12 @@ Silk editor: [GitHub](https://github.com/woutervroege/silk-editor)
         </style>
         
         <input
-            type="file"
+            id="file-upload"
             hidden
-            disabled$="[[nothingSelected]]">
+            type="file"
+            on-change="_processImage"
+            accept="image/jpeg,image/jpeg,image/png"
+            >
 
         <button
             id="silk-select-file"
@@ -504,7 +507,8 @@ Silk editor: [GitHub](https://github.com/woutervroege/silk-editor)
             },
 
             insertImage: function() {
-                document.execCommand("insertHTML", false, '<img src="http://lorempixel.com/800/400/">');
+                this.$$("#file-upload").click();
+                // document.execCommand("insertHTML", false, '<img src="http://lorempixel.com/800/400/">');
             },
 
             _getScrollTop: function() {
@@ -685,6 +689,51 @@ Silk editor: [GitHub](https://github.com/woutervroege/silk-editor)
 
             _getSelectedTextIsEmptyString: function(selectedText) {
                 return (!selectedText || selectedText.length === 0);
+            },
+
+            _processImage: function(e) {
+                var self = this;
+                var file = e.target.files[0];
+                var fileType = file.type;
+                var reader = new FileReader();
+                reader.onloadend = function () {
+                    var imageData = self._resizeImage(reader.result, fileType);
+                    document.execCommand("insertHTML", false, '<img src="'+imageData+'">');
+                }
+                reader.readAsDataURL(file);
+            },
+
+            _resizeImage: function(fileReaderData, fileType) {
+                var img = document.createElement("img");
+                img.src = fileReaderData;
+
+                var canvas = document.createElement("canvas");
+                var ctx = canvas.getContext("2d");
+                ctx.drawImage(img, 0, 0);
+
+                var MAX_WIDTH = 2560;
+                var MAX_HEIGHT = 2560;
+                var width = img.width;
+                var height = img.height;
+
+                if (width > height) {
+                  if (width > MAX_WIDTH) {
+                    height *= MAX_WIDTH / width;
+                    width = MAX_WIDTH;
+                  }
+                } else {
+                  if (height > MAX_HEIGHT) {
+                    width *= MAX_HEIGHT / height;
+                    height = MAX_HEIGHT;
+                  }
+                }
+                canvas.width = width;
+                canvas.height = height;
+                var ctx = canvas.getContext("2d");
+                ctx.drawImage(img, 0, 0, width, height);
+
+                var dataurl = canvas.toDataURL(fileType);
+                return dataurl;
             }
 
         })
