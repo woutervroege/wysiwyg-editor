@@ -134,7 +134,7 @@ Silk editor: [GitHub](https://github.com/woutervroege/silk-editor)
         <button
             id="silk-select-file"
             on-tap="insertImage"
-            hidden$="[[!nothingSelected]]"
+            hidden$="[[!fileUploadButtonPosition.top]]"
             style$="top:[[fileUploadButtonPosition.top]]px;left:[[fileUploadButtonPosition.left]]px"
             >+</button>
 
@@ -205,7 +205,7 @@ Silk editor: [GitHub](https://github.com/woutervroege/silk-editor)
             on-focus="_disableSpellcheck"
             on-paste="_pasteHTML"
             on-mouseup="_mouseUpHandler"
-            on-keypress="_keyPressHandler"
+            on-keyup="_keyUpHandler"
             on-input="_updateContent"
             contenteditable$="[[!disabled]]"><content></content></article>
 
@@ -327,17 +327,15 @@ Silk editor: [GitHub](https://github.com/woutervroege/silk-editor)
                 },
                 fileUploadButtonPosition: {
                     type: Object,
-                    value: {},
-                    computed: "_getFileUploadButtonPosition(formattingBarPosition)"
+                    value: {
+                        top: null,
+                        left: null
+                    }
                 }
             },
 
             ready: function() {
                 window.onresize = this._mouseUpHandler.bind(this);
-            },
-
-            _keyPressHandler: function(e) {
-                this.set("fileUploadButtonPosition", this._getFileUploadButtonPosition());
             },
 
             selectedTextChanged: function(newValue, oldValue) {
@@ -470,7 +468,6 @@ Silk editor: [GitHub](https://github.com/woutervroege/silk-editor)
 
             _getFormattingBarPosition: function() {
                 var range = this._getSelectionRange();
-                console.log("_getFormattingBarPosition", range)
                 if(!range.getClientRects()[0]) return;
                 if (range.getClientRects()[0].width === 0 && range.getClientRects()[1]) {
                     var topPosition = range.getClientRects()[1].top;
@@ -489,12 +486,20 @@ Silk editor: [GitHub](https://github.com/woutervroege/silk-editor)
                 }
             },
 
-            _getFileUploadButtonPosition: function(formattingBarPosition) {
-                var position = this._getFormattingBarPosition();
-                console.log("position", position);
+            _getFileUploadButtonPosition: function() {
+                var selectedElement = this._getSelectionRange().startContainer;
+                if(!selectedElement.getClientRects) return false;
+                if(!selectedElement.getClientRects()[0]) return false;
+                if (selectedElement.getClientRects()[0].width === 0 && selectedElement.getClientRects()[1]) {
+                    var topPosition = selectedElement.getClientRects()[1].top;
+                    var leftPosition = selectedElement.startContainer.parentElement.offsetLeft;
+                } else {
+                    var topPosition = selectedElement.getClientRects()[0].top;
+                    var leftPosition = selectedElement.getClientRects()[0].left;                    
+                }
                 return {
-                    top: position.top + (this._getSelectedFontSize()*0.75),
-                    left: position.left - 72
+                    top: topPosition + this._getScrollTop(),
+                    left: leftPosition
                 }
             },
 
@@ -512,12 +517,13 @@ Silk editor: [GitHub](https://github.com/woutervroege/silk-editor)
                 return element.scrollLeft;
             },
 
-            _mouseUpHandler: function() {
+            _mouseUpHandler: function(e) {
                 this.set("formattingBarPosition", this._getFormattingBarPosition());
-                // if(! this.formattingBarPosition) return;
-                // $formattingBar = this.$$(".formatting-bar");
-                // $formattingBar.style.top = (this.formattingBarPosition.top) + "px";
-                // $formattingBar.style.left = formattingBarPosition.left + "px";
+                this.set("fileUploadButtonPosition", this._getFileUploadButtonPosition());
+            },
+
+            _keyUpHandler: function(e) {
+                this.set("fileUploadButtonPosition", this._getFileUploadButtonPosition());
             },
 
             _disableSpellcheck: function() {
