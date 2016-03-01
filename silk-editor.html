@@ -360,6 +360,7 @@ Silk editor: [GitHub](https://github.com/woutervroege/silk-editor)
 
             ready: function() {
                 window.onresize = this._mouseUpHandler.bind(this);
+                window.onscroll = this._mouseUpHandler.bind(this);
             },
 
             _parseSettings: function(formattingOptions) {
