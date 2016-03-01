@@ -126,21 +126,25 @@ Silk editor: [GitHub](https://github.com/woutervroege/silk-editor)
                 }
             }
         </style>
-        
-        <input
-            id="file-upload"
-            hidden
-            type="file"
-            on-change="_processImage"
-            accept="image/jpeg,image/jpeg,image/png"
-            >
 
-        <button
-            id="silk-select-file"
-            on-tap="insertImage"
-            hidden$="[[!fileUploadButtonPosition.top]]"
-            style$="top:[[fileUploadButtonPosition.top]]px;left:[[fileUploadButtonPosition.left]]px"
-            >+</button>
+        <template is="dom-if" if="[[settings.image]]">
+        
+            <input
+                id="file-upload"
+                hidden
+                type="file"
+                on-change="_processImage"
+                accept="image/jpeg,image/jpeg,image/png"
+                >
+
+            <button
+                id="silk-select-file"
+                on-tap="insertImage"
+                hidden$="[[!fileUploadButtonPosition.top]]"
+                style$="top:[[fileUploadButtonPosition.top]]px;left:[[fileUploadButtonPosition.left]]px"
+                >+</button>
+
+        </template>
 
         <section
             class="formatting-bar"
@@ -335,6 +339,22 @@ Silk editor: [GitHub](https://github.com/woutervroege/silk-editor)
                         top: null,
                         left: null
                     }
+                },
+                resizeImages: {
+                    type: Boolean,
+                    value: false
+                },
+                maxImageHeight: {
+                    type: Number,
+                    value: 2560
+                },
+                maxImageWidth: {
+                    type: Number,
+                    value: 2560
+                },
+                maxImageSize: {
+                    type: Number,
+                    value: 2000
                 }
             },
 
@@ -360,6 +380,7 @@ Silk editor: [GitHub](https://github.com/woutervroege/silk-editor)
                 settings["h5"] = options.indexOf("h5") !== -1;
                 settings["h6"] = options.indexOf("h6") !== -1;
                 settings["link"] = options.indexOf("link") !== -1;
+                settings["image"] = options.indexOf("image") !== -1;
                 return settings;
             },
 
@@ -509,7 +530,6 @@ Silk editor: [GitHub](https://github.com/woutervroege/silk-editor)
 
             insertImage: function() {
                 this.$$("#file-upload").click();
-                // document.execCommand("insertHTML", false, '<img src="http://lorempixel.com/800/400/">');
             },
 
             _getScrollTop: function() {
@@ -693,13 +713,22 @@ Silk editor: [GitHub](https://github.com/woutervroege/silk-editor)
             },
 
             _processImage: function(e) {
+                if(!this.settings.image) return console.warn("image upload is disabled!");
                 var self = this;
                 var file = e.target.files[0];
+
+                var maximumFileSizeInBytes = this.maxImageSize*1000;
+                if(file.size > maximumFileSizeInBytes) {
+                    return this.fire("image-upload-error", "maxium upload size exceeded ("+ this.maxImageSize+"KB)");
+                }
+
                 var fileType = file.type;
                 var reader = new FileReader();
                 reader.onloadend = function () {
-                    var imageData = self._resizeImage(reader.result, fileType);
+                    var imageData = reader.result;
+                    if(self.resizeImages) imageData = self._resizeImage(imageData, fileType);
                     document.execCommand("insertHTML", false, '<img src="'+imageData+'">');
+                    self.$$("#file-upload").value = "";
                 }
                 reader.readAsDataURL(file);
             },
@@ -707,31 +736,33 @@ Silk editor: [GitHub](https://github.com/woutervroege/silk-editor)
             _resizeImage: function(fileReaderData, fileType) {
                 var img = document.createElement("img");
                 img.src = fileReaderData;
+                imageWidth = img.width;
+                imageHeight = img.height;
+
+                if(imageHeight <= this.maxImageHeight && imageWidth <= this.maxImageWidth) {
+                    return fileReaderData;  
+                } 
 
                 var canvas = document.createElement("canvas");
                 var ctx = canvas.getContext("2d");
                 ctx.drawImage(img, 0, 0);
 
-                var MAX_WIDTH = 2560;
-                var MAX_HEIGHT = 2560;
-                var width = img.width;
-                var height = img.height;
-
-                if (width > height) {
-                  if (width > MAX_WIDTH) {
-                    height *= MAX_WIDTH / width;
-                    width = MAX_WIDTH;
-                  }
+                if (imageWidth > imageHeight) {
+                    if (imageWidth > this.maxImageWidth) {
+                        imageHeight *= this.maxImageWidth / imageWidth;
+                        imageWidth = this.maxImageWidth;
+                    }
                 } else {
-                  if (height > MAX_HEIGHT) {
-                    width *= MAX_HEIGHT / height;
-                    height = MAX_HEIGHT;
-                  }
+                    if (imageHeight > this.maxImageHeight) {
+                        imageWidth *= this.maxImageHeight / imageHeight;
+                        imageHeight = this.maxImageHeight;
+                    }
                 }
-                canvas.width = width;
-                canvas.height = height;
+                canvas.width = imageWidth;
+                canvas.height = imageHeight;
+
                 var ctx = canvas.getContext("2d");
-                ctx.drawImage(img, 0, 0, width, height);
+                ctx.drawImage(img, 0, 0, imageWidth, imageHeight);
 
                 var dataurl = canvas.toDataURL(fileType);
                 return dataurl;
