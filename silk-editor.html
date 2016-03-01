@@ -18,7 +18,7 @@ Silk editor: [GitHub](https://github.com/woutervroege/silk-editor)
             }
 
             .formatting-bar {
-                position: absolute;
+                position: fixed;
                 z-index: 2;
                 overflow:hidden;
                 background-color: rgba(0,0,0,.9);
@@ -45,6 +45,7 @@ Silk editor: [GitHub](https://github.com/woutervroege/silk-editor)
                 cursor: pointer;
                 width: 40px;
                 height: 40px;
+                margin:0;
                 outline: none;
             }
 
@@ -70,7 +71,7 @@ Silk editor: [GitHub](https://github.com/woutervroege/silk-editor)
                 background-color: rgba(0,0,0,.2);
                 font-weight: 600;
                 font-size: 24px;
-                position: absolute;
+                position: fixed;
                 z-index: 2;
                 transform: translate(-50%, -50%);
             }
@@ -240,8 +241,7 @@ Silk editor: [GitHub](https://github.com/woutervroege/silk-editor)
                     type: String,
                     value: null,
                     readOnly: true,
-                    notify: true,
-                    observer: "selectedTextChanged"
+                    notify: true
                 },
                 article: {
                     type: String,
@@ -251,7 +251,7 @@ Silk editor: [GitHub](https://github.com/woutervroege/silk-editor)
                 },
                 formattingOptions: {
                     type: String,
-                    value: "bold,italics,underline,strikethrough,h1,h2,h3,h4,h5,h6,link"
+                    value: "bold,italics,underline,strikethrough,h1,h2,h3,h4,h5,h6,link,image"
                 },
                 settings: {
                     type: Object,
@@ -360,10 +360,6 @@ Silk editor: [GitHub](https://github.com/woutervroege/silk-editor)
 
             ready: function() {
                 window.onresize = this._mouseUpHandler.bind(this);
-            },
-
-            selectedTextChanged: function(newValue, oldValue) {
-
             },
 
             _parseSettings: function(formattingOptions) {
@@ -501,10 +497,8 @@ Silk editor: [GitHub](https://github.com/woutervroege/silk-editor)
                     var topPosition = range.getClientRects()[0].top;
                     var leftPosition = range.getClientRects()[0].left;                    
                 }
-                topPosition += this._getScrollTop();
                 topPosition -= this._getSelectedHeight() || 0;
                 topPosition -= this._getSelectedLineHeight() || 0;
-                leftPosition += this._getScrollLeft() || 0;
                 return {
                     top: topPosition,
                     left: leftPosition
@@ -523,7 +517,7 @@ Silk editor: [GitHub](https://github.com/woutervroege/silk-editor)
                     var leftPosition = selectedElement.getClientRects()[0].left;                    
                 }
                 return {
-                    top: topPosition + this._getScrollTop(),
+                    top: topPosition,
                     left: leftPosition
                 }
             },
