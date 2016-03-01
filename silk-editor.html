@@ -587,7 +587,7 @@ Silk editor: [GitHub](https://github.com/woutervroege/silk-editor)
                 var tags = /<\/?([a-z][a-z0-9]*)\b[^>]*>/gi;
                 return this._stripAttributes(input.replace(tags, function($0, $1) {
                     return allowed.indexOf('<' + $1.toLowerCase() + '>') > -1 ? $0 : '';
-                }), "href");
+                }), "href,src");
             },
 
             _stripAttributes: function(input, allowed) {
@@ -701,6 +701,7 @@ Silk editor: [GitHub](https://github.com/woutervroege/silk-editor)
                 if(settings["h5"]) allowedTags.push("<h5>");
                 if(settings["h6"]) allowedTags.push("<h6>");
                 if(settings["link"]) allowedTags.push("<a>");
+                if(settings["image"]) allowedTags.push("<img>");
                 return allowedTags;
             },
 
