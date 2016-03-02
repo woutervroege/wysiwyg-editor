@@ -28,6 +28,27 @@ Silk editor: [GitHub](https://github.com/woutervroege/silk-editor)
                 white-space: nowrap;
             }
 
+            .formatting-bar[add-link] .formatting-bar-container {
+                transform: translateX(-10px);
+            }
+
+            .formatting-bar[add-link] button:not(.format-link):not(.target-link) {
+                opacity: 0;
+                width: 0;
+                padding: 0;
+            }
+
+            .formatting-bar[add-link] button.target-link {
+                opacity: 1;
+                width: 40px;
+                padding: 0 9px;
+            }
+
+            .formatting-bar[add-link] input[type="url"] {
+                width:270px;
+                padding: 0 9px;
+            }
+
             .formatting-bar[hidden] {
                 opacity: 0;
             }
@@ -35,6 +56,11 @@ Silk editor: [GitHub](https://github.com/woutervroege/silk-editor)
             .formatting-bar:not([hidden]) {
                 pointer-events: all;
                 animation: formattingBarIn 0.2s;
+            }
+
+            .formatting-bar-container {
+                transition: 0.3s all;
+                white-space: nowrap;
             }
 
             .formatting-bar button {
@@ -48,7 +74,8 @@ Silk editor: [GitHub](https://github.com/woutervroege/silk-editor)
                 margin:0;
                 outline: none;
                 position: relative;
-                transition: 0.2s background-color;
+                transition: 0.2s all;
+                padding: 0;
             }
 
             .formatting-bar button:not(:last-child) {
@@ -84,6 +111,23 @@ Silk editor: [GitHub](https://github.com/woutervroege/silk-editor)
 
             .formatting-bar button.format-strikethrough:after {
                 background-position: -120px 0;
+            }
+
+            .formatting-bar input[type="url"] {
+                outline: none;
+                height: 40px;
+                width: 0;
+                font-size: 14px;
+                color: white;
+                margin-left: 0;
+                padding: 0;
+                position: relative;
+                display: inline-block;
+                z-index: 3;
+                background-color: black;
+                border: 0;
+                outline: none;
+                vertical-align: top;
             }
 
             .formatting-bar button.format-link:after {
@@ -128,6 +172,17 @@ Silk editor: [GitHub](https://github.com/woutervroege/silk-editor)
 
             .formatting-bar button.format-h6:after {
                 background-position: -480px 0;
+                transform: scale(0.6,0.6);
+            }
+
+            .formatting-bar button.target-link {
+                opacity: 0;
+                width: 0;
+                padding: 0;                
+            }
+
+            .formatting-bar button.target-link:after {
+                background-position: -560px 0;
                 transform: scale(0.6,0.6);
             }
 
@@ -231,86 +286,106 @@ Silk editor: [GitHub](https://github.com/woutervroege/silk-editor)
 
         <section
             class="formatting-bar"
+            add-link$="[[showLinkInput]]"
             hidden$="[[nothingSelected]]"
             style$="top:[[formattingBarPosition.top]]px;left:[[formattingBarPosition.left]]px"
             >
 
-            <button
-                class="format-bold"
-                on-tap="toggleBold"
-                disabled$="[[selectedTextHasHeading]]"
-                hidden$="[[!settings.bold]]"
-                selected$="[[selectedTextIsBold]]"></button>
-            <button
-                class="format-italics"
-                on-tap="toggleItalics"
-                disabled$="[[selectedTextHasHeading]]"
-                hidden$="[[!settings.italics]]"
-                selected$="[[selectedTextIsItalic]]"></button>
-            <button
-                class="format-underline"
-                on-tap="toggleUnderline"
-                disabled$="[[selectedTextHasHeading]]"
-                hidden$="[[!settings.underline]]"
-                selected$="[[selectedTextIsUnderlined]]"></button>
-            <button
-                class="format-strikethrough"
-                on-tap="toggleStrikeThrough"
-                disabled$="[[selectedTextHasHeading]]"
-                hidden$="[[!settings.strikethrough]]"
-                selected$="[[selectedTextIsStrikeThrough]]"></button>
-            <button
-                class="format-h1"
-                on-tap="toggleH1"
-                disabled$="[[nothingSelected]]"
-                hidden$="[[!settings.h1]]"
-                selected$="[[selectedTextHasH1]]"></button>
-            <button
-                class="format-h2"
-                on-tap="toggleH2"
-                disabled$="[[nothingSelected]]"
-                hidden$="[[!settings.h2]]"
-                selected$="[[selectedTextHasH2]]"></button>
-            <button
-                class="format-h3"
-                on-tap="toggleH3"
-                disabled$="[[nothingSelected]]"
-                hidden$="[[!settings.h3]]"
-                selected$="[[selectedTextHasH3]]"></button>
-            <button
-                class="format-h4"
-                on-tap="toggleH4"
-                disabled$="[[nothingSelected]]"
-                hidden$="[[!settings.h4]]"
-                selected$="[[selectedTextHasH4]]"></button>
-            <button
-                class="format-h5"
-                on-tap="toggleH5"
-                disabled$="[[nothingSelected]]"
-                hidden$="[[!settings.h5]]"
-                selected$="[[selectedTextHasH5]]"></button>
-            <button
-                class="format-h6"
-                on-tap="toggleH6"
-                disabled$="[[nothingSelected]]"
-                hidden$="[[!settings.h6]]"
-                selected$="[[selectedTextHasH6]]"></button>
-            <button
-                class="format-link"
-                on-tap="toggleLink"
-                disabled$="[[nothingSelected]]"
-                hidden$="[[!settings.link]]"
-                selected$="[[selectedTextHaslink]]"></button>
-            <button
-                class="format-unorderedlist"
-                on-tap="addUnorderedList"
-                disabled$="[[nothingSelected]]"
-                hidden$="[[!settings.unorderedlist]]"></button>
-            <button
-                class="format-orderedlist"
-                on-tap="addOrderedList"
-                disabled$="[[nothingSelected]]"
-                hidden$="[[!settings.orderedlist]]"></button>
+            <div class="formatting-bar-container">
+
+                <button
+                    class="format-bold"
+                    on-tap="toggleBold"
+                    disabled$="[[selectedTextHasHeading]]"
+                    hidden$="[[!settings.bold]]"
+                    selected$="[[selectedTextIsBold]]"></button>
+                <button
+                    class="format-italics"
+                    on-tap="toggleItalics"
+                    disabled$="[[selectedTextHasHeading]]"
+                    hidden$="[[!settings.italics]]"
+                    selected$="[[selectedTextIsItalic]]"></button>
+                <button
+                    class="format-underline"
+                    on-tap="toggleUnderline"
+                    disabled$="[[selectedTextHasHeading]]"
+                    hidden$="[[!settings.underline]]"
+                    selected$="[[selectedTextIsUnderlined]]"></button>
+                <button
+                    class="format-strikethrough"
+                    on-tap="toggleStrikeThrough"
+                    disabled$="[[selectedTextHasHeading]]"
+                    hidden$="[[!settings.strikethrough]]"
+                    selected$="[[selectedTextIsStrikeThrough]]"></button>
+                <button
+                    class="format-h1"
+                    on-tap="toggleH1"
+                    disabled$="[[nothingSelected]]"
+                    hidden$="[[!settings.h1]]"
+                    selected$="[[selectedTextHasH1]]"></button>
+                <button
+                    class="format-h2"
+                    on-tap="toggleH2"
+                    disabled$="[[nothingSelected]]"
+                    hidden$="[[!settings.h2]]"
+                    selected$="[[selectedTextHasH2]]"></button>
+                <button
+                    class="format-h3"
+                    on-tap="toggleH3"
+                    disabled$="[[nothingSelected]]"
+                    hidden$="[[!settings.h3]]"
+                    selected$="[[selectedTextHasH3]]"></button>
+                <button
+                    class="format-h4"
+                    on-tap="toggleH4"
+                    disabled$="[[nothingSelected]]"
+                    hidden$="[[!settings.h4]]"
+                    selected$="[[selectedTextHasH4]]"></button>
+                <button
+                    class="format-h5"
+                    on-tap="toggleH5"
+                    disabled$="[[nothingSelected]]"
+                    hidden$="[[!settings.h5]]"
+                    selected$="[[selectedTextHasH5]]"></button>
+                <button
+                    class="format-h6"
+                    on-tap="toggleH6"
+                    disabled$="[[nothingSelected]]"
+                    hidden$="[[!settings.h6]]"
+                    selected$="[[selectedTextHasH6]]"></button>
+                <button
+                    class="format-link"
+                    on-tap="toggleLinkInput"
+                    disabled$="[[nothingSelected]]"
+                    hidden$="[[!settings.link]]"
+                    selected$="[[selectedTextHaslink]]"></button>
+
+                <input
+                    type="url"
+                    value="{{linkValue::input}}"
+                    on-keyup="insertLink"
+                    on-focus="saveCurrentSelection">
+
+                <button
+                    class="format-unorderedlist"
+                    on-tap="addUnorderedList"
+                    disabled$="[[nothingSelected]]"
+                    hidden$="[[!settings.unorderedlist]]"></button>
+                <button
+                    class="format-orderedlist"
+                    on-tap="addOrderedList"
+                    disabled$="[[nothingSelected]]"
+                    hidden$="[[!settings.orderedlist]]"></button>
+
+                <button
+                    class="target-link"
+                    on-tap="toggleExternalLinkTarget"
+                    disabled$="[[nothingSelected]]"
+                    hidden$="[[!settings.link]]"
+                    selected$="[[externalLinkTarget]]"></button>
+
+            </div>
+
         </section>
         <article
             spellcheck$="[[checkSpelling]]"
@@ -432,7 +507,7 @@ Silk editor: [GitHub](https://github.com/woutervroege/silk-editor)
                 nothingSelected: {
                     type: Boolean,
                     value: true,
-                    computed: "_getSelectedTextIsEmptyString(selectedText)"
+                    computed: "_getSelectedTextIsEmptyString(selectedText)",
                 },
                 formattingBarPosition: {
                     type: Object,
@@ -463,6 +538,26 @@ Silk editor: [GitHub](https://github.com/woutervroege/silk-editor)
                 maxImageSize: {
                     type: Number,
                     value: 2000
+                },
+                showLinkInput: {
+                    type: Boolean,
+                    value: false
+                },
+                savedRange: {
+                    type: Object,
+                    value: {}
+                },
+                savedLinkValue: {
+                    type: String,
+                    value: null
+                },
+                linkValue: {
+                    type: String,
+                    value: "http://"
+                },
+                externalLinkTarget: {
+                    type: Boolean,
+                    value: false
                 }
             },
 
@@ -470,6 +565,10 @@ Silk editor: [GitHub](https://github.com/woutervroege/silk-editor)
                 window.onresize = this._mouseUpHandler.bind(this);
                 window.onscroll = this._mouseUpHandler.bind(this);
             },
+
+            observers: [
+                "setLinkValue(selectedText)"
+            ],
 
             _parseSettings: function(formattingOptions) {
                 var settings = {};
@@ -547,22 +646,54 @@ Silk editor: [GitHub](https://github.com/woutervroege/silk-editor)
                 this._addHTML("h6");
             },
 
+            toggleLinkInput: function() {
+                this.showLinkInput = !this.showLinkInput;
+                var self = this;
+                // if(!self.showLinkInput) return;
+                // window.setTimeout(function() {
+                //      self.$$("input[type=\"url\"]").focus();                    
+                // }, 2000)
+            },
+
+            saveCurrentSelection: function(evt) {
+                evt.preventDefault();
+                this.savedRange = window.getSelection().getRangeAt(0);
+                this.savedLinkValue = this.linkValue;
+            },
+
             toggleLink: function() {
                 if(!this.settings.link) return console.warn("link is disabled!");
-                var selectedElement = this._getSelectionRange().startContainer.parentElement;
                 var url = window.prompt("Please add a link", selectedElement.href || "http://");
+                this.externalLinkTarget = (selectedElement.target && selectedElement.target === "_blank");
                 if(!url || url.length === 0) return this.removeLink();
                 else this.insertLink(url);
             },
 
-            insertLink: function(url) {
+            insertLink: function(evt) {
+                if(evt.which === 27) {
+                    this.linkValue = this.savedLinkValue;
+                    this.showLinkInput = false;
+                } 
+                if(evt.which !== 13) return;
                 if(!this.settings.link) return console.warn("link is disabled!");
-                document.execCommand("insertHTML", false, "<a href=\""+url+"\">"+this.selectedText+"</a>");
+                this.nothingSelected = false;
+                this.showLinkInput = false;
+
+
+                var selection = window.getSelection();
+                selection.removeAllRanges();
+                selection.addRange(this.savedRange);
+
+                if(this.linkValue.length === 0) return this.removeLink(selection);
+
+                var target = (this.externalLinkTarget) ? "_blank" : "_self";
+
+                document.execCommand("insertHTML", false, "<a href=\"" + this.linkValue + "\" target=\""+target+"\">" + selection.toString() + "</a>");
             },
 
-            removeLink: function() {
+            removeLink: function(selection) {
                 if(!this.settings.link) return console.warn("link is disabled!");
-                document.execCommand("unlink", false);
+                return document.execCommand('insertHTML', false, '<span>' + selection.toString() + '</span>');
             },
 
             addUnorderedList: function() {
@@ -573,6 +704,10 @@ Silk editor: [GitHub](https://github.com/woutervroege/silk-editor)
             addOrderedList: function() {
                 if(!this.settings.unorderedlist) return console.warn("unordered list is disabled!");
                 document.execCommand("insertHTML", false, "<ol><li>"+this.selectedText+"</li></ol>");
+            },
+
+            toggleExternalLinkTarget: function() {
+                this.externalLinkTarget = !this.externalLinkTarget;
             },
 
             getContents: function() {
@@ -900,6 +1035,14 @@ Silk editor: [GitHub](https://github.com/woutervroege/silk-editor)
 
                 var dataurl = canvas.toDataURL(fileType);
                 return dataurl;
+            },
+
+            setLinkValue: function() {
+                var selectionRange = this._getSelectionRange();
+                if(!selectionRange) return;
+                var selectedElement = selectionRange.startContainer.parentElement;
+                this.linkValue = selectedElement.href || "http://";
+                this.externalLinkTarget = false;
             }
 
         })
