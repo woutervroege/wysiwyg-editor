@@ -37,7 +37,7 @@ Silk editor: [GitHub](https://github.com/woutervroege/silk-editor)
                 animation: formattingBarIn 0.2s;
             }
 
-            button {
+            .formatting-bar button {
                 border:0;
                 background-color: transparent;
                 color: white;
@@ -47,43 +47,125 @@ Silk editor: [GitHub](https://github.com/woutervroege/silk-editor)
                 height: 40px;
                 margin:0;
                 outline: none;
+                position: relative;
+                transition: 0.2s background-color;
             }
 
-            button:hover {
+            .formatting-bar button:not(:last-child) {
+                border-right: 1px solid rgba(255,255,255,.2);                
+            }
+
+            .formatting-bar button:after {
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                content: " ";
+                transform: scale(0.5,0.5);
+                transform-origin: center;
+                background-image: url(assets/sprite.png);
+                background-repeat: no-repeat;
+                box-sizing: border-box;
+                background-position: 50% 50%;
+            }
+
+            .formatting-bar button.format-bold:after {
+                background-position: 0 0;
+            }
+
+            .formatting-bar button.format-italics:after {
+                background-position: -40px 0;
+            }
+
+            .formatting-bar button.format-underline:after {
+                background-position: -80px 0;
+            }
+
+            .formatting-bar button.format-strikethrough:after {
+                background-position: -120px 0;
+            }
+
+            .formatting-bar button.format-link:after {
+                background-position: -160px 0;
+                transform: scale(0.6,0.6);
+            }
+
+            .formatting-bar button.format-unorderedlist:after {
+                background-position: -200px 0;
+                transform: scale(0.6,0.6);
+            }
+
+            .formatting-bar button.format-orderedlist:after {
+                background-position: -240px 0;
+                transform: scale(0.6,0.6);
+            }
+
+            .formatting-bar button.format-h1:after {
+                background-position: -280px 0;
+                transform: scale(0.6,0.6);
+            }
+
+            .formatting-bar button.format-h2:after {
+                background-position: -320px 0;
+                transform: scale(0.6,0.6);
+            }
+
+            .formatting-bar button.format-h3:after {
+                background-position: -360px 0;
+                transform: scale(0.6,0.6);
+            }
+
+            .formatting-bar button.format-h4:after {
+                background-position: -400px 0;
+                transform: scale(0.6,0.6);
+            }
+
+            .formatting-bar button.format-h5:after {
+                background-position: -440px 0;
+                transform: scale(0.6,0.6);
+            }
+
+            .formatting-bar button.format-h6:after {
+                background-position: -480px 0;
+                transform: scale(0.6,0.6);
+            }
+
+            .formatting-bar button:hover {
                 background-color: rgba(255,0,0,.3);
             }
 
-            button[selected], button:active {
-                background-color: rgba(247,120,107,1);
-                color: black;
+            .formatting-bar button[selected], button:active {
+                background-color: rgba(221,65,50,1);
             }
 
-            button[disabled] {
+            .formatting-bar button[disabled] {
                 background-color: transparent;
                 opacity: 0.5;
-                color: white;
             }
 
             #silk-select-file {
                 width: 36px;
                 height: 36px;
                 border-radius: 50%;
-                background-color: rgba(0,0,0,.2);
+                background-color: rgba(221,65,50,0.2);
                 font-weight: 600;
                 font-size: 24px;
                 position: fixed;
                 z-index: 2;
                 transform: translate(-50%, -50%);
+                border:0;
+                cursor: pointer;
+                outline: none;
+                color: white;
             }
 
             #silk-select-file:hover {
-                background-color: rgba(0,0,0,.4);
-                color: white;              
+                background-color: rgba(221,65,50,.4);
             }
 
             #silk-select-file:active {
-                background-color: rgba(0,0,0,.6);
-                color: white;             
+                background-color: rgba(221,65,50,0.6);
             }
 
             @-webkit-keyframes formattingBarIn {
@@ -154,60 +236,71 @@ Silk editor: [GitHub](https://github.com/woutervroege/silk-editor)
             >
 
             <button
+                class="format-bold"
                 on-tap="toggleBold"
                 disabled$="[[selectedTextHasHeading]]"
                 hidden$="[[!settings.bold]]"
-                selected$="[[selectedTextIsBold]]"><b>B</b></button>
+                selected$="[[selectedTextIsBold]]"></button>
             <button
+                class="format-italics"
                 on-tap="toggleItalics"
                 disabled$="[[selectedTextHasHeading]]"
                 hidden$="[[!settings.italics]]"
-                selected$="[[selectedTextIsItalic]]"><i>i</i></button>
+                selected$="[[selectedTextIsItalic]]"></button>
             <button
+                class="format-underline"
                 on-tap="toggleUnderline"
                 disabled$="[[selectedTextHasHeading]]"
                 hidden$="[[!settings.underline]]"
-                selected$="[[selectedTextIsUnderlined]]"><u>U</u></button>
+                selected$="[[selectedTextIsUnderlined]]"></button>
             <button
+                class="format-strikethrough"
                 on-tap="toggleStrikeThrough"
                 disabled$="[[selectedTextHasHeading]]"
                 hidden$="[[!settings.strikethrough]]"
-                selected$="[[selectedTextIsStrikeThrough]]"><s>S</s></button>
+                selected$="[[selectedTextIsStrikeThrough]]"></button>
             <button
+                class="format-h1"
                 on-tap="toggleH1"
                 disabled$="[[nothingSelected]]"
                 hidden$="[[!settings.h1]]"
-                selected$="[[selectedTextHasH1]]">h1</button>
+                selected$="[[selectedTextHasH1]]"></button>
             <button
+                class="format-h2"
                 on-tap="toggleH2"
                 disabled$="[[nothingSelected]]"
                 hidden$="[[!settings.h2]]"
-                selected$="[[selectedTextHasH2]]">h2</button>
+                selected$="[[selectedTextHasH2]]"></button>
             <button
+                class="format-h3"
                 on-tap="toggleH3"
                 disabled$="[[nothingSelected]]"
                 hidden$="[[!settings.h3]]"
-                selected$="[[selectedTextHasH3]]">h3</button>
+                selected$="[[selectedTextHasH3]]"></button>
             <button
+                class="format-h4"
                 on-tap="toggleH4"
                 disabled$="[[nothingSelected]]"
                 hidden$="[[!settings.h4]]"
-                selected$="[[selectedTextHasH4]]">h4</button>
+                selected$="[[selectedTextHasH4]]"></button>
             <button
+                class="format-h5"
                 on-tap="toggleH5"
                 disabled$="[[nothingSelected]]"
                 hidden$="[[!settings.h5]]"
-                selected$="[[selectedTextHasH5]]">h5</button>
+                selected$="[[selectedTextHasH5]]"></button>
             <button
+                class="format-h6"
                 on-tap="toggleH6"
                 disabled$="[[nothingSelected]]"
                 hidden$="[[!settings.h6]]"
-                selected$="[[selectedTextHasH6]]">h6</button>
+                selected$="[[selectedTextHasH6]]"></button>
             <button
+                class="format-link"
                 on-tap="toggleLink"
                 disabled$="[[nothingSelected]]"
                 hidden$="[[!settings.link]]"
-                selected$="[[selectedTextHaslink]]">&#60;a&#62;</button>
+                selected$="[[selectedTextHaslink]]"></button>
             <button
                 class="format-unorderedlist"
                 on-tap="addUnorderedList"
