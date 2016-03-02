@@ -216,7 +216,7 @@ Silk editor: [GitHub](https://github.com/woutervroege/silk-editor)
             on-mouseup="_mouseUpHandler"
             on-keyup="_keyUpHandler"
             on-input="_updateContent"
-            contenteditable$="[[!disabled]]"><content></content></article>
+            contenteditable$="[[!disabled]]"></article>
 
     </template>
     <script>
@@ -242,6 +242,11 @@ Silk editor: [GitHub](https://github.com/woutervroege/silk-editor)
                     value: null,
                     readOnly: true,
                     notify: true
+                },
+                content: {
+                    type: String,
+                    notify: true,
+                    observer: "_contentChanged"
                 },
                 article: {
                     type: String,
@@ -702,8 +707,13 @@ Silk editor: [GitHub](https://github.com/woutervroege/silk-editor)
                 return allowedTags;
             },
 
+            _contentChanged: function(content) {
+                this.$$("article").innerHTML = content;
+            },
+
             _articleChanged: function() {
                 this._setSelectedText(new String(this.selectedText));
+                this.fire("content-change", this.$$("article").innerHTML);
             },
 
             _getSelectedTextIsEmptyString: function(selectedText) {
