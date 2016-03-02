@@ -266,7 +266,6 @@ Silk editor: [GitHub](https://github.com/woutervroege/silk-editor)
                 },
                 formattingOptions: {
                     type: String,
-                    value: "bold,italics,underline,strikethrough,h1,h2,h3,h4,h5,h6,link,image"
                     value: "bold,italics,underline,strikethrough,h1,h2,h3,h4,h5,h6,link,image,unorderedlist,orderedlist"
                 },
                 settings: {
@@ -612,6 +611,11 @@ Silk editor: [GitHub](https://github.com/woutervroege/silk-editor)
             },
 
             _stripTags: function(input, allowed) {
+                input = input
+                    .replace(/(\r\n|\n)+/gi, "<br>")
+                    .replace(/^.*?<body>/gi, "");
+
+
                 allowed = this.allowedTags.join(",");
                 var tags = /<\/?([a-z][a-z0-9]*)\b[^>]*>/gi;
                 return this._stripAttributes(input.replace(tags, function($0, $1) {
@@ -717,7 +721,7 @@ Silk editor: [GitHub](https://github.com/woutervroege/silk-editor)
             },
 
             _getAllowedTags: function() {
-                var allowedTags = [];
+                var allowedTags = ["<br>", "<p>"];
                 var settings = this.settings;
                 if(settings["bold"]) allowedTags.push("<b>", "<strong>");
                 if(settings["italics"]) allowedTags.push("<i>", "<em>");
