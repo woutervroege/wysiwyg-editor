@@ -460,6 +460,10 @@ Silk editor: [GitHub](https://github.com/woutervroege/silk-editor)
                 document.execCommand("unlink", false);
             },
 
+            getContents: function() {
+                return this.$$("article").innerHTML
+            },
+
             _getSelection: function() {
                var selection = "";
 
@@ -685,7 +689,7 @@ Silk editor: [GitHub](https://github.com/woutervroege/silk-editor)
             },
 
             _updateContent: function() {
-                this._setArticle(this.$$("article").innerHTML);
+                this._setArticle(this.getContents());
                 this._mouseUpHandler();
             },
 
@@ -713,7 +717,7 @@ Silk editor: [GitHub](https://github.com/woutervroege/silk-editor)
 
             _articleChanged: function() {
                 this._setSelectedText(new String(this.selectedText));
-                this.fire("content-change", this.$$("article").innerHTML);
+                this.fire("content-change", this.getContents());
             },
 
             _getSelectedTextIsEmptyString: function(selectedText) {
