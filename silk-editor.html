@@ -28,6 +28,13 @@ Silk editor: [GitHub](https://github.com/woutervroege/silk-editor)
                 white-space: nowrap;
             }
 
+            .formatting-bar[data-fixed] {
+                top: 0;
+                left:0;
+                width:100%;
+                border-radius: 0;
+            }
+
             .formatting-bar[add-link] .formatting-bar-container {
                 transform: translateX(-10px);
             }
@@ -286,8 +293,9 @@ Silk editor: [GitHub](https://github.com/woutervroege/silk-editor)
 
         <section
             class="formatting-bar"
+            data-fixed$="[[fixedFormattingBar]]"
             add-link$="[[showLinkInput]]"
-            hidden$="[[nothingSelected]]"
+            hidden$="[[hideFormattingBar]]"
             style$="top:[[formattingBarPosition.top]]px;left:[[formattingBarPosition.left]]px"
             >
 
@@ -441,6 +449,10 @@ Silk editor: [GitHub](https://github.com/woutervroege/silk-editor)
                     type: String,
                     value: "bold,italics,underline,strikethrough,h1,h2,h3,h4,h5,h6,link,image,unorderedlist,orderedlist"
                 },
+                fixedFormattingBar: {
+                    type: Boolean,
+                    value: false
+                },
                 settings: {
                     type: Object,
                     computed: "_parseSettings(formattingOptions)"
@@ -513,6 +525,11 @@ Silk editor: [GitHub](https://github.com/woutervroege/silk-editor)
                     type: Boolean,
                     value: true,
                     computed: "_getSelectedTextIsEmptyString(selectedText)",
+                },
+                hideFormattingBar: {
+                    type: Boolean,
+                    value: false,
+                    computed: "_getHideFormattingBar(nothingSelected, fixedFormattingBar)",
                 },
                 formattingBarPosition: {
                     type: Object,
@@ -752,6 +769,12 @@ Silk editor: [GitHub](https://github.com/woutervroege/silk-editor)
             },
 
             _getFormattingBarPosition: function() {
+                if(this.fixedFormattingBar) {
+                    return {
+                        top:0,
+                        left:0
+                    }
+                }
                 var range = this._getSelectionRange();
                 if(!range) return;
                 if(!range.getClientRects()[0]) return;
@@ -996,6 +1019,11 @@ Silk editor: [GitHub](https://github.com/woutervroege/silk-editor)
 
             _getSelectedTextIsEmptyString: function(selectedText) {
                 return (!selectedText || selectedText.length === 0);
+            },
+
+            _getHideFormattingBar: function(nothingSelected) {
+                if(this.fixedFormattingBar) return false;
+                return nothingSelected;
             },
 
             _processImage: function(e) {
