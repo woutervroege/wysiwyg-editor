@@ -1043,12 +1043,14 @@ Silk editor: [GitHub](https://github.com/woutervroege/silk-editor)
 
                 var maximumFileSizeInBytes = this.maxImageSize*1000;
                 if(file.size > maximumFileSizeInBytes) {
+                    this.$$("#file-upload").value = null;
                     return this.fire("image-upload-error", "maxium upload size exceeded ("+ this.maxImageSize+"KB)");
                 }
 
                 var fileType = file.type;
                 var reader = new FileReader();
                 reader.onloadend = function () {
+                    self.$$("#file-upload").value = null;
                     var imageData = reader.result;
                     if(self.resizeImages) imageData = self._resizeImage(imageData, fileType);
                     document.execCommand("insertHTML", false, '<img src="'+imageData+'">');
