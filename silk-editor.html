@@ -390,7 +390,7 @@ Silk editor: [GitHub](https://github.com/woutervroege/silk-editor)
         <article
             spellcheck$="[[checkSpelling]]"
             on-focus="_disableSpellcheck"
-            on-paste="_pasteHTML"
+            on-paste="_pasteHandler"
             on-mouseup="_mouseUpHandler"
             on-keyup="_keyUpHandler"
             on-input="_updateContent"
@@ -411,6 +411,11 @@ Silk editor: [GitHub](https://github.com/woutervroege/silk-editor)
                 checkSpelling: {
                     type: Boolean,
                     value: false
+                },
+                pastePlainText: {
+                    type: Boolean,
+                    value: false,
+                    notify: true
                 },
                 selection: {
                     type: Object
@@ -557,8 +562,8 @@ Silk editor: [GitHub](https://github.com/woutervroege/silk-editor)
                 },
                 externalLinkTarget: {
                     type: Boolean,
-                    value: false
-                }
+                    computed: "_getLinkTarget(selectedText)"
+                },
             },
 
             ready: function() {
@@ -664,7 +669,6 @@ Silk editor: [GitHub](https://github.com/woutervroege/silk-editor)
             toggleLink: function() {
                 if(!this.settings.link) return console.warn("link is disabled!");
                 var url = window.prompt("Please add a link", selectedElement.href || "http://");
-                this.externalLinkTarget = (selectedElement.target && selectedElement.target === "_blank");
                 if(!url || url.length === 0) return this.removeLink();
                 else this.insertLink(url);
             },
@@ -707,7 +711,7 @@ Silk editor: [GitHub](https://github.com/woutervroege/silk-editor)
             },
 
             toggleExternalLinkTarget: function() {
-                this.externalLinkTarget = !this.externalLinkTarget;
+                // this.externalLinkTarget = !this.externalLinkTarget;
             },
 
             getContents: function() {
@@ -811,21 +815,31 @@ Silk editor: [GitHub](https://github.com/woutervroege/silk-editor)
                 if(!this.checkSpelling) document.body.spellcheck = false;
             },
 
-            _pasteHTML: function(e) {
+            _pasteHandler: function(e) {
+
+                e.preventDefault();
+
                 if (e.originalEvent && e.originalEvent.clipboardData && e.originalEvent.clipboardData.getData) {
-                    e.preventDefault();
-                    var html = this._stripTags(e.originalEvent.originalEvent.clipboardData.getData("text/html"));
-                    window.document.execCommand("insertHTML", false, html);
+                    if(this.pastePlainText) {
+                        var text = e.originalEvent.originalEvent.clipboardData.getData("text/plain");
+                        window.document.execCommand("insertText", false, text);
+                    } else {
+                        var html = this._stripTags(e.originalEvent.originalEvent.clipboardData.getData("text/html"));
+                        window.document.execCommand("insertHTML", false, html);
+                    }
                 }
                 else if (e.clipboardData && e.clipboardData.getData) {
-                    e.preventDefault();
-                    var html = this._stripTags(e.clipboardData.getData("text/html"));
-                    window.document.execCommand("insertHTML", false, html);
+                    if(this.pastePlainText) {
+                        var text = e.clipboardData.getData("text/plain");
+                        window.document.execCommand("insertText", false, text);
+                    } else {
+                        var html = this._stripTags(e.clipboardData.getData("text/html"));
+                        window.document.execCommand("insertHTML", false, html);
+                    }
                 }
                 else if (window.clipboardData && window.clipboardData.getData) {
                     if (!_onPaste_StripFormatting_IEPaste) {
                         _onPaste_StripFormatting_IEPaste = true;
-                        e.preventDefault();
                         window.document.execCommand("ms-pasteTextOnly", false);
                     }
                     _onPaste_StripFormatting_IEPaste = false;
@@ -1043,6 +1057,12 @@ Silk editor: [GitHub](https://github.com/woutervroege/silk-editor)
                 var selectedElement = selectionRange.startContainer.parentElement;
                 this.linkValue = selectedElement.href || "http://";
                 this.externalLinkTarget = false;
+            },
+
+            _getLinkTarget: function() {
+                var selectedRange = this._getSelectionRange();
+                var selectedElement = (selectedRange && selectedRange.startContainer && selectedRange.startContainer.parentElement);
+                return (selectedElement.target && selectedElement.target);
             }
 
         })
