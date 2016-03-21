@@ -987,6 +987,9 @@ Silk editor: [GitHub](https://github.com/woutervroege/silk-editor)
             },
 
             _articleChanged: function() {
+                if(this.getContents().length == 0) {
+                    this.$$("article").innerHTML = "<p></p>";
+                }
                 this._setSelectedText(new String(this.selectedText));
                 this.fire("content-change", this.getContents());
             },
