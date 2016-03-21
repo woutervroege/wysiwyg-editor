@@ -152,6 +152,11 @@ Silk editor: [GitHub](https://github.com/woutervroege/silk-editor)
                 transform: scale(0.6,0.6);
             }
 
+            .formatting-bar button.format-image:after {
+                background-position: -595px 0;
+                transform: scale(0.6,0.6);
+            }
+
             .formatting-bar button.format-h1:after {
                 background-position: -280px 0;
                 transform: scale(0.6,0.6);
@@ -282,13 +287,13 @@ Silk editor: [GitHub](https://github.com/woutervroege/silk-editor)
                 accept="image/jpeg,image/jpeg,image/png"
                 >
 
-            <button
+<!--             <button
                 id="silk-select-file"
                 on-tap="insertImage"
                 hidden$="[[!fileUploadButtonPosition.top]]"
                 style$="top:[[fileUploadButtonPosition.top]]px;left:[[fileUploadButtonPosition.left]]px"
                 >+</button>
-
+ -->
         </template>
 
         <section
@@ -384,6 +389,11 @@ Silk editor: [GitHub](https://github.com/woutervroege/silk-editor)
                     on-tap="addOrderedList"
                     disabled$="[[nothingSelected]]"
                     hidden$="[[!settings.orderedlist]]"></button>
+
+                <button
+                    class="format-image"
+                    on-tap="insertImage"
+                    hidden$="[[!settings.image]]"></button>
 
 <!--                 <button
                     class="target-link"
