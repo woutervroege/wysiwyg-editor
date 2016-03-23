@@ -13,6 +13,20 @@ Silk editor: [GitHub](https://github.com/woutervroege/silk-editor)
                 display: block;
                 position: relative;
             }
+
+            :host[fixed-formatting-bar] .formatting-bar {
+                position: absolute;
+                top: 0;
+                left:0;
+                width:100%;
+                border-radius: 0;
+            }
+
+            :host[fixed-formatting-bar] .content {
+                max-height: 100vh;
+                overflow: auto;
+            }
+
             article {
                 outline: none;
             }
@@ -27,13 +41,6 @@ Silk editor: [GitHub](https://github.com/woutervroege/silk-editor)
                 box-sizing: border-box;
                 white-space: nowrap;
                 height: 40px;
-            }
-
-            .formatting-bar[data-fixed] {
-                top: 0;
-                left:0;
-                width:100%;
-                border-radius: 0;
             }
 
             .formatting-bar[add-link] .formatting-bar-container {
@@ -406,14 +413,18 @@ Silk editor: [GitHub](https://github.com/woutervroege/silk-editor)
             </div>
 
         </section>
-        <article
-            spellcheck$="[[checkSpelling]]"
-            on-focus="_disableSpellcheck"
-            on-paste="_pasteHandler"
-            on-mouseup="_mouseUpHandler"
-            on-keyup="_keyUpHandler"
-            on-input="_updateContent"
-            contenteditable$="[[!disabled]]"></article>
+
+        <section class="content">
+            <article
+                spellcheck$="[[checkSpelling]]"
+                on-focus="_disableSpellcheck"
+                on-paste="_pasteHandler"
+                on-mouseup="_mouseUpHandler"
+                on-keyup="_keyUpHandler"
+                on-input="_updateContent"
+                contenteditable$="[[!disabled]]"
+            ></article>
+        </section>
 
     </template>
     <script>
@@ -462,7 +473,8 @@ Silk editor: [GitHub](https://github.com/woutervroege/silk-editor)
                 },
                 fixedFormattingBar: {
                     type: Boolean,
-                    value: false
+                    value: false,
+                    reflectToAttribute: true
                 },
                 settings: {
                     type: Object,
