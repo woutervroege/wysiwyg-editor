@@ -1,6 +1,6 @@
 {
   "name": "silk-editor",
-  "version": "0.99.3",
+  "version": "1.0.0",
   "homepage": "https://github.com/woutervroege/silk-editor",
   "description": "Polymer wysiwyg editor",
   "main": "",
@@ -26,9 +26,10 @@
     "webcomponents"
   ],
   "dependencies": {
-    "polymer": "Polymer/polymer#^1.2.0"
+    "polymer": "Polymer/polymer#^1.4.0"
   },
   "devDependencies": {
-    "iron-component-page": "PolymerElements/iron-component-page#^1.1.4"
+    "iron-component-page": "PolymerElements/iron-component-page#^1.1.5",
+    "web-component-tester": "*"
   }
 }
