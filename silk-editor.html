@@ -388,6 +388,7 @@ Example:
                     selected$="[[selectedTextHaslink]]"></button>
 
                 <input
+                    id="urlInput"
                     type="url"
                     value="{{linkValue::input}}"
                     on-keyup="insertLink"
@@ -699,11 +700,8 @@ Example:
 
             toggleLinkInput: function() {
                 this.showLinkInput = !this.showLinkInput;
-                var self = this;
-                // if(!self.showLinkInput) return;
-                // window.setTimeout(function() {
-                //      self.$$("input[type=\"url\"]").focus();                    
-                // }, 2000)
+                var hiliteColor = (this.showLinkInput === true) ? "#afd5fc" : "transparent";
+                document.execCommand("hiliteColor", false, hiliteColor);
             },
 
             saveCurrentSelection: function(evt) {
