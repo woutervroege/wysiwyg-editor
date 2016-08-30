@@ -326,66 +326,77 @@ Example:
             <div class="formatting-bar-container">
 
                 <button
+                    title="Bold"
                     class="format-bold"
                     on-tap="toggleBold"
                     disabled$="[[selectedTextHasHeading]]"
                     hidden$="[[!settings.bold]]"
                     selected$="[[selectedTextIsBold]]"></button>
                 <button
+                    title="Italics"
                     class="format-italics"
                     on-tap="toggleItalics"
                     disabled$="[[selectedTextHasHeading]]"
                     hidden$="[[!settings.italics]]"
                     selected$="[[selectedTextIsItalic]]"></button>
                 <button
+                    title="Underline"
                     class="format-underline"
                     on-tap="toggleUnderline"
                     disabled$="[[selectedTextHasHeading]]"
                     hidden$="[[!settings.underline]]"
                     selected$="[[selectedTextIsUnderlined]]"></button>
                 <button
+                    title="Strikethrough"
                     class="format-strikethrough"
                     on-tap="toggleStrikeThrough"
                     disabled$="[[selectedTextHasHeading]]"
                     hidden$="[[!settings.strikethrough]]"
                     selected$="[[selectedTextIsStrikeThrough]]"></button>
                 <button
+                    title="Heading 1"
                     class="format-h1"
                     on-tap="toggleH1"
                     disabled$="[[nothingSelected]]"
                     hidden$="[[!settings.h1]]"
                     selected$="[[selectedTextHasH1]]"></button>
                 <button
+                    title="Heading 2"
                     class="format-h2"
                     on-tap="toggleH2"
                     disabled$="[[nothingSelected]]"
                     hidden$="[[!settings.h2]]"
                     selected$="[[selectedTextHasH2]]"></button>
                 <button
+                    title="Heading 3"
                     class="format-h3"
                     on-tap="toggleH3"
                     disabled$="[[nothingSelected]]"
                     hidden$="[[!settings.h3]]"
                     selected$="[[selectedTextHasH3]]"></button>
                 <button
+                    title="Heading 4"
                     class="format-h4"
                     on-tap="toggleH4"
                     disabled$="[[nothingSelected]]"
                     hidden$="[[!settings.h4]]"
                     selected$="[[selectedTextHasH4]]"></button>
                 <button
+                    title="Heading 5"
                     class="format-h5"
                     on-tap="toggleH5"
                     disabled$="[[nothingSelected]]"
                     hidden$="[[!settings.h5]]"
                     selected$="[[selectedTextHasH5]]"></button>
                 <button
+                    title="Heading 6"
                     class="format-h6"
                     on-tap="toggleH6"
                     disabled$="[[nothingSelected]]"
                     hidden$="[[!settings.h6]]"
                     selected$="[[selectedTextHasH6]]"></button>
                 <button
+                    title=" formatting"
                     class="format-link"
                     on-tap="toggleLinkInput"
                     disabled$="[[nothingSelected]]"
@@ -400,30 +411,35 @@ Example:
                     on-focus="saveCurrentSelection">
 
                 <button
+                    title="Unordered list"
                     class="format-unorderedlist"
                     on-tap="addUnorderedList"
                     disabled$="[[nothingSelected]]"
                     hidden$="[[!settings.unorderedlist]]"></button>
                 <button
+                    title="Ordered list"
                     class="format-orderedlist"
                     on-tap="addOrderedList"
                     disabled$="[[nothingSelected]]"
                     hidden$="[[!settings.orderedlist]]"></button>
 
                 <button
+                    title="Insert image"
                     class="format-image"
                     on-tap="insertImage"
                     hidden$="[[!settings.image]]"></button>
 
                 <button
-                    class="format-vimeo"
-                    on-tap="toggleVimeoInput"
-                    hidden$="[[!settings.vimeo]]"></button>
-
-                <button
+                    title="Insert Youtube video"
                     class="format-youtube"
                     on-tap="toggleYoutubeInput"
                     hidden$="[[!settings.youtube]]"></button>
+
+                <button
+                    title="Insert Vimeo video"
+                    class="format-vimeo"
+                    on-tap="toggleVimeoInput"
+                    hidden$="[[!settings.vimeo]]"></button>
 
                 <input
                     id="vimeoInput"
@@ -1207,7 +1223,7 @@ Example:
 
             insertYoutubeVideo: function(value) {
                 var youtubeID = this._parseValueToYoutubeID(value);
-                var embedCode = '<iframe width="420" height="315" src="https://www.youtube.com/embed/'+youtubeID+'" frameborder="0" allowfullscreen></iframe>';
+                var embedCode = '<iframe width="640" height="360" src="https://www.youtube.com/embed/'+youtubeID+'" frameborder="0" allowfullscreen></iframe>';
                 var selection = window.getSelection();
                 selection.removeAllRanges();
                 selection.addRange(this.savedRange);
