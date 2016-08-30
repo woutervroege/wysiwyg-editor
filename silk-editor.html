@@ -49,23 +49,19 @@ Example:
                 height: 40px;
             }
 
-            .formatting-bar[add-link] .formatting-bar-container {
+            .formatting-bar[add-link] .formatting-bar-container, .formatting-bar[add-vimeo] .formatting-bar-container {
                 transform: translateX(-10px);
             }
 
-            .formatting-bar[add-link] button:not(.format-link):not(.target-link) {
+            .formatting-bar[add-link] button:not(.format-link),
+            .formatting-bar[add-vimeo] button:not(.format-vimeo) {
                 opacity: 0;
                 width: 0;
                 padding: 0;
             }
 
-            .formatting-bar[add-link] button.target-link {
-                opacity: 1;
-                width: 40px;
-                padding: 0 9px;
-            }
-
-            .formatting-bar[add-link] input[type="url"] {
+            .formatting-bar[add-link] #urlInput,
+            .formatting-bar[add-vimeo] #vimeoInput {
                 width:270px;
                 padding: 0 9px;
             }
@@ -168,6 +164,11 @@ Example:
 
             .formatting-bar button.format-image:after {
                 background-position: -595px 0;
+                transform: scale(0.6,0.6);
+            }
+
+            .formatting-bar button.format-vimeo:after {
+                background-position: -635px 0;
                 transform: scale(0.6,0.6);
             }
 
@@ -301,19 +302,13 @@ Example:
                 accept="image/jpeg,image/jpeg,image/png"
                 >
 
-<!--             <button
-                id="silk-select-file"
-                on-tap="insertImage"
-                hidden$="[[!fileUploadButtonPosition.top]]"
-                style$="top:[[fileUploadButtonPosition.top]]px;left:[[fileUploadButtonPosition.left]]px"
-                >+</button>
- -->
         </template>
 
         <section
             class="formatting-bar"
             data-fixed$="[[fixedFormattingBar]]"
             add-link$="[[showLinkInput]]"
+            add-vimeo$="[[showVimeoInput]]"
             hidden$="[[hideFormattingBar]]"
             style$="top:[[formattingBarPosition.top]]px;left:[[formattingBarPosition.left]]px"
             >
@@ -410,13 +405,19 @@ Example:
                     on-tap="insertImage"
                     hidden$="[[!settings.image]]"></button>
 
-<!--                 <button
-                    class="target-link"
-                    on-tap="toggleExternalLinkTarget"
-                    disabled$="[[nothingSelected]]"
-                    hidden$="[[!settings.link]]"
-                    selected$="[[externalLinkTarget]]"></button>
- -->
+                <button
+                    class="format-vimeo"
+                    on-tap="toggleVimeoInput"
+                    hidden$="[[!settings.vimeo]]"></button>
+
+                <input
+                    id="vimeoInput"
+                    type="url"
+                    value="{{vimeoURL::input}}"
+                    on-keypress="_handleVimeoInputKeypress"
+                    on-focus="saveCurrentSelection"
+                    placeholder="Insert Vimeo URL">
+
             </div>
 
         </section>
@@ -476,7 +477,7 @@ Example:
                 },
                 formattingOptions: {
                     type: String,
-                    value: "bold,italics,underline,strikethrough,h1,h2,h3,h4,h5,h6,link,image,unorderedlist,orderedlist"
+                    value: "bold,italics,underline,strikethrough,h1,h2,h3,h4,h5,h6,link,image,unorderedlist,orderedlist,vimeo"
                 },
                 fixedFormattingBar: {
                     type: Boolean,
@@ -595,6 +596,10 @@ Example:
                     type: Boolean,
                     value: false
                 },
+                showVimeoInput: {
+                    type: Boolean,
+                    value: false
+                },
                 savedRange: {
                     type: Object,
                     value: {}
@@ -639,6 +644,7 @@ Example:
                 settings["orderedlist"] = options.indexOf("orderedlist") !== -1;
                 settings["link"] = options.indexOf("link") !== -1;
                 settings["image"] = options.indexOf("image") !== -1;
+                settings["vimeo"] = options.indexOf("vimeo") !== -1;
                 return settings;
             },
 
@@ -742,6 +748,10 @@ Example:
             removeLink: function(selection) {
                 if(!this.settings.link) return console.warn("link is disabled!");
                 return document.execCommand('insertHTML', false, '<span>' + selection.toString() + '</span>');
+            },
+
+            toggleVimeoInput: function() {
+                this.showVimeoInput = !this.showVimeoInput;
             },
 
             addUnorderedList: function() {
@@ -904,6 +914,7 @@ Example:
             },
 
             _stripTags: function(input, allowed) {
+                return;
                 input = input
                     .replace(/(\r\n|\n)+/gi, "<br>")
                     .replace(/^.*?<body>/gi, "");
@@ -913,7 +924,7 @@ Example:
                 var tags = /<\/?([a-z][a-z0-9]*)\b[^>]*>/gi;
                 return this._stripAttributes(input.replace(tags, function($0, $1) {
                     return allowed.indexOf('<' + $1.toLowerCase() + '>') > -1 ? $0 : '';
-                }), "href,src");
+                }), "href,src,width,height,webkitallowfullscreen,mozallowfullscreen,allowfullscreen");
             },
 
             _stripAttributes: function(input, allowed) {
@@ -1028,6 +1039,7 @@ Example:
                 if(settings["h6"]) allowedTags.push("<h6>");
                 if(settings["link"]) allowedTags.push("<a>");
                 if(settings["image"]) allowedTags.push("<img>");
+                if(settings["vimeo"]) allowedTags.push("<iframe>");
                 if(settings["unorderedlist"]) allowedTags.push("<ul>", "<li>");
                 if(settings["orderedlist"]) allowedTags.push("<ol>", "<li>");
                 return allowedTags;
@@ -1124,6 +1136,28 @@ Example:
                 var selectedRange = this._getSelectionRange();
                 var selectedElement = (selectedRange && selectedRange.startContainer && selectedRange.startContainer.parentElement);
                 return (selectedElement.target && selectedElement.target);
+            },
+
+            _handleVimeoInputKeypress: function(evt) {
+                if(evt.which !== 13) return;
+                this.insertVimeoVideo(evt.target.value);
+            },
+
+            insertVimeoVideo: function(value) {
+                var vimeoID = this._parseValueToVimeoID(value);
+                var embedCode = '<iframe src="https://player.vimeo.com/video/'+vimeoID+'?title=0&byline=0&portrait=0" width="640" height="360" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>';
+
+                var selection = window.getSelection();
+                selection.removeAllRanges();
+                selection.addRange(this.savedRange);
+
+                window.document.execCommand("insertHTML", false, embedCode);
+                this.toggleVimeoInput();
+                this.vimeoURL = null;
+            },
+
+            _parseValueToVimeoID: function(value) {
+                return value.replace(/^.*(?:vimeo.com)(\/((channels|groups|albums)\/.*|video)|)\/([0-9]+)(\/|)/, "$4");
             }
 
         })
