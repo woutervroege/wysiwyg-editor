@@ -41,6 +41,11 @@ Example:
                 outline: none;
             }
 
+            article:not(:focus):empty:after {
+                content: attr(data-placeholder);
+                @apply --silk-placeholder-text;
+            }
+
             article img {
                 @apply --silk-image;
             }
@@ -419,6 +424,7 @@ Example:
                 on-keyup="_keyUpHandler"
                 on-input="_updateContent"
                 contenteditable$="[[!disabled]]"
+                data-placeholder$="[[placeholder]]"
             ></article>
         </section>
 
@@ -462,6 +468,10 @@ Example:
                     readOnly: true,
                     notify: true,
                     observer: "_articleChanged"
+                },
+                placeholder: {
+                    type: String,
+                    value: 'start typing here...'
                 },
                 formattingOptions: {
                     type: String,
