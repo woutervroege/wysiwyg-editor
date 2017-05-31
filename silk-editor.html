@@ -413,7 +413,8 @@ Example:
         <section class="content">
             <article
                 spellcheck$="[[checkSpelling]]"
-                on-focus="_disableSpellcheck"
+                on-focus="_focusHandler"
+                on-blur="_blurHandler"
                 on-paste="_pasteHandler"
                 on-mouseup="_mouseUpHandler"
                 on-keyup="_keyUpHandler"
@@ -878,6 +879,16 @@ Example:
                 this.set("fileUploadButtonPosition", this._getFileUploadButtonPosition());
             },
 
+            _focusHandler: function(evt) {
+                this._disableSpellcheck();
+                evt.target.classList.add('focussed');
+            },
+
+            _blurHandler: function() {
+                evt.target.classList.remove('focussed');
+                this.fire('blur');
+            },
+
             _disableSpellcheck: function() {
                 if(!this.checkSpelling) document.body.spellcheck = false;
             },
@@ -1053,6 +1064,8 @@ Example:
             },
 
             _contentChanged: function(content) {
+                var elementIsFocussed = this.$$('article').classList.contains('focussed');
+                if(elementIsFocussed) return;
                 this.$$("article").innerHTML = content;
             },
 
