@@ -49,7 +49,7 @@ Example:
                 position: fixed;
                 z-index: 2;
                 overflow:hidden;
-                background-color: rgba(0,0,0,.9);
+                background-color: var(--silk-formatting-bar-color, black);
                 font-size: 0;
                 border-radius: 4px;
                 box-sizing: border-box;
@@ -106,13 +106,15 @@ Example:
                 position: relative;
                 transition: 0.2s all;
                 padding: 0;
-/*                display: flex;
-*/                align-items: center;
+                align-items: center;
                 justify-content: center;
             }
 
             .formatting-bar button:not(:last-child) {
-                border-right: 1px solid rgba(255,255,255,.2);                
+                color: var(--silk-formatting-bar-text-color, white);
+                --logo-background-color: var(--silk-formatting-bar-color);
+                --logo-tint-color: var(--silk-formatting-bar-text-color, white);
+                border-right: 1px solid var(--silk-formatting-bar-divider-color, rgba(255,255,255,.3));
             }
 
             .formatting-bar input[type="url"] {
@@ -126,7 +128,7 @@ Example:
                 position: relative;
                 display: inline-block;
                 z-index: 3;
-                background-color: black;
+                background-color: var(--silk-formatting-bar-color, black);
                 border: 0;
                 outline: none;
                 vertical-align: top;
@@ -159,11 +161,11 @@ Example:
             }
 
             .formatting-bar button:hover {
-                background-color: rgba(255,0,0,.3);
+                background-color: var(--silk-formatting-bar-button-hover-color, rgba(255,0,0,.3));
             }
 
             .formatting-bar button[selected], button:active {
-                background-color: rgba(221,65,50,1);
+                background-color: var(--silk-formatting-bar-button-selected-color, rgba(221,65,50,1));
             }
 
             .formatting-bar button[disabled] {
