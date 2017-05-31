@@ -3,13 +3,14 @@
     <head>
         <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
 
-        <link rel="import" href="../../polymer/polymer.html">
+        <link rel="import" href="../../iron-demo-helpers/demo-pages-shared-styles.html">
+        <link rel="import" href="../../iron-demo-helpers/demo-snippet.html">
         <link rel="import" href="../silk-editor.html">
 
-        <style type="text/css">
             @import url(https://fonts.googleapis.com/css?family=Roboto+Slab);
             html, body {
                 margin:0;
+        <style is="custom-style" include="demo-pages-shared-styles">
             }
             article {
                 font-family: 'Roboto Slab', serif;
@@ -26,21 +27,23 @@
     </head>
     <body>
 
-        <template id="tpl" is="dom-bind">
-
-            <silk-editor
-                fixed-formatting-bar
-                paste-plain-text
-                resize-images
-                max-image-height="800"
-                max-image-width="800"
-                max-image-size="1000"
-                content="[[data]]"
-                on-image-upload-error="handleImageUploadError"
-                on-content-change="handleContentChange"
-            ></silk-editor>
-
-        </template>
+    <div class="vertical-section-container centered">
+        <h3>Basic fairytale-textbox demo</h3>
+        <demo-snippet>
+            <template is="dom-bind" id="tpl">
+                <silk-editor
+                    paste-plain-text
+                    resize-images
+                    max-image-height="800"
+                    max-image-width="800"
+                    max-image-size="1000"
+                    content="[[data]]"
+                    on-image-upload-error="handleImageUploadError"
+                    on-content-change="handleContentChange"
+                ></silk-editor>
+            </template>
+        </demo-snippet>
+    </div>
 
     </body>
 
