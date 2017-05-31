@@ -419,6 +419,7 @@ Example:
             <article
                 spellcheck$="[[checkSpelling]]"
                 on-focus="_focusHandler"
+                on-blur="_blurHandler"
                 on-paste="_pasteHandler"
                 on-mouseup="_mouseUpHandler"
                 on-keyup="_keyUpHandler"
@@ -636,7 +637,7 @@ Example:
                 document.addEventListener('selectionchange', (function() {
                     this._getSelection();
                     if(!this.selectedText) {
-                        this._blurHandler();
+                        this._selectionChangedHandler();
                     }
                 }).bind(this));
             },
@@ -902,9 +903,12 @@ Example:
                 evt.target.classList.add('focussed');
             },
 
+            _selectionChangedHandler: function() {
+                this.notifyPath('nothingSelected', true);                    
+            },
+
             _blurHandler: function() {
                 this.$$('article').classList.remove('focussed');
-                this.notifyPath('nothingSelected', true);                    
             },
 
             _disableSpellcheck: function() {
