@@ -1,25 +1,48 @@
 <!doctype html>
 <html>
     <head>
+
+        <script>
+          window.Polymer = {
+            useNativeCSSProperties: true,
+            lazyRegister: true,
+            dom: 'shadow'
+          };
+        </script>
+
         <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
 
         <link rel="import" href="../../iron-demo-helpers/demo-pages-shared-styles.html">
         <link rel="import" href="../../iron-demo-helpers/demo-snippet.html">
         <link rel="import" href="../silk-editor.html">
 
-            @import url(https://fonts.googleapis.com/css?family=Roboto+Slab);
-            html, body {
-                margin:0;
         <style is="custom-style" include="demo-pages-shared-styles">
+
+            .vertical-section-container.centered {
+                max-width: 800px;
             }
-            article {
-                font-family: 'Roboto Slab', serif;
-                font-size: 1.2rem;
-                line-height: 1.5;
-                max-width: 700px;
+
+            demo-snippet {
+              --demo-snippet-demo: {
+                display: block;
                 margin: 0 auto;
-                padding: 36px 18px;
+              }
             }
+
+            silk-editor {
+                --silk-text: {
+                    font-family: Georgia, serif;
+                    font-size: 1.2rem;
+                    line-height: 1.5;
+                    max-width: 700px;
+                    margin: 0 auto;
+                    padding: 36px 18px;                    
+                }
+                --silk-image: {
+                    width: 100%;
+                }
+            }
+
             article img {
                 width: 100%;
             }

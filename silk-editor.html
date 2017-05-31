@@ -20,7 +20,7 @@ Example:
                 position: relative;
             }
 
-            :host[fixed-formatting-bar] .formatting-bar {
+            :host([fixed-formatting-bar]) .formatting-bar {
                 position: absolute;
                 top: 0;
                 left:0;
@@ -28,13 +28,18 @@ Example:
                 border-radius: 0;
             }
 
-            :host[fixed-formatting-bar] .content {
+            :host([fixed-formatting-bar]) .content {
                 max-height: 100vh;
                 overflow: auto;
             }
 
             article {
+                @apply --silk-text;
                 outline: none;
+            }
+
+            article img {
+                @apply --silk-image;
             }
 
             .formatting-bar {
@@ -831,7 +836,11 @@ Example:
             _getSelection: function() {
                var selection = "";
 
-                if (window.getSelection) {  // all browsers, except IE before version 9
+                if(document.activeElement.shadowRoot) {
+                    selection = document.activeElement.shadowRoot.getSelection();
+                }
+
+                else if (window.getSelection) {  // all browsers, except IE before version 9
                     if (document.activeElement && (document.activeElement.tagName.toLowerCase() == "textarea" || document.activeElement.tagName.toLowerCase() == "input")) {
                         var text = document.activeElement.value;
                         selection = text.substring(document.activeElement.selectionStart, document.activeElement.selectionEnd);
@@ -840,10 +849,8 @@ Example:
                         selection = window.getSelection();
                     }
                 }
-                else {
-                    if (document.selection.createRange) { // Internet Explorer
-                        selection = document.selection.createRange();
-                    }
+                else if (document.selection.createRange) { // Internet Explorer
+                    selection = document.selection.createRange();
                 }
                 this._setSelectedText(selection.toString() || selection.text);
                 return selection;
@@ -869,21 +876,21 @@ Example:
                     }
                 }
                 var range = this._getSelectionRange();
-                if(!range) return;
-                if(!range.getClientRects()[0]) return;
-                if (range.getClientRects()[0].width === 0 && range.getClientRects()[1]) {
-                    var topPosition = range.getClientRects()[1].top;
-                    var leftPosition = range.startContainer.parentElement.offsetLeft;
-                } else {
-                    var topPosition = range.getClientRects()[0].top;
-                    var leftPosition = range.getClientRects()[0].left;                    
+
+                if(!(range && range.getBoundingClientRect())) {
+                    return;
                 }
+                
+                var topPosition = range.getBoundingClientRect().top;
+                var leftPosition = range.getBoundingClientRect().left;
+
                 topPosition -= this._getSelectedHeight() || 0;
                 topPosition -= this._getSelectedLineHeight() || 0;
-                return {
+                var formattingBarPosition = {
                     top: topPosition,
                     left: leftPosition
                 }
+                return formattingBarPosition;
             },
 
             _getFileUploadButtonPosition: function() {
