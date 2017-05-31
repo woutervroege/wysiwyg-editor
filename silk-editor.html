@@ -1,4 +1,7 @@
 <link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../iron-icons/editor-icons.html">
+<link rel="import" href="youtube-logo.html">
+<link rel="import" href="vimeo-logo.html">
 
 <!--
 Silk editor: [GitHub](https://github.com/woutervroege/silk-editor)
@@ -87,6 +90,7 @@ Example:
             .formatting-bar-container {
                 transition: 0.3s all;
                 white-space: nowrap;
+                display: flex;
             }
 
             .formatting-bar button {
@@ -102,41 +106,13 @@ Example:
                 position: relative;
                 transition: 0.2s all;
                 padding: 0;
+/*                display: flex;
+*/                align-items: center;
+                justify-content: center;
             }
 
             .formatting-bar button:not(:last-child) {
                 border-right: 1px solid rgba(255,255,255,.2);                
-            }
-
-            .formatting-bar button:after {
-                position: absolute;
-                top: 0;
-                left: 0;
-                width: 100%;
-                height: 100%;
-                content: " ";
-                transform: scale(0.5,0.5);
-                transform-origin: center;
-                background-image: url(assets/sprite.png);
-                background-repeat: no-repeat;
-                box-sizing: border-box;
-                background-position: 50% 50%;
-            }
-
-            .formatting-bar button.format-bold:after {
-                background-position: 0 0;
-            }
-
-            .formatting-bar button.format-italics:after {
-                background-position: -40px 0;
-            }
-
-            .formatting-bar button.format-underline:after {
-                background-position: -80px 0;
-            }
-
-            .formatting-bar button.format-strikethrough:after {
-                background-position: -120px 0;
             }
 
             .formatting-bar input[type="url"] {
@@ -156,70 +132,25 @@ Example:
                 vertical-align: top;
             }
 
-            .formatting-bar button.format-link:after {
-                background-position: -160px 0;
-                transform: scale(0.6,0.6);
-            }
-
-            .formatting-bar button.format-unorderedlist:after {
-                background-position: -200px 0;
-                transform: scale(0.6,0.6);
-            }
-
-            .formatting-bar button.format-orderedlist:after {
-                background-position: -240px 0;
-                transform: scale(0.6,0.6);
-            }
-
-            .formatting-bar button.format-image:after {
-                background-position: -595px 0;
-                transform: scale(0.6,0.6);
-            }
-
-            .formatting-bar button.format-vimeo:after {
-                background-position: -635px 0;
-                transform: scale(0.6,0.6);
-            }
-
-            .formatting-bar button.format-youtube:after {
-                background-position: -675px 0;
-                transform: scale(0.6,0.6);
-            }
-
-            .formatting-bar button.format-h1:after {
-                background-position: -280px 0;
-                transform: scale(0.6,0.6);
-            }
-
-            .formatting-bar button.format-h2:after {
-                background-position: -320px 0;
-                transform: scale(0.6,0.6);
-            }
-
-            .formatting-bar button.format-h3:after {
-                background-position: -360px 0;
-                transform: scale(0.6,0.6);
-            }
-
-            .formatting-bar button.format-h4:after {
-                background-position: -400px 0;
-                transform: scale(0.6,0.6);
-            }
-
-            .formatting-bar button.format-h5:after {
-                background-position: -440px 0;
-                transform: scale(0.6,0.6);
-            }
-
-            .formatting-bar button.format-h6:after {
-                background-position: -480px 0;
-                transform: scale(0.6,0.6);
+            .formatting-bar button.format-heading {
+                font-family: Helvetica, Arial, sans-serif;
+                font-weight: bold;
             }
 
             .formatting-bar button.target-link {
                 opacity: 0;
                 width: 0;
                 padding: 0;                
+            }
+
+            .formatting-bar youtube-logo {
+                width: 24px;
+                height: 24px;
+            }
+
+            .formatting-bar vimeo-logo {
+                width: 20px;
+                height: 20px;
             }
 
             .formatting-bar button.target-link:after {
@@ -330,83 +261,89 @@ Example:
 
             <div class="formatting-bar-container">
 
+
                 <button
                     title="Bold"
                     class="format-bold"
                     on-tap="toggleBold"
                     disabled$="[[selectedTextHasHeading]]"
                     hidden$="[[!settings.bold]]"
-                    selected$="[[selectedTextIsBold]]"></button>
+                    selected$="[[selectedTextIsBold]]"
+                ><iron-icon icon="editor:format-bold"></iron-icon></button>
                 <button
                     title="Italics"
                     class="format-italics"
                     on-tap="toggleItalics"
                     disabled$="[[selectedTextHasHeading]]"
                     hidden$="[[!settings.italics]]"
-                    selected$="[[selectedTextIsItalic]]"></button>
+                    selected$="[[selectedTextIsItalic]]"
+                ><iron-icon icon="editor:format-italic"></iron-icon></button>
                 <button
                     title="Underline"
                     class="format-underline"
                     on-tap="toggleUnderline"
                     disabled$="[[selectedTextHasHeading]]"
                     hidden$="[[!settings.underline]]"
-                    selected$="[[selectedTextIsUnderlined]]"></button>
+                    selected$="[[selectedTextIsUnderlined]]"
+                ><iron-icon icon="editor:format-underlined"></iron-icon></button>
                 <button
                     title="Strikethrough"
                     class="format-strikethrough"
                     on-tap="toggleStrikeThrough"
                     disabled$="[[selectedTextHasHeading]]"
                     hidden$="[[!settings.strikethrough]]"
-                    selected$="[[selectedTextIsStrikeThrough]]"></button>
+                    selected$="[[selectedTextIsStrikeThrough]]"
+                ><iron-icon icon="editor:format-strikethrough"></iron-icon></button>
                 <button
                     title="Heading 1"
-                    class="format-h1"
+                    class="format-heading"
                     on-tap="toggleH1"
                     disabled$="[[nothingSelected]]"
                     hidden$="[[!settings.h1]]"
-                    selected$="[[selectedTextHasH1]]"></button>
+                    selected$="[[selectedTextHasH1]]">h1</button>
                 <button
                     title="Heading 2"
-                    class="format-h2"
+                    class="format-heading"
                     on-tap="toggleH2"
                     disabled$="[[nothingSelected]]"
                     hidden$="[[!settings.h2]]"
-                    selected$="[[selectedTextHasH2]]"></button>
+                    selected$="[[selectedTextHasH2]]">h2</button>
                 <button
                     title="Heading 3"
-                    class="format-h3"
+                    class="format-heading"
                     on-tap="toggleH3"
                     disabled$="[[nothingSelected]]"
                     hidden$="[[!settings.h3]]"
-                    selected$="[[selectedTextHasH3]]"></button>
+                    selected$="[[selectedTextHasH3]]">h3</button>
                 <button
                     title="Heading 4"
-                    class="format-h4"
+                    class="format-heading"
                     on-tap="toggleH4"
                     disabled$="[[nothingSelected]]"
                     hidden$="[[!settings.h4]]"
-                    selected$="[[selectedTextHasH4]]"></button>
+                    selected$="[[selectedTextHasH4]]">h4</button>
                 <button
                     title="Heading 5"
-                    class="format-h5"
+                    class="format-heading"
                     on-tap="toggleH5"
                     disabled$="[[nothingSelected]]"
                     hidden$="[[!settings.h5]]"
-                    selected$="[[selectedTextHasH5]]"></button>
+                    selected$="[[selectedTextHasH5]]">h5</button>
                 <button
                     title="Heading 6"
-                    class="format-h6"
+                    class="format-heading"
                     on-tap="toggleH6"
                     disabled$="[[nothingSelected]]"
                     hidden$="[[!settings.h6]]"
-                    selected$="[[selectedTextHasH6]]"></button>
+                    selected$="[[selectedTextHasH6]]">h6</button>
                 <button
                     title=" formatting"
                     class="format-link"
                     on-tap="toggleLinkInput"
                     disabled$="[[nothingSelected]]"
                     hidden$="[[!settings.link]]"
-                    selected$="[[selectedTextHaslink]]"></button>
+                    selected$="[[selectedTextHaslink]]"
+                ><iron-icon icon="editor:insert-link"></iron-icon></button>
 
                 <input
                     id="urlInput"
@@ -420,31 +357,36 @@ Example:
                     class="format-unorderedlist"
                     on-tap="addUnorderedList"
                     disabled$="[[nothingSelected]]"
-                    hidden$="[[!settings.unorderedlist]]"></button>
+                    hidden$="[[!settings.unorderedlist]]"
+                ><iron-icon icon="editor:format-list-bulleted"></iron-icon></button>
                 <button
                     title="Ordered list"
                     class="format-orderedlist"
                     on-tap="addOrderedList"
                     disabled$="[[nothingSelected]]"
-                    hidden$="[[!settings.orderedlist]]"></button>
+                    hidden$="[[!settings.orderedlist]]"
+                ><iron-icon icon="editor:format-list-numbered"></iron-icon></button>
 
                 <button
                     title="Insert image"
                     class="format-image"
                     on-tap="insertImage"
-                    hidden$="[[!settings.image]]"></button>
+                    hidden$="[[!settings.image]]"
+                ><iron-icon icon="editor:insert-photo"></iron-icon></button>
 
                 <button
                     title="Insert Youtube video"
                     class="format-youtube"
                     on-tap="toggleYoutubeInput"
-                    hidden$="[[!settings.youtube]]"></button>
+                    hidden$="[[!settings.youtube]]"
+                ><youtube-logo></youtube-logo></button>
 
                 <button
                     title="Insert Vimeo video"
                     class="format-vimeo"
                     on-tap="toggleVimeoInput"
-                    hidden$="[[!settings.vimeo]]"></button>
+                    hidden$="[[!settings.vimeo]]"
+                ><vimeo-logo></vimeo-logo></button>
 
                 <input
                     id="vimeoInput"

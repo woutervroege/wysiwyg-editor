@@ -1,0 +1,35 @@
+<link rel="import" href="../polymer/polymer.html">
+
+<dom-module id="youtube-logo">
+    <template>
+        <style>
+            :host {
+                display: flex;
+                margin: 0 auto;
+            }
+            svg {
+                width: 100%;
+                height: 100%;
+                flex: 1;
+            }
+            .cls-1{
+                fill: var(--logo-tint-color, black);
+            }
+            .cls-2{
+                fill-rule: evenodd;
+            }
+            .cls-3{
+                fill: var(--logo-background-color, white);
+            }
+        </style>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1021 718.42">
+            <path class="cls-1" d="M405,492,681,349,405,205Z"/>
+            <path class="cls-2" d="M405,205,647,366.63,681,349Z"/>
+            <path class="cls-3" d="M1010.8,155s-10-70.39-40.59-101.39c-38.82-40.68-82.34-40.89-102.3-43.27C726.16.08,514.07,0,510.76,0h-.48S296,0,153.09,10.33c-20,2.38-63.46,2.58-102.3,43.27C20.17,84.6,10.21,155,10.21,155S0,237.64,0,320.3V397.8c0,82.66,10.21,165.32,10.21,165.32s10,70.39,40.57,101.39c38.84,40.68,89.86,39.4,112.58,43.66C245,716,510.5,718.42,510.5,718.42S725,718.1,867.91,707.77c20-2.38,63.48-2.58,102.3-43.27,30.61-31,40.59-101.39,40.59-101.39S1021,480.46,1021,397.8V320.3C1021,237.64,1010.8,155,1010.8,155ZM405,492l0-287L681,349Z"/>
+        </svg>
+    </template>
+    <script>
+    Polymer({
+        is: 'youtube-logo'
+    })
+    </script>
