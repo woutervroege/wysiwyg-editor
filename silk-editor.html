@@ -618,13 +618,18 @@ Example:
                 }
             },
 
-            listeners: {
-                'blur': '_blurHandler'
-            },
-
             observers: [
                 "setLinkValue(selectedText)"
             ],
+
+            attached: function() {
+                document.addEventListener('selectionchange', (function() {
+                    this._getSelection();
+                    if(!this.selectedText) {
+                        this._blurHandler();
+                    }
+                }).bind(this));
+            },
 
             ready: function() {
                 window.onresize = this._mouseUpHandler.bind(this);
