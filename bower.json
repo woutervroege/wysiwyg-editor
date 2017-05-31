@@ -1,6 +1,6 @@
 {
   "name": "silk-editor",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "homepage": "https://github.com/woutervroege/silk-editor",
   "description": "Polymer wysiwyg editor",
   "main": "silk-editor.html",
