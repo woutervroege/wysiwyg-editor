@@ -414,7 +414,6 @@ Example:
             <article
                 spellcheck$="[[checkSpelling]]"
                 on-focus="_focusHandler"
-                on-blur="_blurHandler"
                 on-paste="_pasteHandler"
                 on-mouseup="_mouseUpHandler"
                 on-keyup="_keyUpHandler"
@@ -619,14 +618,18 @@ Example:
                 }
             },
 
-            ready: function() {
-                window.onresize = this._mouseUpHandler.bind(this);
-                window.onscroll = this._mouseUpHandler.bind(this);
+            listeners: {
+                'blur': '_blurHandler'
             },
 
             observers: [
                 "setLinkValue(selectedText)"
             ],
+
+            ready: function() {
+                window.onresize = this._mouseUpHandler.bind(this);
+                window.onscroll = this._mouseUpHandler.bind(this);
+            },
 
             _parseSettings: function(formattingOptions) {
                 var settings = {};
@@ -885,8 +888,8 @@ Example:
             },
 
             _blurHandler: function() {
-                evt.target.classList.remove('focussed');
-                this.fire('blur');
+                this.$$('article').classList.remove('focussed');
+                this.notifyPath('nothingSelected', true);                    
             },
 
             _disableSpellcheck: function() {
