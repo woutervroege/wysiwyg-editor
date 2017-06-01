@@ -1150,7 +1150,7 @@ Example:
 
             _articleChanged: function() {
                 if(this.getContents().length == 0) {
-                    this.$$("article").innerHTML = "<p></p>";
+                    this.$$("article").innerHTML = "";
                 }
                 this._setSelectedText(new String(this.selectedText));
                 this.fire("content-change", this.getContents());
