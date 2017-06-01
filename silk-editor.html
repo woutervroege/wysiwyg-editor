@@ -977,6 +977,7 @@ Example:
                 this._selectionChangedHandler();
                 this._blurHandler();
                 this.savedRange = null;
+                this.selection.removeAllRanges();
             },
 
             _selectionChangedHandler: function() {
