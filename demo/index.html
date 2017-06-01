@@ -30,13 +30,14 @@
             }
 
             silk-editor {
+                max-height: 500px;
+                overflow: auto;
                 --silk-text: {
                     font-family: Georgia, serif;
                     font-size: 1.2rem;
                     line-height: 1.5;
                     max-width: 700px;
-                    margin: 0 auto;
-                    padding: 36px 18px;                    
+                    margin: 72px 18px;
                 }
                 --silk-image: {
                     width: 100%;
@@ -51,7 +52,7 @@
     <body>
 
     <div class="vertical-section-container centered">
-        <h3>Basic silk-editor demo</h3>
+        <h3>Full featured silk-editor demo</h3>
         <demo-snippet>
             <template is="dom-bind" id="tpl">
                 <silk-editor
@@ -68,6 +69,36 @@
         </demo-snippet>
     </div>
 
+    <div class="vertical-section-container centered">
+        <h3>Fixed formatting bar</h3>
+        <demo-snippet>
+            <template is="dom-bind" id="tpl2">
+                <silk-editor
+                    fixed-formatting-bar
+                    paste-plain-text
+                    resize-images
+                    max-image-height="800"
+                    max-image-width="800"
+                    max-image-size="1000"
+                    content="[[data]]"
+                ></silk-editor>
+            </template>
+        </demo-snippet>
+    </div>
+    </div>
+
+    <div class="vertical-section-container centered">
+        <h3>Simple formatting bar</h3>
+        <demo-snippet>
+            <template is="dom-bind" id="tpl2">
+                <silk-editor
+                    paste-plain-text
+                    content="[[data]]"
+                    formatting-options="bold,italics,underline"
+                ></silk-editor>
+            </template>
+        </demo-snippet>
+    </div>
     </body>
 
     <script>
