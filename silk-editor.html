@@ -638,7 +638,7 @@ Example:
                 },
                 focussed: {
                     type: Boolean,
-                    readOnly: true,
+                    computed: '_computeFocussed(selectedText)',
                     reflectToAttribute: true
                 }
             },
@@ -651,14 +651,23 @@ Example:
                 'esc': '_escHandler'
             },
 
-            listeners: {
-                'mouseenter': '_mouseEnterHandler',
-                'mouseleave': '_mouseLeaveHandler'
-            },
-
             attached: function() {
-                document.addEventListener('selectionchange', (function() {
-                    this._getSelection();
+                document.addEventListener('selectionchange', (function(e) {
+                    var e = Polymer.dom(e).event;
+                    var activeElement = e.target.activeElement;
+                    switch(activeElement.nodeName.toLowerCase()) {
+                        case 'article':
+                        var selectionIsPartOfInstance = (e.target.activeElement.isEqualNode(this.$$('article')))
+                        break;
+                        default:
+                        var selectionIsPartOfInstance = (e.target.activeElement.isEqualNode(this))
+                        break;
+                    }
+                    if(!selectionIsPartOfInstance) {
+                        this._setSelectedText('');
+                        return;
+                    }
+                    this._setSelection();
                     if(!this.selectedText) {
                         this._selectionChangedHandler();
                     }
@@ -756,7 +765,8 @@ Example:
 
             saveCurrentSelection: function(evt) {
                 evt.preventDefault();
-                this.savedRange = window.getSelection().getRangeAt(0);
+                evt.stopPropagation();
+                this.savedRange = this.selection.getRangeAt(0);
                 this.savedLinkValue = this.linkValue;
             },
 
@@ -778,7 +788,7 @@ Example:
                 this.showLinkInput = false;
 
 
-                var selection = window.getSelection();
+                var selection = this.selection;
                 selection.removeAllRanges();
                 selection.addRange(this.savedRange);
 
@@ -820,7 +830,7 @@ Example:
                 return this.$$("article").innerHTML
             },
 
-            _getSelection: function() {
+            _setSelection: function() {
                var selection = "";
 
                 if(document.activeElement.shadowRoot) {
@@ -840,12 +850,12 @@ Example:
                     selection = document.selection.createRange();
                 }
                 this._setSelectedText(selection.toString() || selection.text);
-                return selection;
+                this.selection = selection;
             },
 
             _getSelectionRange: function() {
                 try {
-                    return this._getSelection().getRangeAt(0);
+                    return this.selection.getRangeAt(0);
                 } catch(e) {
                     return false;
                 }
@@ -898,6 +908,7 @@ Example:
                     top: topPosition,
                     left: leftPosition
                 }
+
                 return formattingBarPosition;
             },
 
@@ -942,12 +953,19 @@ Example:
                 this.set("fileUploadButtonPosition", this._getFileUploadButtonPosition());
             },
 
-            _mouseEnterHandler: function() {
-                this._setFocussed(true);
-            },
+            _computeFocussed: function(selectedText) {
+                var savedRange = this.savedRange;
+                if(!selectedText && !savedRange) return false;
 
-            _mouseLeaveHandler: function() {
-                this._setFocussed(false);
+                var hasSelectedText = selectedText && selectedText.length > 0;
+                if(hasSelectedText) return true;
+
+                var hasSavedText = savedRange.toString();
+                if(hasSavedText && hasSavedText.length > 0) {
+                    return true;
+                }
+
+                return false;
             },
 
             _focusHandler: function(evt) {
@@ -958,6 +976,7 @@ Example:
             _escHandler: function() {
                 this._selectionChangedHandler();
                 this._blurHandler();
+                this.savedRange = null;
             },
 
             _selectionChangedHandler: function() {
@@ -1162,7 +1181,13 @@ Example:
 
             _getHideFormattingBar: function(nothingSelected) {
                 if(this.fixedFormattingBar) return false;
-                return nothingSelected;
+                if(nothingSelected) {
+                    if(!this.savedRange) return true;
+                    var savedText = this.savedRange.toString();
+                    return savedText.length < 1;
+                } else {
+                    return false;
+                }
             },
 
             _processImage: function(e) {
@@ -1246,7 +1271,7 @@ Example:
                 var vimeoID = this._parseValueToVimeoID(value);
                 var embedCode = '<iframe src="https://player.vimeo.com/video/'+vimeoID+'?title=0&byline=0&portrait=0" width="640" height="360" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>';
 
-                var selection = window.getSelection();
+                var selection = this.selection;
                 selection.removeAllRanges();
                 selection.addRange(this.savedRange);
 
@@ -1267,7 +1292,7 @@ Example:
             insertYoutubeVideo: function(value) {
                 var youtubeID = this._parseValueToYoutubeID(value);
                 var embedCode = '<iframe width="640" height="360" src="https://www.youtube.com/embed/'+youtubeID+'" frameborder="0" allowfullscreen></iframe>';
-                var selection = window.getSelection();
+                var selection = this.selection;
                 selection.removeAllRanges();
                 selection.addRange(this.savedRange);
 
