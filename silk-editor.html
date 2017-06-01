@@ -855,10 +855,31 @@ Example:
                 }
                 
                 var topPosition = range.getBoundingClientRect().top;
-                var leftPosition = range.getBoundingClientRect().left;
+                var rangeWidth = range.getBoundingClientRect().width;
 
                 topPosition -= this._getSelectedHeight() || 0;
                 topPosition -= this._getSelectedLineHeight() || 0;
+
+                var leftPosition = range.getBoundingClientRect().left;
+                var bodyWidth = document.body.offsetWidth;
+                var formattingBarWidth = this.$$('.formatting-bar').offsetWidth;
+                
+                if( (leftPosition + formattingBarWidth) > bodyWidth ) {
+                    //too large to start @ left side
+
+                    if( (leftPosition - formattingBarWidth + rangeWidth) < 0 ) {
+                        //should be centered
+                        leftPosition-=formattingBarWidth/2;
+                        leftPosition+=rangeWidth/2;
+                    }
+
+                    else {
+                        //should @ right side
+                        leftPosition-=formattingBarWidth;
+                        leftPosition+=rangeWidth;
+                    }
+                }
+
                 var formattingBarPosition = {
                     top: topPosition,
                     left: leftPosition
