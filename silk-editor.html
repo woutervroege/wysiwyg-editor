@@ -37,6 +37,10 @@ Example:
                 overflow: auto;
             }
 
+            :host(:not([focussed])) .formatting-bar {
+                display: none!important;
+            }
+
             article {
                 @apply --silk-text;
                 outline: none;
@@ -631,6 +635,11 @@ Example:
                 youtubeURL: {
                     type: String,
                     value: null
+                },
+                focussed: {
+                    type: Boolean,
+                    readOnly: true,
+                    reflectToAttribute: true
                 }
             },
 
@@ -640,6 +649,11 @@ Example:
 
             keyBindings: {
                 'esc': '_escHandler'
+            },
+
+            listeners: {
+                'mouseenter': '_mouseEnterHandler',
+                'mouseleave': '_mouseLeaveHandler'
             },
 
             attached: function() {
@@ -926,6 +940,14 @@ Example:
 
             _keyUpHandler: function(e) {
                 this.set("fileUploadButtonPosition", this._getFileUploadButtonPosition());
+            },
+
+            _mouseEnterHandler: function() {
+                this._setFocussed(true);
+            },
+
+            _mouseLeaveHandler: function() {
+                this._setFocussed(false);
             },
 
             _focusHandler: function(evt) {
