@@ -41,18 +41,49 @@ Example:
                 display: none!important;
             }
 
-            article {
+            :host article {
                 @apply --silk-text;
                 outline: none;
             }
 
-            article:not(:focus):empty:after {
+            :host article:not(:focus):empty:after {
                 content: attr(data-placeholder);
                 @apply --silk-placeholder-text;
             }
 
-            article img {
+            :host article img,
+            :host article ::slotted(img) {
                 @apply --silk-image;
+            }
+
+            :host article h1,
+            :host article ::slotted(h1) {
+                @apply --silk-heading1;
+            }
+
+            :host article h2,
+            :host article ::slotted(h2) {
+                @apply --silk-heading2;
+            }
+
+            :host article h3,
+            :host article ::slotted(h3) {
+                @apply --silk-heading3;
+            }
+
+            :host article h4,
+            :host article ::slotted(h4) {
+                @apply --silk-heading4;
+            }
+
+            :host article h5,
+            :host article ::slotted(h5) {
+                @apply --silk-heading5;
+            }
+
+            :host article h6,
+            :host article ::slotted(h6) {
+                @apply --silk-heading6;
             }
 
             .formatting-bar {
