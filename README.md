@@ -1,30 +1,21 @@
-# silk-editor
-
-Silk-editor is a is a richt text editor
-
-## Dependencies
-
-Element dependencies are managed via [Bower](http://bower.io/). You can
-install that via:
-
-    npm install -g bower
-
-Then, go ahead and download the element's dependencies:
-
-    bower install
+# \<silk-editor\>
 
 
-## Playing With Your Element
 
-If you wish to work on your element in isolation, we recommend that you use
-[Polyserve](https://github.com/PolymerLabs/polyserve) to keep your element's
-bower dependencies in line. You can install it via:
+## Install the Polymer-CLI
 
-    npm install -g polyserve
+First, make sure you have the [Polymer CLI](https://www.npmjs.com/package/polymer-cli) installed. Then run `polymer serve` to serve your element locally.
 
-And you can run it via:
+## Viewing Your Element
 
-    polyserve
+```
+$ polymer serve
+```
 
-Once running, you can preview your element at
-`http://localhost:8080/components/silk-editor/`, where `silk-editor` is the name of the directory containing it.
+## Running Tests
+
+```
+$ polymer test
+```
+
+Your application is already set up to be tested via [web-component-tester](https://github.com/Polymer/web-component-tester). Run `polymer test` to run your application's test suite locally.

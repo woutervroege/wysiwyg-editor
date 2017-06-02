@@ -1,120 +1,42 @@
 <!doctype html>
-<html>
-    <head>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes">
 
-        <script>
-          window.Polymer = {
-            useNativeCSSProperties: true,
-            lazyRegister: true,
-            dom: 'shadow'
-          };
-        </script>
-
-        <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
-
-        <link rel="import" href="../../iron-demo-helpers/demo-pages-shared-styles.html">
-        <link rel="import" href="../../iron-demo-helpers/demo-snippet.html">
-        <link rel="import" href="../silk-editor.html">
-
-        <style is="custom-style" include="demo-pages-shared-styles">
-
-            .vertical-section-container.centered {
-                max-width: 800px;
-            }
-
-            demo-snippet {
-              --demo-snippet-demo: {
-                display: block;
-                margin: 0 auto;
-              }
-            }
-
-            silk-editor {
-                max-height: 500px;
-                overflow: auto;
-                --silk-text: {
-                    font-family: Georgia, serif;
-                    font-size: 1.2rem;
-                    line-height: 1.5;
-                    max-width: 700px;
-                    margin: 72px 18px;
-                }
-                --silk-image: {
-                    width: 100%;
-                }
-            }
-
-            article img {
-                width: 100%;
-            }
-        </style>
-    </head>
-    <body>
-
-    <div class="vertical-section-container centered">
-        <h3>Full featured silk-editor demo</h3>
-        <demo-snippet>
-            <template is="dom-bind" id="tpl">
-                <silk-editor
-                    paste-plain-text
-                    resize-images
-                    max-image-height="800"
-                    max-image-width="800"
-                    max-image-size="1000"
-                    content="[[data]]"
-                    on-image-upload-error="handleImageUploadError"
-                    on-content-change="handleContentChange"
-                ></silk-editor>
-            </template>
-        </demo-snippet>
-    </div>
-
-    <div class="vertical-section-container centered">
-        <h3>Fixed formatting bar</h3>
-        <demo-snippet>
-            <template is="dom-bind" id="tpl2">
-                <silk-editor
-                    fixed-formatting-bar
-                    paste-plain-text
-                    resize-images
-                    max-image-height="800"
-                    max-image-width="800"
-                    max-image-size="1000"
-                    content="[[data]]"
-                ></silk-editor>
-            </template>
-        </demo-snippet>
-    </div>
-    </div>
-
-    <div class="vertical-section-container centered">
-        <h3>Simple formatting bar</h3>
-        <demo-snippet>
-            <template is="dom-bind" id="tpl2">
-                <silk-editor
-                    paste-plain-text
-                    content="[[data]]"
-                    formatting-options="bold,italics,underline"
-                ></silk-editor>
-            </template>
-        </demo-snippet>
-    </div>
-    </body>
+    <title>silk-editor demo</title>
 
     <script>
-        var tpl = document.querySelector('#tpl');
-        tpl.addEventListener('dom-change', function() {
-
-            tpl.handleContentChange = function(evt, content) {
-                console.log("content changed", content);
-            }
-
-            tpl.handleImageUploadError = function(evt, message) {
-                alert(message);
-            }
-
-            tpl.data = "<h1>This is Silk editor</h1><p><b>Lorem ipsum dolor sit amet consectetur adipiscing elit. Etiam a ullamcorper neque. Curabitur vitae nunc et magna imperdiet lacinia.Curabitur mauris lorem, efficitur in quam vitae, scelerisque tincidunt massa. Etiam tincidunt tortor quis nulla iaculis, sed tempor augue hendrerit. Interdum et malesuada fames ac ante ipsum primis in faucibus. Phasellus elementum sit amet dolor a vulputate. Integer purus sapien, suscipit nec libero fringilla, ultrices suscipit nibh.</b></p><p>Sed dolor sem, iaculis a sem sit amet, accumsan blandit leo. Cras vehicula tortor sit amet accumsan rutrum. In eget congue mi. Praesent nec ex quam. Aliquam dignissim purus nec eros semper, quis feugiat mi luctus. Example: Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam a ullamcorper neque. Curabitur vitae nunc et magna imperdiet lacinia. Curabitur mauris lorem, efficitur in quam vitae, scelerisque tincidunt massa. Etiam tincidunt tortor quis nulla iaculis, sed tempor augue hendrerit. Interdum et malesuada fames ac ante ipsum primis in faucibus. Phasellus elementum sit amet dolor a vulputate. Integer purus sapien, suscipit nec libero fringilla, ultrices suscipit nibh. Sed dolor sem, iaculis a sem sit amet, accumsan blandit leo. Cras vehicula tortor sit amet accumsan rutrum. In eget congue mi. Praesent nec ex <a href=\"http://lotsofpeople.nl\">quam</a>. Aliquam dignissim purus nec eros semper, quis feugiat mi luctus.<p>Example: Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam a ullamcorper neque. Curabitur vitae nunc et magna imperdiet lacinia. Curabitur mauris lorem, efficitur in quam vitae, scelerisque tincidunt massa. Etiam tincidunt tortor quis nulla iaculis, sed tempor augue hendrerit. Interdum et malesuada fames ac ante ipsum primis in faucibus. Phasellus elementum sit amet dolor a vulputate. Integer purus sapien, suscipit nec libero fringilla, ultrices suscipit nibh. Sed dolor sem, iaculis a sem sit amet, accumsan blandit leo. Cras vehicula tortor sit amet accumsan rutrum. In eget congue mi. Praesent nec ex quam. Aliquam dignissim purus nec eros semper, quis feugiat mi luctus.<p>Example: Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam a ullamcorper neque. Curabitur vitae nunc et magna imperdiet lacinia. Curabitur mauris lorem, efficitur in quam vitae, scelerisque tincidunt massa. Etiam tincidunt tortor quis nulla iaculis, sed tempor augue hendrerit. Interdum et malesuada fames ac ante ipsum primis in faucibus. Phasellus elementum sit amet dolor a vulputate. Integer purus sapien, suscipit nec libero fringilla, ultrices suscipit nibh. Sed dolor sem, iaculis a sem sit amet, accumsan blandit leo. Cras vehicula tortor sit amet accumsan rutrum. In eget congue mi. Praesent nec ex quam. Aliquam dignissim purus nec eros semper, quis feugiat mi luctus.<p>Example: Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam a ullamcorper neque. Curabitur vitae nunc et magna imperdiet lacinia. Curabitur mauris lorem, efficitur in quam vitae, scelerisque tincidunt massa. Etiam tincidunt tortor quis nulla iaculis, sed tempor augue hendrerit. Interdum et malesuada fames ac ante ipsum primis in faucibus. Phasellus elementum sit amet dolor a vulputate. Integer purus sapien, suscipit nec libero fringilla, ultrices suscipit nibh. Sed dolor sem, iaculis a sem sit amet, accumsan blandit leo. Cras vehicula tortor sit amet accumsan rutrum. In eget congue mi. Praesent nec ex quam. Aliquam dignissim purus nec eros semper, quis feugiat mi luctus.<p>Example: Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam a ullamcorper neque. Curabitur vitae nunc et magna imperdiet lacinia. Curabitur mauris lorem, efficitur in quam vitae, scelerisque tincidunt massa. Etiam tincidunt tortor quis nulla iaculis, sed tempor augue hendrerit. Interdum et malesuada fames ac ante ipsum primis in faucibus. Phasellus elementum sit amet dolor a vulputate. Integer purus sapien, suscipit nec libero fringilla, ultrices suscipit nibh. Sed dolor sem, iaculis a sem sit amet, accumsan blandit leo. Cras vehicula tortor sit amet accumsan rutrum. In eget congue mi. Praesent nec ex quam. Aliquam dignissim purus nec eros semper, quis feugiat mi luctus.<p>Example: Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam a ullamcorper neque. Curabitur vitae nunc et magna imperdiet lacinia. Curabitur mauris lorem, efficitur in quam vitae, scelerisque tincidunt massa. Etiam tincidunt tortor quis nulla iaculis, sed tempor augue hendrerit. Interdum et malesuada fames ac ante ipsum primis in faucibus. Phasellus elementum sit amet dolor a vulputate. Integer purus sapien, suscipit nec libero fringilla, ultrices suscipit nibh. Sed dolor sem, iaculis a sem sit amet, accumsan blandit leo. Cras vehicula tortor sit amet accumsan rutrum. In eget congue mi. Praesent nec ex quam. Aliquam dignissim purus nec eros semper, quis feugiat mi luctus.<p>Example: Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam a ullamcorper neque. Curabitur vitae nunc et magna imperdiet lacinia. Curabitur mauris lorem, efficitur in quam vitae, scelerisque tincidunt massa. Etiam tincidunt tortor quis nulla iaculis, sed tempor augue hendrerit. Interdum et malesuada fames ac ante ipsum primis in faucibus. Phasellus elementum sit amet dolor a vulputate. Integer purus sapien, suscipit nec libero fringilla, ultrices suscipit nibh. Sed dolor sem, iaculis a sem sit amet, accumsan blandit leo. Cras vehicula tortor sit amet accumsan rutrum. In eget congue mi. Praesent nec ex quam. Aliquam dignissim purus nec eros semper, quis feugiat mi luctus.<br>Example: Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam a ullamcorper neque. Curabitur vitae nunc et magna imperdiet lacinia. Curabitur mauris lorem, efficitur in quam vitae, scelerisque tincidunt massa. Etiam tincidunt tortor quis nulla iaculis, sed tempor augue hendrerit. Interdum et malesuada fames ac ante ipsum primis in faucibus. Phasellus elementum sit amet dolor a vulputate. Integer purus sapien, suscipit nec libero fringilla, ultrices suscipit nibh. Sed dolor sem, iaculis a sem sit amet, accumsan blandit leo. Cras vehicula tortor sit amet accumsan rutrum. In eget congue mi. Praesent nec ex quam. Aliquam dignissim purus nec eros semper, quis feugiat mi luctus.<p>Example: Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam a ullamcorper neque. Curabitur vitae nunc et magna imperdiet lacinia. Curabitur mauris lorem, efficitur in quam vitae, scelerisque tincidunt massa. Etiam tincidunt tortor quis nulla iaculis, sed tempor augue hendrerit. Interdum et malesuada fames ac ante ipsum primis in faucibus. Phasellus elementum sit amet dolor a vulputate. Integer purus sapien, suscipit nec libero fringilla, ultrices suscipit nibh. Sed dolor sem, iaculis a sem sit amet, accumsan blandit leo. Cras vehicula tortor sit amet accumsan rutrum. In eget congue mi. Praesent nec ex quam. Aliquam dignissim purus nec eros semper, quis feugiat mi luctus.";
-        });
+      window.Polymer = {
+        useNativeCSSProperties: true,
+        lazyRegister: true,
+        dom: 'shadow'
+      };
     </script>
 
+    <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
+
+    <link rel="import" href="../../iron-demo-helpers/demo-pages-shared-styles.html">
+    <link rel="import" href="../../iron-demo-helpers/demo-snippet.html">
+    <link rel="import" href="../silk-editor.html">
+
+    <style is="custom-style" include="demo-pages-shared-styles">
+      demo-snippet {
+        --demo-snippet-demo: {
+          display: block;
+          margin: 0 auto;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="vertical-section-container centered">
+      <h3>Basic silk-editor demo</h3>
+      <demo-snippet>
+        <template>
+          <silk-editor></silk-editor>
+        </template>
+      </demo-snippet>
+    </div>
+  </body>
 </html>

@@ -1,1312 +1,159 @@
 <link rel="import" href="../polymer/polymer.html">
-<link rel="import" href="../iron-a11y-keys-behavior/iron-a11y-keys-behavior.html">
-<link rel="import" href="../iron-icons/editor-icons.html">
-<link rel="import" href="youtube-logo.html">
-<link rel="import" href="vimeo-logo.html">
 
 <!--
-Silk editor: [GitHub](https://github.com/woutervroege/silk-editor)
+`silk-editor`
 
-`silk-editor` is a is a rich text editor
 
-Example:
-
-    <silk-editor></silk-editor>
-
-@demo
+@demo demo/index.html
 -->
 
 <dom-module id="silk-editor">
-    <template>
-        <style>
-            :host {
-                display: block;
-                position: relative;
-            }
+  <template>
+    <style>
+      :host {
+        display: block;
+      }
+    </style>
 
-            :host([fixed-formatting-bar]) .formatting-bar {
-                position: absolute;
-                top: 0;
-                left:0;
-                width:100%;
-                border-radius: 0;
-            }
+    <button on-tap="_toggleBold">Bold</button>
+    <button on-tap="_toggleItalic">Italic</button>
+    <button on-tap="_toggleUnderline">Underline</button>
+    <button on-tap="_toggleStrikethrough">Strikethrough</button>
 
-            :host([fixed-formatting-bar]) .content {
-                max-height: 100vh;
-                overflow: auto;
-            }
+    <article
+      contenteditable="true"
+      on-focus="_handleFocus"
+      on-blur="_handleBlur"
+      on-input="_handleInput"
+    ></article>
+  </template>
 
-            :host(:not([focussed])) .formatting-bar {
-                display: none!important;
-            }
+  <script>
+    Polymer({
 
-            article {
-                @apply --silk-text;
-                outline: none;
-            }
+      is: 'silk-editor',
 
-            article:not(:focus):empty:after {
-                content: attr(data-placeholder);
-                @apply --silk-placeholder-text;
-            }
+      behaviors: [
+        Polymer.IronA11yKeysBehavior
+      ],
 
-            article img {
-                @apply --silk-image;
-            }
-
-            .formatting-bar {
-                position: fixed;
-                z-index: 2;
-                overflow:hidden;
-                background-color: var(--silk-formatting-bar-color, black);
-                font-size: 0;
-                border-radius: 4px;
-                box-sizing: border-box;
-                white-space: nowrap;
-                height: 40px;
-            }
-
-            .formatting-bar[add-link] .formatting-bar-container,
-            .formatting-bar[add-vimeo] .formatting-bar-container,
-            .formatting-bar[add-youtube] .formatting-bar-container {
-                transform: translateX(-10px);
-            }
-
-            .formatting-bar[add-link] button:not(.format-link),
-            .formatting-bar[add-vimeo] button:not(.format-vimeo),
-            .formatting-bar[add-youtube] button:not(.format-youtube) {
-                opacity: 0;
-                width: 0;
-                padding: 0;
-            }
-
-            .formatting-bar[add-link] #urlInput,
-            .formatting-bar[add-vimeo] #vimeoInput,
-            .formatting-bar[add-youtube] #youtubeInput {
-                width:270px;
-                padding: 0 9px;
-            }
-
-            .formatting-bar[hidden] {
-                opacity: 0;
-            }
-
-            .formatting-bar:not([hidden]) {
-                pointer-events: all;
-                animation: formattingBarIn 0.2s;
-            }
-
-            .formatting-bar-container {
-                transition: 0.3s all;
-                white-space: nowrap;
-                display: flex;
-            }
-
-            .formatting-bar button {
-                border:0;
-                background-color: transparent;
-                color: white;
-                font-size:16px;
-                cursor: pointer;
-                width: 40px;
-                height: 40px;
-                margin:0;
-                outline: none;
-                position: relative;
-                transition: 0.2s all;
-                padding: 0;
-                align-items: center;
-                justify-content: center;
-            }
-
-            .formatting-bar button:not(:last-child) {
-                color: var(--silk-formatting-bar-text-color, white);
-                --logo-background-color: var(--silk-formatting-bar-color);
-                --logo-tint-color: var(--silk-formatting-bar-text-color, white);
-                border-right: 1px solid var(--silk-formatting-bar-divider-color, rgba(255,255,255,.3));
-            }
-
-            .formatting-bar input[type="url"] {
-                outline: none;
-                height: 40px;
-                width: 0;
-                font-size: 14px;
-                color: white;
-                margin-left: 0;
-                padding: 0;
-                position: relative;
-                display: inline-block;
-                z-index: 3;
-                background-color: var(--silk-formatting-bar-color, black);
-                border: 0;
-                outline: none;
-                vertical-align: top;
-            }
-
-            .formatting-bar button.format-heading {
-                font-family: Helvetica, Arial, sans-serif;
-                font-weight: bold;
-            }
-
-            .formatting-bar button.target-link {
-                opacity: 0;
-                width: 0;
-                padding: 0;                
-            }
-
-            .formatting-bar youtube-logo {
-                width: 24px;
-                height: 24px;
-            }
-
-            .formatting-bar vimeo-logo {
-                width: 24px;
-                height: 24px;
-            }
-
-            .formatting-bar button.target-link:after {
-                background-position: -560px 0;
-                transform: scale(0.6,0.6);
-            }
-
-            .formatting-bar button:hover {
-                background-color: var(--silk-formatting-bar-button-hover-color, rgba(255,0,0,.3));
-            }
-
-            .formatting-bar button[selected], button:active {
-                background-color: var(--silk-formatting-bar-button-selected-color, rgba(221,65,50,1));
-            }
-
-            .formatting-bar button[disabled] {
-                background-color: transparent;
-                opacity: 0.5;
-            }
-
-            #silk-select-file {
-                width: 36px;
-                height: 36px;
-                border-radius: 50%;
-                background-color: rgba(221,65,50,0.2);
-                font-weight: 600;
-                font-size: 24px;
-                position: fixed;
-                z-index: 2;
-                transform: translate(-50%, -50%);
-                border:0;
-                cursor: pointer;
-                outline: none;
-                color: white;
-            }
-
-            #silk-select-file:hover {
-                background-color: rgba(221,65,50,.4);
-            }
-
-            #silk-select-file:active {
-                background-color: rgba(221,65,50,0.6);
-            }
-
-            @-webkit-keyframes formattingBarIn {
-                0%{
-                    opacity: 0;
-                    transform: translateY(50%);
-                }
-                100% {
-                    opacity: 1;
-                    transform: translateY(0);
-                }
-            }
-            @-moz-keyframes formattingBarIn {
-                0%{
-                    opacity: 0;
-                    transform: translateY(50%);
-                }
-                100% {
-                    opacity: 1;
-                    transform: translateY(0);
-                }
-            }
-            @-o-keyframes formattingBarIn {
-                0%{
-                    opacity: 0;
-                    transform: translateY(50%);
-                }
-                100% {
-                    opacity: 1;
-                    transform: translateY(0);
-                }
-            }
-            @keyframes formattingBarIn {
-                0%{
-                    opacity: 0;
-                    transform: translateY(50%);
-                }
-                100% {
-                    opacity: 1;
-                    transform: translateY(0);
-                }
-            }
-        </style>
-
-        <template is="dom-if" if="[[settings.image]]">
+      properties: {
         
-            <input
-                id="file-upload"
-                hidden
-                type="file"
-                on-change="_processImage"
-                accept="image/jpeg,image/jpeg,image/png"
-                >
-
-        </template>
-
-        <section
-            class="formatting-bar"
-            data-fixed$="[[fixedFormattingBar]]"
-            add-link$="[[showLinkInput]]"
-            add-vimeo$="[[showVimeoInput]]"
-            add-youtube$="[[showYoutubeInput]]"
-            hidden$="[[hideFormattingBar]]"
-            style$="top:[[formattingBarPosition.top]]px;left:[[formattingBarPosition.left]]px"
-            >
-
-            <div class="formatting-bar-container">
-
-
-                <button
-                    title="Bold"
-                    class="format-bold"
-                    on-tap="toggleBold"
-                    disabled$="[[selectedTextHasHeading]]"
-                    hidden$="[[!settings.bold]]"
-                    selected$="[[selectedTextIsBold]]"
-                ><iron-icon icon="editor:format-bold"></iron-icon></button>
-                <button
-                    title="Italics"
-                    class="format-italics"
-                    on-tap="toggleItalics"
-                    disabled$="[[selectedTextHasHeading]]"
-                    hidden$="[[!settings.italics]]"
-                    selected$="[[selectedTextIsItalic]]"
-                ><iron-icon icon="editor:format-italic"></iron-icon></button>
-                <button
-                    title="Underline"
-                    class="format-underline"
-                    on-tap="toggleUnderline"
-                    disabled$="[[selectedTextHasHeading]]"
-                    hidden$="[[!settings.underline]]"
-                    selected$="[[selectedTextIsUnderlined]]"
-                ><iron-icon icon="editor:format-underlined"></iron-icon></button>
-                <button
-                    title="Strikethrough"
-                    class="format-strikethrough"
-                    on-tap="toggleStrikeThrough"
-                    disabled$="[[selectedTextHasHeading]]"
-                    hidden$="[[!settings.strikethrough]]"
-                    selected$="[[selectedTextIsStrikeThrough]]"
-                ><iron-icon icon="editor:format-strikethrough"></iron-icon></button>
-                <button
-                    title="Heading 1"
-                    class="format-heading"
-                    on-tap="toggleH1"
-                    disabled$="[[nothingSelected]]"
-                    hidden$="[[!settings.h1]]"
-                    selected$="[[selectedTextHasH1]]">h1</button>
-                <button
-                    title="Heading 2"
-                    class="format-heading"
-                    on-tap="toggleH2"
-                    disabled$="[[nothingSelected]]"
-                    hidden$="[[!settings.h2]]"
-                    selected$="[[selectedTextHasH2]]">h2</button>
-                <button
-                    title="Heading 3"
-                    class="format-heading"
-                    on-tap="toggleH3"
-                    disabled$="[[nothingSelected]]"
-                    hidden$="[[!settings.h3]]"
-                    selected$="[[selectedTextHasH3]]">h3</button>
-                <button
-                    title="Heading 4"
-                    class="format-heading"
-                    on-tap="toggleH4"
-                    disabled$="[[nothingSelected]]"
-                    hidden$="[[!settings.h4]]"
-                    selected$="[[selectedTextHasH4]]">h4</button>
-                <button
-                    title="Heading 5"
-                    class="format-heading"
-                    on-tap="toggleH5"
-                    disabled$="[[nothingSelected]]"
-                    hidden$="[[!settings.h5]]"
-                    selected$="[[selectedTextHasH5]]">h5</button>
-                <button
-                    title="Heading 6"
-                    class="format-heading"
-                    on-tap="toggleH6"
-                    disabled$="[[nothingSelected]]"
-                    hidden$="[[!settings.h6]]"
-                    selected$="[[selectedTextHasH6]]">h6</button>
-                <button
-                    title=" formatting"
-                    class="format-link"
-                    on-tap="toggleLinkInput"
-                    disabled$="[[nothingSelected]]"
-                    hidden$="[[!settings.link]]"
-                    selected$="[[selectedTextHaslink]]"
-                ><iron-icon icon="editor:insert-link"></iron-icon></button>
-
-                <input
-                    id="urlInput"
-                    type="url"
-                    value="{{linkValue::input}}"
-                    on-keyup="insertLink"
-                    on-focus="saveCurrentSelection">
-
-                <button
-                    title="Unordered list"
-                    class="format-unorderedlist"
-                    on-tap="addUnorderedList"
-                    disabled$="[[nothingSelected]]"
-                    hidden$="[[!settings.unorderedlist]]"
-                ><iron-icon icon="editor:format-list-bulleted"></iron-icon></button>
-                <button
-                    title="Ordered list"
-                    class="format-orderedlist"
-                    on-tap="addOrderedList"
-                    disabled$="[[nothingSelected]]"
-                    hidden$="[[!settings.orderedlist]]"
-                ><iron-icon icon="editor:format-list-numbered"></iron-icon></button>
-
-                <button
-                    title="Insert image"
-                    class="format-image"
-                    on-tap="insertImage"
-                    hidden$="[[!settings.image]]"
-                ><iron-icon icon="editor:insert-photo"></iron-icon></button>
-
-                <button
-                    title="Insert Youtube video"
-                    class="format-youtube"
-                    on-tap="toggleYoutubeInput"
-                    hidden$="[[!settings.youtube]]"
-                ><youtube-logo></youtube-logo></button>
-
-                <button
-                    title="Insert Vimeo video"
-                    class="format-vimeo"
-                    on-tap="toggleVimeoInput"
-                    hidden$="[[!settings.vimeo]]"
-                ><vimeo-logo></vimeo-logo></button>
-
-                <input
-                    id="vimeoInput"
-                    type="url"
-                    value="{{vimeoURL::input}}"
-                    on-keypress="_handleVimeoInputKeypress"
-                    on-focus="saveCurrentSelection"
-                    placeholder="Insert Vimeo URL">
-
-                <input
-                    id="youtubeInput"
-                    type="url"
-                    value="{{youtubeURL::input}}"
-                    on-keypress="_handleYoutubeInputKeypress"
-                    on-focus="saveCurrentSelection"
-                    placeholder="Insert Youtube URL">
-
-            </div>
-
-        </section>
-
-        <section class="content">
-            <article
-                spellcheck$="[[checkSpelling]]"
-                on-focus="_focusHandler"
-                on-blur="_blurHandler"
-                on-paste="_pasteHandler"
-                on-mouseup="_mouseUpHandler"
-                on-keyup="_keyUpHandler"
-                on-input="_updateContent"
-                contenteditable$="[[!disabled]]"
-                data-placeholder$="[[placeholder]]"
-            ></article>
-        </section>
-
-    </template>
-    <script>
-        Polymer({
-            
-            is: "silk-editor",
-
-            behaviors: [
-                Polymer.IronA11yKeysBehavior
-            ],
-            
-            properties: {
-                disabled: {
-                    type: Boolean,
-                    value: false,
-                    reflectToAttribute: true
-                },
-                checkSpelling: {
-                    type: Boolean,
-                    value: false
-                },
-                pastePlainText: {
-                    type: Boolean,
-                    value: false,
-                    notify: true
-                },
-                selection: {
-                    type: Object
-                },
-                selectedText: {
-                    type: String,
-                    value: null,
-                    readOnly: true,
-                    notify: true
-                },
-                content: {
-                    type: String,
-                    notify: true,
-                    observer: "_contentChanged"
-                },
-                article: {
-                    type: String,
-                    readOnly: true,
-                    notify: true,
-                    observer: "_articleChanged"
-                },
-                placeholder: {
-                    type: String,
-                    value: 'start typing here...'
-                },
-                formattingOptions: {
-                    type: String,
-                    value: "bold,italics,underline,strikethrough,h1,h2,h3,h4,h5,h6,link,image,unorderedlist,orderedlist,vimeo,youtube"
-                },
-                fixedFormattingBar: {
-                    type: Boolean,
-                    value: false,
-                    reflectToAttribute: true
-                },
-                settings: {
-                    type: Object,
-                    computed: "_parseSettings(formattingOptions)"
-                },
-                allowedTags: {
-                    type: Array,
-                    computed: "_getAllowedTags(settings.*)"
-                },
-                selectedTextHasHeading: {
-                    type: Boolean,
-                    value: false,
-                    computed: "_selectedTextHasHeading(selectedText)"
-                },
-                selectedTextIsBold: {
-                    type: Boolean,
-                    value: false,
-                    computed: "_selectedTextIsBold(selectedText)"
-                },
-                selectedTextIsItalic: {
-                    type: Boolean,
-                    value: false,
-                    computed: "_selectedTextIsItalic(selectedText)"                    
-                },
-                selectedTextIsUnderlined: {
-                    type: Boolean,
-                    value: false,
-                    computed: "_selectedTextIsUnderlined(selectedText)"                    
-                },
-                selectedTextIsStrikeThrough: {
-                    type: Boolean,
-                    value: false,
-                    computed: "_selectedTextIsStrikeThrough(selectedText)"                    
-                },
-                selectedTextHasH1: {
-                    type: Boolean,
-                    value: false,
-                    computed: "_selectedTextHasH1(selectedText)"
-                },
-                selectedTextHasH2: {
-                    type: Boolean,
-                    value: false,
-                    computed: "_selectedTextHasH2(selectedText)"
-                },
-                selectedTextHasH3: {
-                    type: Boolean,
-                    value: false,
-                    computed: "_selectedTextHasH3(selectedText)"
-                },
-                selectedTextHasH4: {
-                    type: Boolean,
-                    value: false,
-                    computed: "_selectedTextHasH4(selectedText)"
-                },
-                selectedTextHasH5: {
-                    type: Boolean,
-                    value: false,
-                    computed: "_selectedTextHasH5(selectedText)"
-                },
-                selectedTextHasH6: {
-                    type: Boolean,
-                    value: false,
-                    computed: "_selectedTextHasH6(selectedText)"
-                },
-                selectedTextHaslink: {
-                    type: Boolean,
-                    value: false,
-                    computed: "_selectedTextHasLink(selectedText)"
-                },
-                nothingSelected: {
-                    type: Boolean,
-                    value: true,
-                    computed: "_getSelectedTextIsEmptyString(selectedText)",
-                },
-                hideFormattingBar: {
-                    type: Boolean,
-                    computed: "_getHideFormattingBar(nothingSelected, fixedFormattingBar)",
-                },
-                formattingBarPosition: {
-                    type: Object,
-                    value: {
-                        top: 0,
-                        left: 0
-                    }
-                },
-                fileUploadButtonPosition: {
-                    type: Object,
-                    value: {
-                        top: null,
-                        left: null
-                    }
-                },
-                resizeImages: {
-                    type: Boolean,
-                    value: false
-                },
-                maxImageHeight: {
-                    type: Number,
-                    value: 2560
-                },
-                maxImageWidth: {
-                    type: Number,
-                    value: 2560
-                },
-                maxImageSize: {
-                    type: Number,
-                    value: 2000
-                },
-                showLinkInput: {
-                    type: Boolean,
-                    value: false
-                },
-                showVimeoInput: {
-                    type: Boolean,
-                    value: false
-                },
-                showYoutubeInput: {
-                    type: Boolean,
-                    value: false
-                },
-                savedRange: {
-                    type: Object,
-                    value: {}
-                },
-                savedLinkValue: {
-                    type: String,
-                    value: null
-                },
-                linkValue: {
-                    type: String,
-                    value: "http://"
-                },
-                externalLinkTarget: {
-                    type: Boolean,
-                    computed: "_getLinkTarget(selectedText)"
-                },
-                vimeoURL: {
-                    type: String,
-                    value: null
-                },
-                youtubeURL: {
-                    type: String,
-                    value: null
-                },
-                focussed: {
-                    type: Boolean,
-                    computed: '_computeFocussed(selectedText)',
-                    reflectToAttribute: true
-                }
-            },
-
-            observers: [
-                "setLinkValue(selectedText)"
-            ],
-
-            keyBindings: {
-                'esc': '_escHandler'
-            },
-
-            attached: function() {
-                document.addEventListener('selectionchange', (function(e) {
-                    var e = Polymer.dom(e).event;
-                    var activeElement = e.target.activeElement;
-                    switch(activeElement.nodeName.toLowerCase()) {
-                        case 'article':
-                        var selectionIsPartOfInstance = (e.target.activeElement.isEqualNode(this.$$('article')))
-                        break;
-                        default:
-                        var selectionIsPartOfInstance = (e.target.activeElement.isEqualNode(this))
-                        break;
-                    }
-                    if(!selectionIsPartOfInstance) {
-                        this._setSelectedText('');
-                        return;
-                    }
-                    this._setSelection();
-                    if(!this.selectedText) {
-                        this._selectionChangedHandler();
-                        this._blurHandler();
-                        this.savedRange = null;
-                    }
-                }).bind(this));
-            },
-
-            ready: function() {
-                window.onresize = this._mouseUpHandler.bind(this);
-                window.onscroll = this._mouseUpHandler.bind(this);
-            },
-
-            _parseSettings: function(formattingOptions) {
-                var settings = {};
-                var options = formattingOptions.toLowerCase().replace(/\s/g, "").split(/,/g);
-                settings["bold"] = options.indexOf("bold") !== -1;
-                settings["italics"] = options.indexOf("italics") !== -1;
-                settings["underline"] = options.indexOf("underline") !== -1;
-                settings["strikethrough"] = options.indexOf("strikethrough") !== -1;
-                settings["h1"] = options.indexOf("h1") !== -1;
-                settings["h2"] = options.indexOf("h2") !== -1;
-                settings["h3"] = options.indexOf("h3") !== -1;
-                settings["h4"] = options.indexOf("h4") !== -1;
-                settings["h5"] = options.indexOf("h5") !== -1;
-                settings["h6"] = options.indexOf("h6") !== -1;
-                settings["unorderedlist"] = options.indexOf("unorderedlist") !== -1;
-                settings["orderedlist"] = options.indexOf("orderedlist") !== -1;
-                settings["link"] = options.indexOf("link") !== -1;
-                settings["image"] = options.indexOf("image") !== -1;
-                settings["youtube"] = options.indexOf("youtube") !== -1;
-                settings["vimeo"] = options.indexOf("vimeo") !== -1;
-                return settings;
-            },
-
-            toggleBold: function() {
-                if(!this.settings.bold) return console.warn("bold is disabled!");
-                document.execCommand("Bold")
-            },
-
-            toggleItalics: function() {
-                if(!this.settings.italics) return console.warn("italics is disabled!");
-                document.execCommand("Italic")
-            },
-
-            toggleUnderline: function() {
-                if(!this.settings.underline) return console.warn("underline is disabled!");
-                document.execCommand("Underline")
-            },
-
-            toggleStrikeThrough: function() {
-                if(!this.settings.strikethrough) return console.warn("strikethrough is disabled!");
-                document.execCommand("StrikeThrough")
-            },
-
-            toggleH1: function() {
-                if(!this.settings.h1) return console.warn("h1 is disabled!");
-                if(this._selectedTextHasH1()) return this.removeFormatting();
-                this._addHTML("h1");
-            },
-
-            toggleH2: function() {
-                if(!this.settings.h2) return console.warn("h2 is disabled!");
-                if(this._selectedTextHasH2()) return this.removeFormatting();
-                this._addHTML("h2");
-            },
-
-            toggleH3: function() {
-                if(!this.settings.h3) return console.warn("h3 is disabled!");
-                if(this._selectedTextHasH3()) return this.removeFormatting();
-                this._addHTML("h3");
-            },
-
-            toggleH4: function() {
-                if(!this.settings.h4) return console.warn("h4 is disabled!");
-                if(this._selectedTextHasH4()) return this.removeFormatting();
-                this._addHTML("h4");
-            },
-
-            toggleH5: function() {
-                if(!this.settings.h5) return console.warn("h5 is disabled!");
-                if(this._selectedTextHasH5()) return this.removeFormatting();
-                this._addHTML("h5");
-            },
-
-            toggleH6: function() {
-                if(!this.settings.h6) return console.warn("h6 is disabled!");
-                if(this._selectedTextHasH6()) return this.removeFormatting();
-                this._addHTML("h6");
-            },
-
-            toggleLinkInput: function() {
-                this.showLinkInput = !this.showLinkInput;
-                var hiliteColor = (this.showLinkInput === true) ? "#afd5fc" : "transparent";
-                document.execCommand("hiliteColor", false, hiliteColor);
-            },
-
-            saveCurrentSelection: function(evt) {
-                evt.preventDefault();
-                evt.stopPropagation();
-                this.savedRange = this.selection.getRangeAt(0);
-                this.savedLinkValue = this.linkValue;
-            },
-
-            toggleLink: function() {
-                if(!this.settings.link) return console.warn("link is disabled!");
-                var url = window.prompt("Please add a link", selectedElement.href || "http://");
-                if(!url || url.length === 0) return this.removeLink();
-                else this.insertLink(url);
-            },
-
-            insertLink: function(evt) {
-                if(evt.which === 27) {
-                    this.linkValue = this.savedLinkValue;
-                    this.showLinkInput = false;
-                } 
-                if(evt.which !== 13) return;
-                if(!this.settings.link) return console.warn("link is disabled!");
-                this.nothingSelected = false;
-                this.showLinkInput = false;
-
-
-                var selection = this.selection;
-                selection.removeAllRanges();
-                selection.addRange(this.savedRange);
-
-                if(this.linkValue.length === 0) return this.removeLink(selection);
-
-                var target = (this.externalLinkTarget) ? "_blank" : "_self";
-
-                document.execCommand("insertHTML", false, "<a href=\"" + this.linkValue + "\" target=\""+target+"\">" + selection.toString() + "</a>");
-            },
-
-            removeLink: function(selection) {
-                if(!this.settings.link) return console.warn("link is disabled!");
-                return document.execCommand('insertHTML', false, '<span>' + selection.toString() + '</span>');
-            },
-
-            toggleVimeoInput: function() {
-                this.showVimeoInput = !this.showVimeoInput;
-            },
-
-            toggleYoutubeInput: function() {
-                this.showYoutubeInput = !this.showYoutubeInput;
-            },
-
-            addUnorderedList: function() {
-                if(!this.settings.unorderedlist) return console.warn("unordered list is disabled!");
-                document.execCommand("insertHTML", false, "<ul><li>"+this.selectedText+"</li></ul>");
-            },
-
-            addOrderedList: function() {
-                if(!this.settings.unorderedlist) return console.warn("unordered list is disabled!");
-                document.execCommand("insertHTML", false, "<ol><li>"+this.selectedText+"</li></ol>");
-            },
-
-            toggleExternalLinkTarget: function() {
-                // this.externalLinkTarget = !this.externalLinkTarget;
-            },
-
-            getContents: function() {
-                return this.$$("article").innerHTML
-            },
-
-            _setSelection: function() {
-               var selection = "";
-
-                if(document.activeElement.shadowRoot) {
-                    selection = document.activeElement.shadowRoot.getSelection();
-                }
-
-                else if (window.getSelection) {  // all browsers, except IE before version 9
-                    if (document.activeElement && (document.activeElement.tagName.toLowerCase() == "textarea" || document.activeElement.tagName.toLowerCase() == "input")) {
-                        var text = document.activeElement.value;
-                        selection = text.substring(document.activeElement.selectionStart, document.activeElement.selectionEnd);
-                    }
-                    else {
-                        selection = window.getSelection();
-                    }
-                }
-                else if (document.selection.createRange) { // Internet Explorer
-                    selection = document.selection.createRange();
-                }
-                this._setSelectedText(selection.toString() || selection.text);
-                this.selection = selection;
-            },
-
-            _getSelectionRange: function() {
-                try {
-                    return this.selection.getRangeAt(0);
-                } catch(e) {
-                    return false;
-                }
-            },
-
-            _getSelectedElement: function() {
-                return this._getSelectionRange().startContainer.parentElement;   
-            },
-
-            _getFormattingBarPosition: function() {
-                if(this.fixedFormattingBar) {
-                    return {
-                        top:0,
-                        left:0
-                    }
-                }
-                var range = this._getSelectionRange();
-
-                if(!(range && range.getBoundingClientRect())) {
-                    return;
-                }
-                
-                var topPosition = range.getBoundingClientRect().top;
-                var rangeWidth = range.getBoundingClientRect().width;
-
-                topPosition -= this._getSelectedHeight() || 0;
-                topPosition -= this._getSelectedLineHeight() || 0;
-
-                var leftPosition = range.getBoundingClientRect().left;
-                var bodyWidth = document.body.offsetWidth;
-                var formattingBarWidth = this.$$('.formatting-bar').offsetWidth;
-                
-                if( (leftPosition + formattingBarWidth) > bodyWidth ) {
-                    //too large to start @ left side
-
-                    if( (leftPosition - formattingBarWidth + rangeWidth) < 0 ) {
-                        //should be centered
-                        leftPosition-=formattingBarWidth/2;
-                        leftPosition+=rangeWidth/2;
-                    }
-
-                    else {
-                        //should @ right side
-                        leftPosition-=formattingBarWidth;
-                        leftPosition+=rangeWidth;
-                    }
-                }
-
-                var formattingBarPosition = {
-                    top: topPosition,
-                    left: leftPosition
-                }
-
-                return formattingBarPosition;
-            },
-
-            _getFileUploadButtonPosition: function() {
-                var selectedElement = this._getSelectionRange().startContainer;
-                if(!selectedElement || !selectedElement.getClientRects) return false;
-                if(!selectedElement || !selectedElement.getClientRects) return false;
-                if(!selectedElement.getClientRects()[0]) return false;
-                if (selectedElement.getClientRects()[0].width === 0 && selectedElement.getClientRects()[1]) {
-                    var topPosition = selectedElement.getClientRects()[1].top;
-                    var leftPosition = selectedElement.startContainer.parentElement.offsetLeft;
-                } else {
-                    var topPosition = selectedElement.getClientRects()[0].top;
-                    var leftPosition = selectedElement.getClientRects()[0].left;                    
-                }
-                return {
-                    top: topPosition,
-                    left: leftPosition
-                }
-            },
-
-            insertImage: function() {
-                this.$$("#file-upload").click();
-            },
-
-            _getScrollTop: function() {
-                var element = (navigator.userAgent.indexOf("Firefox") !== -1) ? document.documentElement : document.body;
-                return element.scrollTop;
-            },
-
-            _getScrollLeft: function() {
-                var element = (navigator.userAgent.indexOf("Firefox") !== -1) ? document.documentElement : document.body;
-                return element.scrollLeft;
-            },
-
-            _mouseUpHandler: function(e) {
-                this.set("formattingBarPosition", this._getFormattingBarPosition());
-                this.set("fileUploadButtonPosition", this._getFileUploadButtonPosition());
-            },
-
-            _keyUpHandler: function(e) {
-                this.set("fileUploadButtonPosition", this._getFileUploadButtonPosition());
-            },
-
-            _computeFocussed: function(selectedText) {
-                var savedRange = this.savedRange;
-                if(!selectedText && !savedRange) return false;
-
-                var hasSelectedText = selectedText && selectedText.length > 0;
-                if(hasSelectedText) return true;
-
-                var hasSavedText = savedRange.toString();
-                if(hasSavedText && hasSavedText.length > 0) {
-                    return true;
-                }
-
-                return false;
-            },
-
-            _focusHandler: function(evt) {
-                this._disableSpellcheck();
-                evt.target.classList.add('focussed');
-            },
-
-            _escHandler: function() {
-                this._selectionChangedHandler();
-                this._blurHandler();
-                this.savedRange = null;
-                this.selection.removeAllRanges();
-            },
-
-            _selectionChangedHandler: function() {
-                this.notifyPath('nothingSelected', true);                    
-            },
-
-            _blurHandler: function() {
-                this.$$('article').classList.remove('focussed');
-            },
-
-            _disableSpellcheck: function() {
-                if(!this.checkSpelling) document.body.spellcheck = false;
-            },
-
-            _pasteHandler: function(e) {
-
-                if (e.originalEvent && e.originalEvent.clipboardData && e.originalEvent.clipboardData.getData) {
-                    e.preventDefault();
-                    if(this.pastePlainText) {
-                        var text = e.originalEvent.originalEvent.clipboardData.getData("text/plain");
-                        window.document.execCommand("insertText", false, text);
-                    } else {
-                        var html = this._stripTags(e.originalEvent.originalEvent.clipboardData.getData("text/html"));
-                        window.document.execCommand("insertHTML", false, html);
-                    }
-                }
-                else if (e.clipboardData && e.clipboardData.getData) {
-                    e.preventDefault();
-                    if(this.pastePlainText) {
-                        var text = e.clipboardData.getData("text/plain");
-                        window.document.execCommand("insertText", false, text);
-                    } else {
-                        var html = this._stripTags(e.clipboardData.getData("text/html"));
-                        window.document.execCommand("insertHTML", false, html);
-                    }
-                }
-                else if (window.clipboardData && window.clipboardData.getData) {
-                    if (!_onPaste_StripFormatting_IEPaste) {
-                        _onPaste_StripFormatting_IEPaste = true;
-                        e.preventDefault();
-                        window.document.execCommand("ms-pasteTextOnly", false);
-                    }
-                    _onPaste_StripFormatting_IEPaste = false;
-                }
-            },
-
-            removeFormatting: function() {
-                var selectedTag = this._getSelectionRange().startContainer.parentNode;
-                var text = selectedTag.innerHTML;
-                document.execCommand("formatBlock", false, 'p');
-            },
-
-            _stripTags: function(input, allowed) {
-                return;
-                input = input
-                    .replace(/(\r\n|\n)+/gi, "<br>")
-                    .replace(/^.*?<body>/gi, "");
-
-
-                allowed = this.allowedTags.join(",");
-                var tags = /<\/?([a-z][a-z0-9]*)\b[^>]*>/gi;
-                return this._stripAttributes(input.replace(tags, function($0, $1) {
-                    return allowed.indexOf('<' + $1.toLowerCase() + '>') > -1 ? $0 : '';
-                }), "href,src,width,height,webkitallowfullscreen,mozallowfullscreen,allowfullscreen");
-            },
-
-            _stripAttributes: function(input, allowed) {
-                allowed = ((allowed || "") + "")
-                    .toLowerCase()
-                    .split(/,/g);
-                var attributes = /\s(([a-z]|[0-9]|\-)+=".*?")/gi;
-                return input.replace(attributes, function(input, attribute) {
-                    var attributeName = attribute.replace(/^(.*?)=.*?$/, "$1");
-                    return allowed.indexOf(attributeName.toLowerCase()) > -1 ? input : '';
-                });
-            },
-
-            _getComputedStylesForElement: function(element) {
-                var getComputedStyles = window.getComputedStyle || document.defaultView.getComputedStyle;
-                return getComputedStyles(element);
-            },
-
-            _getSelectedFontSize: function() {
-                var fontSize = this._getComputedStylesForElement(this._getSelectedElement()).getPropertyValue("font-size");
-                return parseInt(fontSize.replace("px", ""));
-            },
-
-            _getSelectedHeight: function() {
-                var height = this._getComputedStylesForElement(this.$$(".formatting-bar")).getPropertyValue("height");
-                return parseInt(height.replace("px", ""));
-            },
-
-            _getSelectedLineHeight: function() {
-                var lineHeight = this._getComputedStylesForElement(this._getSelectedElement()).getPropertyValue("line-height");
-                return parseInt(lineHeight.replace("px", ""));
-            },
-
-            _addHTML: function(elementName) {
-                if(!this.selectedText || this.selectedText.length === 0) return;
-                document.execCommand("insertHTML", false, "<" + elementName + ">" + this.selectedText + "</" + elementName + ">")
-            },
-
-            _selectedTextIsBold: function() {
-                return document.queryCommandState("Bold");
-            },
-
-            _selectedTextIsItalic: function() {
-                return document.queryCommandState("Italic");                
-            },
-
-            _selectedTextIsUnderlined: function() {
-                return document.queryCommandState("Underline");                
-            },
-
-            _selectedTextIsStrikeThrough: function() {
-                return document.queryCommandState("StrikeThrough");                
-            },
-
-            _selectedTextHasLink: function() {
-                if(!this._getSelectionRange()) return false;
-                var selectedElement = this._getSelectionRange().startContainer.parentElement;
-                return (selectedElement.href && selectedElement.href.length > 0);
-            },
-
-            _selectedTextHasTag: function(tagName) {
-                if(!this._getSelectionRange()) return false;
-                var selectedElement = this._getSelectionRange().startContainer.parentElement;
-                return selectedElement.nodeName.toLowerCase() === tagName;
-            },
-
-            _selectedTextHasHeading: function() {
-                return (this._selectedTextHasH1() || this._selectedTextHasH2() || this._selectedTextHasH3() || this._selectedTextHasH4() || this._selectedTextHasH5() || this._selectedTextHasH6())
-            },
-
-            _selectedTextHasH1: function() {
-                return this._selectedTextHasTag("h1");
-            },
-
-            _selectedTextHasH2: function() {
-                return this._selectedTextHasTag("h2");
-            },
-
-            _selectedTextHasH3: function() {
-                return this._selectedTextHasTag("h3");
-            },
-
-            _selectedTextHasH4: function() {
-                return this._selectedTextHasTag("h4");
-            },
-
-            _selectedTextHasH5: function() {
-                return this._selectedTextHasTag("h5");
-            },
-
-            _selectedTextHasH6: function() {
-                return this._selectedTextHasTag("h6");
-            },
-
-            _updateContent: function() {
-                this._setArticle(this.getContents());
-                this._mouseUpHandler();
-            },
-
-            _getAllowedTags: function() {
-                var allowedTags = ["<br>", "<p>"];
-                var settings = this.settings;
-                if(settings["bold"]) allowedTags.push("<b>", "<strong>");
-                if(settings["italics"]) allowedTags.push("<i>", "<em>");
-                if(settings["underline"]) allowedTags.push("<u>");
-                if(settings["strikethrough"]) allowedTags.push("<s>");
-                if(settings["h1"]) allowedTags.push("<h1>");
-                if(settings["h2"]) allowedTags.push("<h2>");
-                if(settings["h3"]) allowedTags.push("<h3>");
-                if(settings["h4"]) allowedTags.push("<h4>");
-                if(settings["h5"]) allowedTags.push("<h5>");
-                if(settings["h6"]) allowedTags.push("<h6>");
-                if(settings["link"]) allowedTags.push("<a>");
-                if(settings["image"]) allowedTags.push("<img>");
-                if(settings["vimeo"] || settings["youtube"]) allowedTags.push("<iframe>");
-                if(settings["unorderedlist"]) allowedTags.push("<ul>", "<li>");
-                if(settings["orderedlist"]) allowedTags.push("<ol>", "<li>");
-                return allowedTags;
-            },
-
-            _contentChanged: function(content) {
-                var elementIsFocussed = this.$$('article').classList.contains('focussed');
-                if(elementIsFocussed) return;
-                this.$$("article").innerHTML = content;
-            },
-
-            _articleChanged: function() {
-                if(this.getContents().length == 0) {
-                    this.$$("article").innerHTML = "";
-                }
-                this._setSelectedText(new String(this.selectedText));
-                this.fire("content-change", this.getContents());
-            },
-
-            _getSelectedTextIsEmptyString: function(selectedText) {
-                return (!selectedText || selectedText.length === 0);
-            },
-
-            _getHideFormattingBar: function(nothingSelected) {
-                if(this.fixedFormattingBar) return false;
-                if(nothingSelected) {
-                    if(!this.savedRange) return true;
-                    var savedText = this.savedRange.toString();
-                    return savedText.length < 1;
-                } else {
-                    return false;
-                }
-            },
-
-            _processImage: function(e) {
-                if(!this.settings.image) return console.warn("image upload is disabled!");
-                var self = this;
-                var file = e.target.files[0];
-
-                var maximumFileSizeInBytes = this.maxImageSize*1000;
-                if(file.size > maximumFileSizeInBytes) {
-                    this.$$("#file-upload").value = null;
-                    return this.fire("image-upload-error", "maxium upload size exceeded ("+ this.maxImageSize+"KB)");
-                }
-
-                var fileType = file.type;
-                var reader = new FileReader();
-                reader.onloadend = function () {
-                    self.$$("#file-upload").value = null;
-                    var imageData = reader.result;
-                    if(self.resizeImages) imageData = self._resizeImage(imageData, fileType);
-                    document.execCommand("insertHTML", false, '<img src="'+imageData+'">');
-                    self.$$("#file-upload").value = "";
-                }
-                reader.readAsDataURL(file);
-            },
-
-            _resizeImage: function(fileReaderData, fileType) {
-                var img = document.createElement("img");
-                img.src = fileReaderData;
-                imageWidth = img.width;
-                imageHeight = img.height;
-
-                if(imageHeight <= this.maxImageHeight && imageWidth <= this.maxImageWidth) {
-                    return fileReaderData;  
-                } 
-
-                var canvas = document.createElement("canvas");
-                var ctx = canvas.getContext("2d");
-                ctx.drawImage(img, 0, 0);
-
-                if (imageWidth > imageHeight) {
-                    if (imageWidth > this.maxImageWidth) {
-                        imageHeight *= this.maxImageWidth / imageWidth;
-                        imageWidth = this.maxImageWidth;
-                    }
-                } else {
-                    if (imageHeight > this.maxImageHeight) {
-                        imageWidth *= this.maxImageHeight / imageHeight;
-                        imageHeight = this.maxImageHeight;
-                    }
-                }
-                canvas.width = imageWidth;
-                canvas.height = imageHeight;
-
-                var ctx = canvas.getContext("2d");
-                ctx.drawImage(img, 0, 0, imageWidth, imageHeight);
-
-                var dataurl = canvas.toDataURL(fileType);
-                return dataurl;
-            },
-
-            setLinkValue: function() {
-                var selectionRange = this._getSelectionRange();
-                if(!selectionRange) return;
-                var selectedElement = selectionRange.startContainer.parentElement;
-                this.linkValue = selectedElement.href || "http://";
-                this.externalLinkTarget = false;
-            },
-
-            _getLinkTarget: function() {
-                var selectedRange = this._getSelectionRange();
-                var selectedElement = (selectedRange && selectedRange.startContainer && selectedRange.startContainer.parentElement);
-                return (selectedElement.target && selectedElement.target);
-            },
-
-            _handleVimeoInputKeypress: function(evt) {
-                if(evt.which !== 13) return;
-                this.insertVimeoVideo(evt.target.value);
-            },
-
-            insertVimeoVideo: function(value) {
-                var vimeoID = this._parseValueToVimeoID(value);
-                var embedCode = '<iframe src="https://player.vimeo.com/video/'+vimeoID+'?title=0&byline=0&portrait=0" width="640" height="360" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>';
-
-                var selection = this.selection;
-                selection.removeAllRanges();
-                selection.addRange(this.savedRange);
-
-                window.document.execCommand("insertHTML", false, embedCode);
-                this.toggleVimeoInput();
-                this.vimeoURL = null;
-            },
-
-            _parseValueToVimeoID: function(value) {
-                return value.replace(/^.*(?:vimeo.com)(\/((channels|groups|albums)\/.*|video)|)\/([0-9]+)(\/|)/, "$4");
-            },
-
-            _handleYoutubeInputKeypress: function(evt) {
-                if(evt.which !== 13) return;
-                this.insertYoutubeVideo(evt.target.value);
-            },
-
-            insertYoutubeVideo: function(value) {
-                var youtubeID = this._parseValueToYoutubeID(value);
-                var embedCode = '<iframe width="640" height="360" src="https://www.youtube.com/embed/'+youtubeID+'" frameborder="0" allowfullscreen></iframe>';
-                var selection = this.selection;
-                selection.removeAllRanges();
-                selection.addRange(this.savedRange);
-
-                window.document.execCommand("insertHTML", false, embedCode);
-                this.toggleYoutubeInput();
-                this.youtubeURL = null;
-            },
-
-            _parseValueToYoutubeID: function(value) {
-                return value.replace(/^.*((youtu.be\/)|(v\/)|(\/u\/\w\/)|(embed\/)|(watch\?))\??v?=?([^#\&\?]*).*/, "$7")
-            }
-
-        })
-    </script>
+        content: {
+          type: String,
+          value: 'Hello, this is silk-editor',
+          notify: true
+        },
+        
+        focused: {
+          type: Boolean,
+          value: false,
+        },
+
+        selection: {
+          type: Object
+        },
+
+        selectedText: {
+          type: String,
+          value: '',
+          observer: '_selectedTextChanged'
+        },
+
+      },
+
+      keyBindings: {
+        'esc': '_handleKeyEscape',
+        'enter': '_handleKeyEnter',
+        'shift+enter': '_handleKeyShiftEnter'
+      },
+
+      observers: [
+        '_setHTML(content, focused)'
+      ],
+
+      ready: function() {
+        document.addEventListener('selectionchange', this._handleSelectionChange.bind(this));
+      },
+
+      _handleSelectionChange: function(evt) {
+        console.info('selectionchange');
+        this.selection = this._getSelection();
+        this.selectedText = (this.selection) ? this.selection.toString() : '';
+      },
+
+      _selectedTextChanged: function(selectedText, oldSelectedText) {
+        console.info('_selectedTextChanged');
+        if(! (this.selection && this.selection.getRangeAt) ) return;
+        if(selectedText) {
+          this.selection.addRange(this.selection.getRangeAt(0));
+        }
+      },
+
+      _handleFocus: function() {
+        console.info('focus');
+        this.focused = true;
+      },
+
+      _handleBlur: function() {
+        console.info('blur');
+        this.focused = false;
+      },
+
+      _handleInput: function(evt) {
+        console.info('input');
+        var content = evt.target.innerHTML;
+        this.content = content;
+      },
+
+      _setHTML: function(content, focused, selectedText) {
+        if(focused === true) {
+          return;
+        }
+        if(this.selection && this.selection.getRangeAt(0)) {
+          return;
+        }
+        console.info('set HTML');
+        this.$$('article').innerHTML = content;
+      },
+
+      _handleKeyEscape: function() {
+        console.info('_handleKeyEscape');
+        this.$$('article').blur();
+      },
+
+      _handleKeyEnter: function() {
+        console.info('_handleKeyEnter');
+      },
+
+      _handleKeyShiftEnter: function() {
+        console.info('_handleKeyShiftEnter');
+      },
+
+      _getSelection: function() {
+        return window.getSelection();
+      },
+
+      _toggleBold: function(evt) {
+        console.info('_toggleBold');
+        document.execCommand('Bold');
+      },
+
+      _toggleItalic: function() {
+        console.info('_toggleItalic');
+        document.execCommand('Italic');        
+      },
+
+      _toggleUnderline: function() {
+        console.info('_toggleUnderline');
+        document.execCommand('Underline');        
+      },
+
+      _toggleStrikethrough: function() {
+        console.info('_toggleStrikethrough');
+        document.execCommand('Strikethrough');        
+      }
+
+    });
+  </script>
 </dom-module>
