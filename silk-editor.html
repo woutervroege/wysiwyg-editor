@@ -1,5 +1,4 @@
 <link rel="import" href="../polymer/polymer.html">
-<link rel="import" href="../paper-icon-button/paper-icon-button.html">
 <link rel="import" href="../iron-icons/editor-icons.html">
 
 <!--
@@ -16,102 +15,158 @@
         display: block;
         padding: 0;
         margin: 0;
-        font-size: 0;
       }
 
-      .hilited {
-        background-color: red;
+      button {
+        background-color: transparent;
+        border: 0;
+        outline: none;
+        cursor: pointer;
+        border: 1px solid transparent;
+        border-radius: 3px;
+        margin: 5px 2px;
       }
 
-      :host paper-icon-button {
-        color: var(--paper-grey-800);
-        margin: 0;
+      iron-icon {
+        width: 22px;
+        height: 22px;              
       }
 
-      paper-icon-button[disabled] {
-        opacity: 0.5;
-      }
-
-      paper-icon-button[data-selected] {
+      button:hover {
+        border-color: var(--paper-grey-300);
         color: var(--paper-pink-500);
       }
 
+      button[disabled] {
+        opacity: 0.5;
+        pointer-events: none;
+      }
+
+      button[data-selected] {
+        border-color: var(--paper-pink-300);
+        color: var(--paper-pink-500);
+        background-color: var(--paper-pink-100);
+      }
+
       article {
-        font-size: 15px;
-        line-height: 1.3;
+        font-family: Georgia;
+        color: var(--paper-grey-800);
+        font-size: 18px;
+        line-height: 1.5;
+        outline: none;
+      }
+
+      #formatting-bar {
+        visibility: visible;
+        opacity: 1;
+        border: 1px solid var(--paper-grey-300);
+        box-shadow: 0px 2px 1px 0px var(--paper-grey-400);
+        padding: 3px 6px;
+        border-radius: 5px;
+        position: fixed;
+        z-index: 1;
+        background-color: white;
+        transition: 0.3s 0.1s opacity, 0.1s visibility, 0.1s 0.1s transform ease-in-out;
+        transform: translateY(0);
+      }
+
+      #formatting-bar[data-hidden] {
+        visibility: hidden;
+        opacity: 0;
+        transform: translateY(16px);
+        transition: 0.1s opacity, 0.1s visibility, 0.1s transform ease-in-out;
+      }
+
+      [hidden] {
+        display: none!important;
       }
     </style>
 
-    <paper-icon-button
-      icon="editor:format-bold"
-      disabled$="[[!selectedText]]"
-      data-selected$="[[selectedTextState.Bold]]"
-      on-tap="_toggleBold"
-    ></paper-icon-button>
+    <section id="formatting-bar" data-hidden$="[[!selectedText]]">
 
-    <paper-icon-button
-      icon="editor:format-italic"
-      disabled$="[[!selectedText]]"
-      data-selected$="[[selectedTextState.Italic]]"
-      on-tap="_toggleItalic"
-    ></paper-icon-button>
+      <button
+        disabled$="[[!selectedText]]"
+        data-selected$="[[_stateEnabled('Bold', selectedText, content)]]"
+        on-tap="_toggleBold"
+      ><iron-icon icon="editor:format-bold"></iron-icon>
+      </button>
 
-    <paper-icon-button
-      icon="editor:format-underlined"
-      disabled$="[[!selectedText]]"
-      data-selected$="[[selectedTextState.Underline]]"
-      on-tap="_toggleUnderline"
-    ></paper-icon-button>
+      <button
+        disabled$="[[!selectedText]]"
+        data-selected$="[[_stateEnabled('Italic', selectedText, content)]]"
+        on-tap="_toggleItalic"
+      ><iron-icon icon="editor:format-italic"></iron-icon>
+      </button>
 
-    <paper-icon-button
-      icon="editor:format-strikethrough"
-      disabled$="[[!selectedText]]"
-      data-selected$="[[selectedTextState.Strikethrough]]"
-      on-tap="_toggleStrikethrough"
-    ></paper-icon-button>
+      <button
+        disabled$="[[!selectedText]]"
+        data-selected$="[[_stateEnabled('Underline', selectedText, content)]]"
+        on-tap="_toggleUnderline"
+      ><iron-icon icon="editor:format-underlined"></iron-icon>
+      </button>
 
-    <paper-icon-button
-      icon="editor:format-align-left"
-      disabled$="[[!selectedText]]"
-      data-selected$="[[selectedTextState.JustifyLeft]]"
-      on-tap="_alignLeft"
-    ></paper-icon-button>
+      <button
+        disabled$="[[!selectedText]]"
+        data-selected$="[[_stateEnabled('Strikethrough', selectedText, content)]]"
+        on-tap="_toggleStrikethrough"
+      ><iron-icon icon="editor:format-strikethrough"></iron-icon>
+      </button>
 
-    <paper-icon-button
-      icon="editor:format-align-center"
-      disabled$="[[!selectedText]]"
-      data-selected$="[[selectedTextState.JustifyCenter]]"
-      on-tap="_alignCenter"
-    ></paper-icon-button>
+      <button
+        data-selected$="[[_stateEnabled('JustifyLeft', selectedText, content)]]"
+        on-tap="_alignLeft"
+      ><iron-icon icon="editor:format-align-left"></iron-icon>
+      </button>
 
-    <paper-icon-button
-      icon="editor:format-align-right"
-      disabled$="[[!selectedText]]"
-      data-selected$="[[selectedTextState.JustifyRight]]"
-      on-tap="_alignRight"
-    ></paper-icon-button>
+      <button
+        data-selected$="[[_stateEnabled('JustifyCenter', selectedText, content)]]"
+        on-tap="_alignCenter"
+      ><iron-icon icon="editor:format-align-center"></iron-icon>
+      </button>
 
-    <paper-icon-button
-      icon="editor:format-align-justify"
-      disabled$="[[!selectedText]]"
-      data-selected$="[[selectedTextState.JustifyFull]]"
-      on-tap="_alignJustified"
-    ></paper-icon-button>
+      <button
+        data-selected$="[[_stateEnabled('JustifyRight', selectedText, content)]]"
+        on-tap="_alignRight"
+      ><iron-icon icon="editor:format-align-right"></iron-icon>
+      </button>
 
-    <!-- <input
+      <button
+        data-selected$="[[_stateEnabled('JustifyFull', selectedText, content)]]"
+        on-tap="_alignJustified"
+      ><iron-icon icon="editor:format-align-justify"></iron-icon>
+      </button>
+
+      <button
+        data-selected$="[[_stateEnabled('indent', selectedText, content)]]"
+        on-tap="_indent"
+      ><iron-icon icon="editor:format-indent-increase"></iron-icon>
+      </button>
+
+      <button
+        data-selected$="[[_stateEnabled('outdent', selectedText, content)]]"
+        on-tap="_outdent"
+      ><iron-icon icon="editor:format-indent-decrease"></iron-icon>
+      </button>
+
+      <!-- <input
       id="linkInput"
       type="text"
       value="{{link::input}}"
       on-focus="_handleFocusLinkInput"
       on-blur="_handleBlurLinkInput"
       on-keydown="_handleLinkKeydown"
-    >
-    <button
-      on-tap="_insertLink"
-    >Add Link</button> -->
+      >
+      
+      <button
+        on-tap="_insertLink"
+      ><iron-icon icon="icons:link"></iron-icon>
+      </button> -->
+
+    </section>
 
     <article
       contenteditable="true"
+      spellcheck="false"
       on-focus="_handleFocus"
       on-blur="_handleBlur"
       on-input="_handleInput"
@@ -131,7 +186,7 @@
         
         content: {
           type: String,
-          value: '<p>Donec id elit non mi porta gravida at eget metus. Duis mollis, est non commodo luctus, nisi erat porttitor ligula, eget lacinia odio sem nec elit. Cras mattis consectetur purus sit amet fermentum. Donec ullamcorper nulla non metus auctor fringilla. Etiam porta sem malesuada magna mollis euismod. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus.</p><p>Duis mollis, est non commodo luctus, nisi erat porttitor ligula, eget lacinia odio sem nec elit. Praesent commodo cursus magna, vel scelerisque nisl consectetur et. Etiam porta sem malesuada magna mollis euismod. Cras mattis consectetur purus sit amet fermentum. Nullam id dolor id nibh ultricies vehicula ut id elit. Donec id elit non mi porta gravida at eget metus. Aenean eu leo quam. Pellentesque ornare sem lacinia quam venenatis vestibulum.</p><p>Aenean eu leo quam. Pellentesque ornare sem lacinia quam venenatis vestibulum. Maecenas sed diam eget risus varius blandit sit amet non magna. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Integer posuere erat a ante venenatis dapibus posuere velit aliquet. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Nullam quis risus eget urna mollis ornare vel eu leo. Donec id elit non mi porta gravida at eget metus.</p>',
+          value: '<p>Donec id elit non mi porta gravida at eget metus. Duis mollis, est non commodo luctus, nisi erat porttitor ligula, eget lacinia odio sem nec elit. Cras mattis consectetur purus sit amet fermentum. <h1>Donec ullamcorper</h1> nulla non metus auctor fringilla. Etiam porta sem malesuada magna mollis euismod. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus.</p><p>Duis mollis, est non commodo luctus, nisi erat porttitor ligula, eget lacinia odio sem nec elit. Praesent commodo cursus magna, vel scelerisque nisl consectetur et. Etiam porta sem malesuada magna mollis euismod. Cras mattis consectetur purus sit amet fermentum. Nullam id dolor id nibh ultricies vehicula ut id elit. Donec id elit non mi porta gravida at eget metus. Aenean eu leo quam. Pellentesque ornare sem lacinia quam venenatis vestibulum.</p><p>Aenean eu leo quam. Pellentesque ornare sem lacinia quam venenatis vestibulum. Maecenas sed diam eget risus varius blandit sit amet non magna. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Integer posuere erat a ante venenatis dapibus posuere velit aliquet. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Nullam quis risus eget urna mollis ornare vel eu leo. Donec id elit non mi porta gravida at eget metus.</p>',
           notify: true
         },
         
@@ -153,11 +208,6 @@
           type: String,
           value: '',
           observer: '_selectedTextChanged'
-        },
-
-        selectedTextState: {
-          type: Object,
-          computed: '_computeSelectedTextState(selectedText, content)'
         },
 
         link: {
@@ -185,19 +235,8 @@
         document.addEventListener('selectionchange', this._handleSelectionChange.bind(this));
       },
 
-      _computeSelectedTextState: function(selectedText) {
-        var selectedTextState = {
-          Bold: document.queryCommandState('Bold'),
-          Italic: document.queryCommandState('Italic'),
-          Underline: document.queryCommandState('Underline'),
-          Strikethrough: document.queryCommandState('Strikethrough'),
-          JustifyLeft: document.queryCommandState('JustifyLeft'),
-          JustifyCenter: document.queryCommandState('JustifyCenter'),
-          JustifyRight: document.queryCommandState('JustifyRight'),
-          JustifyFull: document.queryCommandState('JustifyFull'),
-        }
-        //console.info('selectedTextState', selectedTextState);
-        return selectedTextState;
+      _stateEnabled: function(state) {
+        return document.queryCommandState(state);
       },
 
       _handleSelectionChange: function(evt) {
@@ -212,11 +251,21 @@
         if(selectedText) {
           var range = this.selection.getRangeAt(0);
           this.selection.addRange(range);
-          //console.info('before save range', this.selection.toString());
           this._saveRange();
+          this._moveFormattingBar();
+          // document.execCommand('hiliteColor', false, '#ffefc0');
+          this.updateStyles();
         } else {
           //console.info('no selectedText');
         }
+      },
+
+      _moveFormattingBar: function() {        
+        var formattingBar = this.$$('#formatting-bar');
+        var formattingBarBox = formattingBar.getBoundingClientRect();
+
+        var selectionBox = this._savedRange.getBoundingClientRect();
+        formattingBar.style.top = (selectionBox.top - formattingBarBox.height - 16) + 'px';
       },
 
       _handleFocus: function() {
@@ -243,12 +292,12 @@
           return;
         }
         //console.info('set HTML');
-        this.$$('article').innerHTML = content;
+        this._getElement().innerHTML = content;
       },
 
       _handleKeyEscape: function() {
         //console.info('_handleKeyEscape');
-        this.$$('article').blur();
+        this._getElement().blur();
       },
 
       _handleKeyEnter: function() {
@@ -331,6 +380,16 @@
         document.execCommand('JustifyFull');
       },
 
+      _indent: function() {
+        console.info('_indent');
+        document.execCommand('Indent');
+      },
+
+      _outdent: function() {
+        console.info('_outdent');
+        document.execCommand('Outdent');
+      },
+
       _saveRange: function() {
         if(window.getSelection) { //non IE Browsers
           this._savedRange = this._getSelection().getRangeAt(0);
@@ -342,7 +401,7 @@
 
       _restoreRange: function() {
         console.log('_restoreRange', this._savedRange);
-        this.$$('article').focus();
+        this._getElement().focus();
         if (this._savedRange != null) {
           //modern browsers
           if (window.getSelection || this.shadowRoot.getSelection) {
@@ -356,6 +415,10 @@
           }
         }
       },
+
+      _getElement: function() {
+        return this.$$('article');
+      }
 
     });
   </script>
