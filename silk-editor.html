@@ -1032,7 +1032,7 @@ Example:
                         var text = e.originalEvent.originalEvent.clipboardData.getData("text/plain");
                         window.document.execCommand("insertText", false, text);
                     } else {
-                        var html = this._stripTags(e.originalEvent.originalEvent.clipboardData.getData("text/html"));
+                        var html = e.originalEvent.originalEvent.clipboardData.getData("text/html");
                         window.document.execCommand("insertHTML", false, html);
                     }
                 }
@@ -1042,7 +1042,7 @@ Example:
                         var text = e.clipboardData.getData("text/plain");
                         window.document.execCommand("insertText", false, text);
                     } else {
-                        var html = this._stripTags(e.clipboardData.getData("text/html"));
+                        var html = e.clipboardData.getData("text/html");
                         window.document.execCommand("insertHTML", false, html);
                     }
                 }
