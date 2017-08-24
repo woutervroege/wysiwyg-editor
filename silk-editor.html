@@ -59,6 +59,14 @@
 
         --formatting-button-icon-size: 22px;
 
+        --silk-content: {
+          font-family: Georgia;
+          color: var(--paper-grey-800);
+          font-size: 18px;
+          line-height: 1.5;
+          outline: none;          
+        }
+
       }
 
       button {
@@ -83,11 +91,7 @@
       }
 
       article {
-        font-family: Georgia;
-        color: var(--paper-grey-800);
-        font-size: 18px;
-        line-height: 1.5;
-        outline: none;
+        @apply --silk-content;
       }
 
       #formatting-bar {
