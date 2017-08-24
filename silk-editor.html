@@ -329,6 +329,7 @@
 
         var selectionBox = this._savedRange.getBoundingClientRect();
         formattingBar.style.top = (selectionBox.top - formattingBarBox.height - 16) + 'px';
+        formattingBar.style.left = (selectionBox.left - (formattingBarBox.width/2)) + (selectionBox.width/2) + 'px';
       },
 
       _handleFocus: function() {
