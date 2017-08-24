@@ -148,20 +148,6 @@
       ><iron-icon icon="editor:format-indent-decrease"></iron-icon>
       </button>
 
-      <!-- <input
-      id="linkInput"
-      type="text"
-      value="{{link::input}}"
-      on-focus="_handleFocusLinkInput"
-      on-blur="_handleBlurLinkInput"
-      on-keydown="_handleLinkKeydown"
-      >
-      
-      <button
-        on-tap="_insertLink"
-      ><iron-icon icon="icons:link"></iron-icon>
-      </button> -->
-
     </section>
 
     <article
@@ -186,16 +172,10 @@
         
         content: {
           type: String,
-          value: '<p>Donec id elit non mi porta gravida at eget metus. Duis mollis, est non commodo luctus, nisi erat porttitor ligula, eget lacinia odio sem nec elit. Cras mattis consectetur purus sit amet fermentum. <h1>Donec ullamcorper</h1> nulla non metus auctor fringilla. Etiam porta sem malesuada magna mollis euismod. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus.</p><p>Duis mollis, est non commodo luctus, nisi erat porttitor ligula, eget lacinia odio sem nec elit. Praesent commodo cursus magna, vel scelerisque nisl consectetur et. Etiam porta sem malesuada magna mollis euismod. Cras mattis consectetur purus sit amet fermentum. Nullam id dolor id nibh ultricies vehicula ut id elit. Donec id elit non mi porta gravida at eget metus. Aenean eu leo quam. Pellentesque ornare sem lacinia quam venenatis vestibulum.</p><p>Aenean eu leo quam. Pellentesque ornare sem lacinia quam venenatis vestibulum. Maecenas sed diam eget risus varius blandit sit amet non magna. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Integer posuere erat a ante venenatis dapibus posuere velit aliquet. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Nullam quis risus eget urna mollis ornare vel eu leo. Donec id elit non mi porta gravida at eget metus.</p>',
           notify: true
         },
         
         focused: {
-          type: Boolean,
-          value: false,
-        },
-
-        linkInputFocused: {
           type: Boolean,
           value: false,
         },
@@ -210,11 +190,6 @@
           observer: '_selectedTextChanged'
         },
 
-        link: {
-          type: String,
-          value: 'http://nu.nl'
-        },
-
         _savedRange: {
           type: Object
         }
@@ -223,8 +198,6 @@
 
       keyBindings: {
         'esc': '_handleKeyEscape',
-        'enter': '_handleKeyEnter',
-        'shift+enter': '_handleKeyShiftEnter'
       },
 
       observers: [
@@ -240,23 +213,18 @@
       },
 
       _handleSelectionChange: function(evt) {
-        //console.info('selectionchange');
         this.selection = this._getSelection();
         this.selectedText = (this.selection) ? this.selection.toString() : '';
       },
 
       _selectedTextChanged: function(selectedText, oldSelectedText) {
-        //console.info('_selectedTextChanged');
         if(! (this.selection && this.selection.getRangeAt) ) return;
         if(selectedText) {
           var range = this.selection.getRangeAt(0);
           this.selection.addRange(range);
           this._saveRange();
           this._moveFormattingBar();
-          // document.execCommand('hiliteColor', false, '#ffefc0');
           this.updateStyles();
-        } else {
-          //console.info('no selectedText');
         }
       },
 
@@ -269,17 +237,14 @@
       },
 
       _handleFocus: function() {
-        console.info('focus');
         this.focused = true;
       },
 
       _handleBlur: function() {
-        //console.info('blur');
         this.focused = false;
       },
 
       _handleInput: function(evt) {
-        //console.info('input');
         var content = evt.target.innerHTML;
         this.content = content;
       },
@@ -291,48 +256,11 @@
         if(this.selection && this.selection.getRangeAt) {
           return;
         }
-        //console.info('set HTML');
         this._getElement().innerHTML = content;
       },
 
       _handleKeyEscape: function() {
-        //console.info('_handleKeyEscape');
         this._getElement().blur();
-      },
-
-      _handleKeyEnter: function() {
-        //console.info('_handleKeyEnter');
-      },
-
-      _handleKeyShiftEnter: function() {
-        //console.info('_handleKeyShiftEnter');
-      },
-
-      _handleLinkKeydown: function(evt) {
-        if(evt.which === 13) {
-          evt.preventDefault();
-          evt.stopPropagation();
-          this._insertLink();
-        }
-      },
-
-      _insertLink: function() {
-          console.info('add link', html);
-          this._restoreRange();
-          var selectedText = this._savedRange.toString();
-          var html = '<a href="' + this.link + '" target="_blank">' + selectedText + '</a>';
-          document.execCommand('insertHTML', false, html);
-      },
-
-      _handleFocusLinkInput: function(evt) {
-        console.info('focus link input');
-        this.linkInputFocused = true;
-        evt.target.focus();
-      },
-
-      _handleBlurLinkInput: function() {
-        console.info('blur link input');
-        this.linkInputFocused = false;
       },
 
       _getSelection: function() {
@@ -341,52 +269,42 @@
       },
 
       _toggleBold: function(evt) {
-        //console.info('_toggleBold');
         document.execCommand('Bold');
       },
 
       _toggleItalic: function() {
-        //console.info('_toggleItalic');
         document.execCommand('Italic');        
       },
 
       _toggleUnderline: function() {
-        //console.info('_toggleUnderline');
         document.execCommand('Underline');        
       },
 
       _toggleStrikethrough: function() {
-        //console.info('_toggleStrikethrough');
         document.execCommand('Strikethrough');        
       },
 
       _alignLeft: function() {
-        console.info('_alignLeft');
         document.execCommand('JustifyLeft');
       },
 
       _alignCenter: function() {
-        console.info('_alignCenter');
         document.execCommand('JustifyCenter');
       },
 
       _alignRight: function() {
-        console.info('_alignRight');
         document.execCommand('JustifyRight');
       },
 
       _alignJustified: function() {
-        console.info('_alignJustified');
         document.execCommand('JustifyFull');
       },
 
       _indent: function() {
-        console.info('_indent');
         document.execCommand('Indent');
       },
 
       _outdent: function() {
-        console.info('_outdent');
         document.execCommand('Outdent');
       },
 
@@ -400,7 +318,6 @@
       },
 
       _restoreRange: function() {
-        console.log('_restoreRange', this._savedRange);
         this._getElement().focus();
         if (this._savedRange != null) {
           //modern browsers
