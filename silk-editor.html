@@ -413,22 +413,6 @@
         }
       },
 
-      _restoreRange: function() {
-        this._getElement().focus();
-        if (this._savedRange != null) {
-          //modern browsers
-          if (window.getSelection || this.shadowRoot.getSelection) {
-            var selection = this._getSelection();
-            selection.removeAllRanges();              
-            selection.addRange(this._savedRange);
-          }
-          //IE
-          else {
-            this._savedRange.select();
-          }
-        }
-      },
-
       _getElement: function() {
         return this.$$('article');
       }
