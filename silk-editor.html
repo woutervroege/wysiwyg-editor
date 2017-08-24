@@ -115,6 +115,7 @@
         disabled$="[[!selectedText]]"
         data-selected$="[[_stateEnabled('Bold', selectedText, content)]]"
         on-tap="_toggleBold"
+        hidden$="[[!bold]]"
       ><iron-icon icon="editor:format-bold"></iron-icon>
       </button>
 
@@ -122,6 +123,7 @@
         disabled$="[[!selectedText]]"
         data-selected$="[[_stateEnabled('Italic', selectedText, content)]]"
         on-tap="_toggleItalic"
+        hidden$="[[!italic]]"
       ><iron-icon icon="editor:format-italic"></iron-icon>
       </button>
 
@@ -129,6 +131,7 @@
         disabled$="[[!selectedText]]"
         data-selected$="[[_stateEnabled('Underline', selectedText, content)]]"
         on-tap="_toggleUnderline"
+        hidden$="[[!underline]]"
       ><iron-icon icon="editor:format-underlined"></iron-icon>
       </button>
 
@@ -136,42 +139,49 @@
         disabled$="[[!selectedText]]"
         data-selected$="[[_stateEnabled('Strikethrough', selectedText, content)]]"
         on-tap="_toggleStrikethrough"
+        hidden$="[[!strikethrough]]"
       ><iron-icon icon="editor:format-strikethrough"></iron-icon>
       </button>
 
       <button
         data-selected$="[[_stateEnabled('JustifyLeft', selectedText, content)]]"
         on-tap="_alignLeft"
+        hidden$="[[!alignLeft]]"
       ><iron-icon icon="editor:format-align-left"></iron-icon>
       </button>
 
       <button
         data-selected$="[[_stateEnabled('JustifyCenter', selectedText, content)]]"
         on-tap="_alignCenter"
+        hidden$="[[!alignCenter]]"
       ><iron-icon icon="editor:format-align-center"></iron-icon>
       </button>
 
       <button
         data-selected$="[[_stateEnabled('JustifyRight', selectedText, content)]]"
         on-tap="_alignRight"
+        hidden$="[[!alignRight]]"
       ><iron-icon icon="editor:format-align-right"></iron-icon>
       </button>
 
       <button
         data-selected$="[[_stateEnabled('JustifyFull', selectedText, content)]]"
         on-tap="_alignJustified"
+        hidden$="[[!alignJustified]]"
       ><iron-icon icon="editor:format-align-justify"></iron-icon>
       </button>
 
       <button
         data-selected$="[[_stateEnabled('indent', selectedText, content)]]"
         on-tap="_indent"
+        hidden$="[[!indent]]"
       ><iron-icon icon="editor:format-indent-increase"></iron-icon>
       </button>
 
       <button
         data-selected$="[[_stateEnabled('outdent', selectedText, content)]]"
         on-tap="_outdent"
+        hidden$="[[!indent]]"
       ><iron-icon icon="editor:format-indent-decrease"></iron-icon>
       </button>
 
@@ -199,7 +209,61 @@
         
         content: {
           type: String,
-          notify: true
+          notify: true,
+        },
+
+        bold: {
+          type: Boolean,
+          value: false,
+          reflectToAttribute: true
+        },
+
+        italic: {
+          type: Boolean,
+          value: false,
+          reflectToAttribute: true
+        },
+
+        underline: {
+          type: Boolean,
+          value: false,
+          reflectToAttribute: true
+        },
+
+        strikethrough: {
+          type: Boolean,
+          value: false,
+          reflectToAttribute: true
+        },
+
+        alignLeft: {
+          type: Boolean,
+          value: false,
+          reflectToAttribute: true          
+        },
+        
+        alignCenter: {
+          type: Boolean,
+          value: false,
+          reflectToAttribute: true          
+        },
+        
+        alignRight: {
+          type: Boolean,
+          value: false,
+          reflectToAttribute: true          
+        },
+        
+        alignJustified: {
+          type: Boolean,
+          value: false,
+          reflectToAttribute: true          
+        },
+        
+        indent: {
+          type: Boolean,
+          value: false,
+          reflectToAttribute: true          
         },
         
         focused: {
