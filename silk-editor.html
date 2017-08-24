@@ -94,6 +94,30 @@
         @apply --silk-content;
       }
 
+      article b,
+      article::slotted(* > b),
+      article strong,
+      article::slotted(* > strong) {
+        @apply --silk-content-bold;
+      }
+
+      article i,
+      article::slotted(* > i),
+      article em,
+      article::slotted(* > em) {
+        @apply --silk-content-italic;
+      }
+
+      article u,
+      article::slotted(* > u) {
+        @apply --silk-content-underline;
+      }
+
+      article s,
+      article::slotted(* > s) {
+        @apply --silk-content-strikethrough;
+      }
+
       #formatting-bar {
         position: fixed;
         z-index: 1;
