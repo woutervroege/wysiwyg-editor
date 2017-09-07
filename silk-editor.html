@@ -135,7 +135,7 @@
       article::slotted(* .silk-highlight),
       article::slotted(* > .silk-highlight) {
         color: var(--paper-grey-800);
-        background-color: Highlight;
+        background-color: #b2d7ff;
       }
 
       #formatting-bar {
@@ -545,7 +545,9 @@
           this.selectedText = '';
         } else {
           this.showLinkInput = true;
-          this.$$('#link-input').focus();
+          window.setTimeout((function() {
+            this.$$('#link-input').focus();
+          }).bind(this), 40)
         }
       },
 
