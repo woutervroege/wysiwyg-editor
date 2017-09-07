@@ -17,6 +17,12 @@
         margin: 0;
         
         --silk-formatting-bar: {
+          position: fixed;
+          z-index: 1;
+          visibility: visible;
+          opacity: 1;
+          display: flex;
+          align-items: center;
           border: 1px solid var(--paper-grey-300);
           box-shadow: 0px 2px 1px 0px var(--paper-grey-400);
           padding: 3px 6px;
@@ -27,6 +33,8 @@
         };
 
         --silk-formatting-bar-hidden: {
+          visibility: hidden;
+          opacity: 0;
           transform: translateY(16px);
           transition: 0.1s opacity, 0.1s visibility, 0.1s transform ease-in-out;
         }
@@ -38,23 +46,23 @@
           cursor: pointer;
           border: 1px solid transparent;
           border-radius: 3px;
-          margin: 5px 2px;          
+          margin: 5px 2px;
         };
 
         --formatting-button-hover: {
           border-color: var(--paper-grey-300);
-          color: var(--paper-pink-500);          
+          color: var(--paper-pink-500);
         }
 
         --formatting-button-disabled: {
           opacity: 0.5;
-          pointer-events: none;          
+          pointer-events: none;
         }
 
         --formatting-button-selected: {
           border-color: var(--paper-pink-300);
           color: var(--paper-pink-500);
-          background-color: var(--paper-pink-100);          
+          background-color: var(--paper-pink-100);
         }
 
         --formatting-button-icon-size: 22px;
@@ -64,15 +72,31 @@
           color: var(--paper-grey-800);
           font-size: 18px;
           line-height: 1.5;
-          outline: none;          
+          outline: none;
         }
 
         --silk-input: {
-          font-family: -apple-system, ".SFNSText-Regular", "San Francisco", "Roboto", "Segoe UI", "Helvetica Neue", "Lucida Grande", sans-serif;
+          width: 0;
+          transition: 0.4s width;
+          padding: 0;
+          font-size: 0;
+          border: 0 solid transparent;
+          border-radius: 3px;
+          outline: none;
+          font-family: -apple-system, '.SFNSText-Regular', 'San Francisco', 'Roboto', 'Segoe UI', 'Helvetica Neue', 'Lucida Grande', sans-serif;
           color: var(--paper-grey-800);
           font-size: 13px;
           line-height: 1.5;
-          outline: none;          
+          outline: none;
+        }
+
+        --silk-input-focus: {
+          border: 1px solid var(--paper-pink-300);
+          padding: 6px;
+        }
+
+        --silk-input-enabled: {
+          width: 160px;
         }
 
       }
@@ -83,7 +107,7 @@
 
       iron-icon {
         width: var(--formatting-button-icon-size);
-        height: var(--formatting-button-icon-size);              
+        height: var(--formatting-button-icon-size);
       }
 
       button:hover {
@@ -139,18 +163,10 @@
       }
 
       #formatting-bar {
-        position: fixed;
-        z-index: 1;
-        visibility: visible;
-        opacity: 1;
-        display: flex;
-        align-items: center;
         @apply --silk-formatting-bar;
       }
 
       #formatting-bar[data-hidden] {
-        visibility: hidden;
-        opacity: 0;
         @apply --silk-formatting-bar-hidden;
       }
 
@@ -160,23 +176,15 @@
       }
 
       #link-input {
-        width: 0;
-        transition: 0.4s width;
-        padding: 0;
-        font-size: 0;
-        border: 0 solid transparent;
-        border-radius: 3px;
-        outline: none;
         @apply --silk-input;
       }
 
       #link-input:focus {
-        border: 1px solid var(--paper-pink-300);
-        padding: 6px;
+        @apply --silk-input-focus;
       }
 
       #formatting-bar[data-show-link-input] #link-input {
-        width: 160px;
+        @apply --silk-input-enabled;
       }
 
       [hidden] {
@@ -335,37 +343,37 @@
         alignLeft: {
           type: Boolean,
           value: false,
-          reflectToAttribute: true          
+          reflectToAttribute: true
         },
         
         alignCenter: {
           type: Boolean,
           value: false,
-          reflectToAttribute: true          
+          reflectToAttribute: true
         },
         
         alignRight: {
           type: Boolean,
           value: false,
-          reflectToAttribute: true          
+          reflectToAttribute: true
         },
         
         alignJustified: {
           type: Boolean,
           value: false,
-          reflectToAttribute: true          
+          reflectToAttribute: true
         },
         
         indent: {
           type: Boolean,
           value: false,
-          reflectToAttribute: true          
+          reflectToAttribute: true
         },
         
         link: {
           type: Boolean,
           value: false,
-          reflectToAttribute: true          
+          reflectToAttribute: true
         },
         
         focused: {
@@ -503,15 +511,15 @@
       },
 
       _toggleItalic: function() {
-        document.execCommand('Italic');        
+        document.execCommand('Italic');
       },
 
       _toggleUnderline: function() {
-        document.execCommand('Underline');        
+        document.execCommand('Underline');
       },
 
       _toggleStrikethrough: function() {
-        document.execCommand('Strikethrough');        
+        document.execCommand('Strikethrough');
       },
 
       _alignLeft: function() {
