@@ -67,6 +67,14 @@
           outline: none;          
         }
 
+        --silk-input: {
+          font-family: -apple-system, ".SFNSText-Regular", "San Francisco", "Roboto", "Segoe UI", "Helvetica Neue", "Lucida Grande", sans-serif;
+          color: var(--paper-grey-800);
+          font-size: 13px;
+          line-height: 1.5;
+          outline: none;          
+        }
+
       }
 
       button {
@@ -118,11 +126,25 @@
         @apply --silk-content-strikethrough;
       }
 
+      article a,
+      article::slotted(* > a) {
+        @apply --silk-content-link;
+      }
+
+      article .silk-highlight,
+      article::slotted(* .silk-highlight),
+      article::slotted(* > .silk-highlight) {
+        color: var(--paper-grey-800);
+        background-color: Highlight;
+      }
+
       #formatting-bar {
         position: fixed;
         z-index: 1;
         visibility: visible;
         opacity: 1;
+        display: flex;
+        align-items: center;
         @apply --silk-formatting-bar;
       }
 
@@ -132,12 +154,42 @@
         @apply --silk-formatting-bar-hidden;
       }
 
+      #formatting-bar[data-link-input-focused] {
+        visibility: visible;
+        opacity: 1;
+      }
+
+      #link-input {
+        width: 0;
+        transition: 0.4s width;
+        padding: 0;
+        font-size: 0;
+        border: 0 solid transparent;
+        border-radius: 3px;
+        outline: none;
+        @apply --silk-input;
+      }
+
+      #link-input:focus {
+        border: 1px solid var(--paper-pink-300);
+        padding: 6px;
+      }
+
+      #formatting-bar[data-show-link-input] #link-input {
+        width: 160px;
+      }
+
       [hidden] {
         display: none!important;
       }
     </style>
 
-    <section id="formatting-bar" data-hidden$="[[!selectedText]]">
+    <section
+      id="formatting-bar"
+      data-hidden$="[[!selectedText]]"
+      data-show-link-input$="[[showLinkInput]]"
+      data-link-input-focused$="[[_linkInputFocused]]"
+      >
 
       <button
         disabled$="[[!selectedText]]"
@@ -211,6 +263,22 @@
         on-tap="_outdent"
         hidden$="[[!indent]]"
       ><iron-icon icon="editor:format-indent-decrease"></iron-icon>
+      </button>
+
+      <input
+        type="text"
+        id="link-input"
+        placeholder="Please type in a url..."
+        on-keypress="_handleInputKeypress"
+        on-focus="_handleInputFocus"
+        on-blur="_handleInputBlur"
+      >
+
+      <button
+        data-selected$="[[_currentSelectionIsLink]]"
+        on-tap="_handleTapLinkButton"
+        hidden$="[[!link]]"
+      ><iron-icon icon="editor:insert-link"></iron-icon>
       </button>
 
     </section>
@@ -294,6 +362,12 @@
           reflectToAttribute: true          
         },
         
+        link: {
+          type: Boolean,
+          value: false,
+          reflectToAttribute: true          
+        },
+        
         focused: {
           type: Boolean,
           value: false,
@@ -309,8 +383,24 @@
           observer: '_selectedTextChanged'
         },
 
+        showLinkInput: {
+          type: Boolean,
+          value: false
+        },
+
         _savedRange: {
           type: Object
+        },
+
+        _currentSelectionIsLink: {
+          type: Boolean,
+          computed: '_computeCurrentSelectionIsLink(selectedText)'
+        },
+
+        _linkInputFocused: {
+          type: Boolean,
+          value: false,
+          observer: '_linkInputFocusedChanged'
         }
 
       },
@@ -332,11 +422,31 @@
       },
 
       _handleSelectionChange: function(evt) {
+        if(this._linkInputFocused) return;
+
+        this._unhighlightElements();
+        this.showLinkInput = false;
+        
         this.selection = this._getSelection();
         this.selectedText = (this.selection) ? this.selection.toString() : '';
       },
 
-      _selectedTextChanged: function(selectedText, oldSelectedText) {
+      _handleInputFocus: function() {
+        this._linkInputFocused = true;
+      },
+
+      _handleInputBlur: function() {
+        this._linkInputFocused = false;
+      },
+
+      _handleInputKeypress: function(evt) {
+        var url = evt.target.value;
+        if(evt.which === 13) {
+          this._insertLink(url);
+        }
+      },
+
+      _selectedTextChanged: function(selectedText) {
         if(! (this.selection && this.selection.getRangeAt) ) return;
         if(selectedText) {
           var range = this.selection.getRangeAt(0);
@@ -428,18 +538,77 @@
         document.execCommand('Outdent');
       },
 
+      _handleTapLinkButton: function() {
+        if(this._currentSelectionIsLink) {
+          var element = this._savedRange.startContainer.parentElement;
+          element.outerHTML = element.innerHTML;
+          this.selectedText = '';
+        } else {
+          this.showLinkInput = true;
+          this.$$('#link-input').focus();
+        }
+      },
+
       _saveRange: function() {
-        if(window.getSelection) { //non IE Browsers
-          this._savedRange = this._getSelection().getRangeAt(0);
-        }
-        else if(document.selection) { //IE
-          this._savedRange = document.selection.createRange();
-        }
+        this._savedRange = this._getSelection().getRangeAt(0);
       },
 
       _getElement: function() {
         return this.$$('article');
-      }
+      },
+
+      _linkInputFocusedChanged: function(linkInputFocused) {
+        if(linkInputFocused) {
+
+          if(this._savedRange.startContainer.parentElement.classList.contains('silk-highlight')) {
+            return;
+          }
+
+          var span = document.createElement('span');
+          span.className = 'silk-highlight';
+          this._savedRange.surroundContents(span);
+
+        }
+      },
+ 
+      _computeCurrentSelectionIsLink: function() {
+        try {
+          var isLink = this._getSelection().getRangeAt && this._getSelection()
+          .getRangeAt(0)
+          .startContainer
+          .parentElement
+          .nodeName.toLowerCase() === 'a';
+          return isLink;
+        } catch(e) {
+          return false;
+        }
+      },
+
+      _toggleLink: function() {
+        this._insertLink(this.$$('#link-input').value);
+      },
+
+      _insertLink: function(url) {
+        if(!url) return;
+        var selection = this._getSelection();
+        selection.removeAllRanges();
+        selection.addRange(this._savedRange);
+
+        document.execCommand('CreateLink', false, url);
+        var selectedText = this.selectedText;
+        this.set('selectedText', '');
+        this.set('selectedText', selectedText);
+
+        this.$$('#link-input').value = '';
+
+      },
+
+      _unhighlightElements: function() {
+        var highlightedElements = Array.from(this._getElement().querySelectorAll('.silk-highlight'));
+        for(var i in highlightedElements) {
+          highlightedElements[i].outerHTML = highlightedElements[i].innerHTML;
+        }
+      },
 
     });
   </script>
