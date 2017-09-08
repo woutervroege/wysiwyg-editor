@@ -1,5 +1,6 @@
 <link rel="import" href="../polymer/polymer.html">
 <link rel="import" href="../iron-icons/editor-icons.html">
+<link rel="import" href="../paper-styles/color.html">
 
 <!--
 `silk-editor`
@@ -155,13 +156,6 @@
         @apply --silk-content-link;
       }
 
-      article .silk-highlight,
-      article::slotted(* .silk-highlight),
-      article::slotted(* > .silk-highlight) {
-        color: var(--paper-grey-800);
-        background-color: #b2d7ff;
-      }
-
       #formatting-bar {
         @apply --silk-formatting-bar;
       }
@@ -305,10 +299,6 @@
 
       is: 'silk-editor',
 
-      behaviors: [
-        Polymer.IronA11yKeysBehavior
-      ],
-
       properties: {
         
         content: {
@@ -413,10 +403,6 @@
 
       },
 
-      keyBindings: {
-        'esc': '_handleKeyEscape',
-      },
-
       observers: [
         '_setHTML(content, focused)'
       ],
@@ -497,10 +483,6 @@
         this._getElement().innerHTML = content;
       },
 
-      _handleKeyEscape: function() {
-        this._getElement().blur();
-      },
-
       _getSelection: function() {
         var element = this.shadowRoot || window;
         return element.getSelection();
@@ -576,6 +558,7 @@
 
           var span = document.createElement('span');
           span.className = 'silk-highlight';
+          span.style.backgroundColor = '#b2d7ff';
           this._savedRange.surroundContents(span);
 
         }
