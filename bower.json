@@ -1,6 +1,22 @@
 {
   "name": "silk-editor",
+  "version": "2.0.0",
+  "homepage": "https://github.com/woutervroege/silk-editor",
+  "description": "Wysiwyg editor",
   "main": "silk-editor.html",
+  "authors": [
+    "Wouter Vroege <wouter@lotsofpeople.nl>"
+  ],
+  "license": "MIT",
+  "keywords": [
+    "contenteditable",
+    "wysiwyg",
+    "medium",
+    "rich-text",
+    "editor",
+    "polymer",
+    "webcomponents"
+  ],
   "dependencies": {
     "polymer": "Polymer/polymer#1.9 - 2",
     "iron-icons": "PolymerElements/iron-icons#^2.0.0"
