@@ -186,6 +186,14 @@
       </button>
 
       <button
+        disabled$="[[!selectedText]]"
+        data-selected$="[[_currentSelectionIsQuote]]"
+        on-tap="_toggleQuote"
+        hidden$="[[!quote]]"
+      ><iron-icon icon="editor:format-quote"></iron-icon>
+      </button>
+
+      <button
         data-selected$="[[_stateEnabled('JustifyLeft', selectedText, content)]]"
         on-tap="_alignLeft"
         hidden$="[[!alignLeft]]"
@@ -331,6 +339,12 @@
             value: false,
             reflectToAttribute: true
           },
+
+          quote: {
+            type: Boolean,
+            value: false,
+            reflectToAttribute: true
+          },
           
           focused: {
             type: Boolean,
@@ -358,7 +372,12 @@
 
           _currentSelectionIsLink: {
             type: Boolean,
-            computed: '_computeCurrentSelectionIsLink(selectedText)'
+            computed: '_computeCurrentSelectionIs(\'a\', selectedText)'
+          },
+
+          _currentSelectionIsQuote: {
+            type: Boolean,
+            computed: '_computeCurrentSelectionIs(\'blockquote\', selectedText)'
           },
 
           _linkInputFocused: {
@@ -483,6 +502,21 @@
         document.execCommand('Strikethrough');
       }
 
+      _toggleNode(node) {
+        var selectedNode = this._getSelection().anchorNode.parentElement.nodeName.toLowerCase();
+        if(selectedNode === node) {
+          var element = this._getSelection().anchorNode.parentElement;
+          element.outerHTML = window.getSelection().anchorNode.textContent;
+          this.selectedText = '';
+        } else {
+          document.execCommand('insertHTML', null, '<' + node + '>' + this.selectedText + '</' + node + '>');
+        }
+      }
+
+      _toggleQuote() {
+        this._toggleNode('blockquote');
+      }
+
       _alignLeft() {
         document.execCommand('JustifyLeft');
       }
@@ -545,13 +579,13 @@
         }
       }
  
-      _computeCurrentSelectionIsLink() {
+      _computeCurrentSelectionIs(node) {
         try {
           var isLink = this._getSelection().getRangeAt && this._getSelection()
           .getRangeAt(0)
           .startContainer
           .parentElement
-          .nodeName.toLowerCase() === 'a';
+          .nodeName.toLowerCase() === node;
           return isLink;
         } catch(e) {
           return false;

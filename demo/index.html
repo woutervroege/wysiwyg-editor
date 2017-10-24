@@ -14,7 +14,13 @@
 
     <custom-style>
       <style is="custom-style" include="demo-pages-shared-styles">
+        blockquote {
+          font-size: 24px;
+        }
 
+        blockquote:before, blockquote:after {
+          content: '"';
+        }
       </style>
     </custom-style>
   </head>
@@ -25,7 +31,7 @@
         <template>
           <silk-editor
             for="article"
-            bold italic underline align-left align-center link
+            bold italic underline align-left align-center link quote
             content="{{content}}"
           ></silk-editor>
 
