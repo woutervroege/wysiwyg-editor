@@ -1,4 +1,5 @@
-<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../polymer/polymer-element.html">
+<link rel="import" href="../polymer/lib/mixins/gesture-event-listeners.html">
 <link rel="import" href="../iron-icons/editor-icons.html">
 <link rel="import" href="../paper-styles/color.html">
 
@@ -247,125 +248,134 @@
   </template>
 
   <script>
-    Polymer({
+    /**
+     * `silk-editor`
+     * Wysiwyg Editor
+     *
+     * @customElement
+     * @polymer
+     * @demo demo/index.html
+     */
+    class SilkEditor extends Polymer.GestureEventListeners(Polymer.Element) {
+      static get is() { return 'silk-editor'; }
+      static get properties() {
+        return {
+          
+          for: {
+            type: String,
+            observer: '_initElementEvents'
+          },
+          
+          content: {
+            type: String,
+            notify: true,
+            readOnly: true
+          },
 
-      is: 'silk-editor',
+          bold: {
+            type: Boolean,
+            value: false,
+            reflectToAttribute: true
+          },
 
-      properties: {
+          italic: {
+            type: Boolean,
+            value: false,
+            reflectToAttribute: true
+          },
 
-        for: {
-          type: String,
-          observer: '_initElementEvents'
-        },
-        
-        content: {
-          type: String,
-          notify: true,
-          readOnly: true
-        },
+          underline: {
+            type: Boolean,
+            value: false,
+            reflectToAttribute: true
+          },
 
-        bold: {
-          type: Boolean,
-          value: false,
-          reflectToAttribute: true
-        },
+          strikethrough: {
+            type: Boolean,
+            value: false,
+            reflectToAttribute: true
+          },
 
-        italic: {
-          type: Boolean,
-          value: false,
-          reflectToAttribute: true
-        },
+          alignLeft: {
+            type: Boolean,
+            value: false,
+            reflectToAttribute: true
+          },
+          
+          alignCenter: {
+            type: Boolean,
+            value: false,
+            reflectToAttribute: true
+          },
+          
+          alignRight: {
+            type: Boolean,
+            value: false,
+            reflectToAttribute: true
+          },
+          
+          alignJustified: {
+            type: Boolean,
+            value: false,
+            reflectToAttribute: true
+          },
+          
+          indent: {
+            type: Boolean,
+            value: false,
+            reflectToAttribute: true
+          },
+          
+          link: {
+            type: Boolean,
+            value: false,
+            reflectToAttribute: true
+          },
+          
+          focused: {
+            type: Boolean,
+            value: false,
+          },
 
-        underline: {
-          type: Boolean,
-          value: false,
-          reflectToAttribute: true
-        },
+          selection: {
+            type: Object
+          },
 
-        strikethrough: {
-          type: Boolean,
-          value: false,
-          reflectToAttribute: true
-        },
+          selectedText: {
+            type: String,
+            value: '',
+            observer: '_selectedTextChanged'
+          },
 
-        alignLeft: {
-          type: Boolean,
-          value: false,
-          reflectToAttribute: true
-        },
-        
-        alignCenter: {
-          type: Boolean,
-          value: false,
-          reflectToAttribute: true
-        },
-        
-        alignRight: {
-          type: Boolean,
-          value: false,
-          reflectToAttribute: true
-        },
-        
-        alignJustified: {
-          type: Boolean,
-          value: false,
-          reflectToAttribute: true
-        },
-        
-        indent: {
-          type: Boolean,
-          value: false,
-          reflectToAttribute: true
-        },
-        
-        link: {
-          type: Boolean,
-          value: false,
-          reflectToAttribute: true
-        },
-        
-        focused: {
-          type: Boolean,
-          value: false,
-        },
+          showLinkInput: {
+            type: Boolean,
+            value: false
+          },
 
-        selection: {
-          type: Object
-        },
+          _savedRange: {
+            type: Object
+          },
 
-        selectedText: {
-          type: String,
-          value: '',
-          observer: '_selectedTextChanged'
-        },
+          _currentSelectionIsLink: {
+            type: Boolean,
+            computed: '_computeCurrentSelectionIsLink(selectedText)'
+          },
 
-        showLinkInput: {
-          type: Boolean,
-          value: false
-        },
+          _linkInputFocused: {
+            type: Boolean,
+            value: false,
+            observer: '_linkInputFocusedChanged'
+          }
 
-        _savedRange: {
-          type: Object
-        },
+        };
+      }
 
-        _currentSelectionIsLink: {
-          type: Boolean,
-          computed: '_computeCurrentSelectionIsLink(selectedText)'
-        },
-
-        _linkInputFocused: {
-          type: Boolean,
-          value: false,
-          observer: '_linkInputFocusedChanged'
-        }
-
-      },
-
-      ready: function() {
+      connectedCallback() {
+        super.connectedCallback();
         document.addEventListener('selectionchange', this._handleSelectionChange.bind(this));
-      },
+      }
 
-      _initElementEvents: function(elementId) {
+      _initElementEvents(elementId) {
         var element = this._getElement();
         
         element.addEventListener('focus', (function() {
@@ -388,13 +398,13 @@
           this._setContent(element.innerHTML);
         }).bind(this));
 
-      },
+      }
 
-      _stateEnabled: function(state) {
+      _stateEnabled(state) {
         return document.queryCommandState(state);
-      },
+      }
 
-      _handleSelectionChange: function(evt) {
+      _handleSelectionChange(evt) {
         if(this._linkInputFocused) return;
 
         this._unhighlightElements();
@@ -402,24 +412,24 @@
         
         this.selection = this._getSelection();
         this.selectedText = (this.selection) ? this.selection.toString() : '';
-      },
+      }
 
-      _handleInputFocus: function() {
+      _handleInputFocus() {
         this._linkInputFocused = true;
-      },
+      }
 
-      _handleInputBlur: function() {
+      _handleInputBlur() {
         this._linkInputFocused = false;
-      },
+      }
 
-      _handleInputKeypress: function(evt) {
+      _handleInputKeypress(evt) {
         var url = evt.target.value;
         if(evt.which === 13) {
           this._insertLink(url);
         }
-      },
+      }
 
-      _selectedTextChanged: function(selectedText) {
+      _selectedTextChanged(selectedText) {
         if(! (this.selection && this.selection.getRangeAt) ) return;
         if(selectedText) {
           var range = this.selection.getRangeAt(0);
@@ -428,76 +438,76 @@
           this._moveFormattingBar();
           this.updateStyles();
         }
-      },
+      }
 
-      _moveFormattingBar: function() {        
-        var formattingBar = this.$$('#formatting-bar');
+      _moveFormattingBar() {        
+        var formattingBar = this.shadowRoot.querySelector('#formatting-bar');
         var formattingBarBox = formattingBar.getBoundingClientRect();
 
         var selectionBox = this._savedRange.getBoundingClientRect();
         formattingBar.style.top = (selectionBox.top - formattingBarBox.height - 16) + 'px';
         formattingBar.style.left = (selectionBox.left - (formattingBarBox.width/2)) + (selectionBox.width/2) + 'px';
-      },
+      }
 
-      _handleFocus: function() {
+      _handleFocus() {
         this.focused = true;
-      },
+      }
 
-      _handleBlur: function() {
+      _handleBlur() {
         this.focused = false;
-      },
+      }
 
-      _handleInput: function(evt) {
+      _handleInput(evt) {
         var content = evt.target.innerHTML;
         this._setContent(content);
-      },
+      }
 
-      _getSelection: function() {
+      _getSelection() {
         var element = window;
         return element.getSelection();
-      },
+      }
 
-      _toggleBold: function(evt) {
+      _toggleBold(evt) {
         document.execCommand('Bold');
-      },
+      }
 
-      _toggleItalic: function() {
+      _toggleItalic() {
         document.execCommand('Italic');
-      },
+      }
 
-      _toggleUnderline: function() {
+      _toggleUnderline() {
         document.execCommand('Underline');
-      },
+      }
 
-      _toggleStrikethrough: function() {
+      _toggleStrikethrough() {
         document.execCommand('Strikethrough');
-      },
+      }
 
-      _alignLeft: function() {
+      _alignLeft() {
         document.execCommand('JustifyLeft');
-      },
+      }
 
-      _alignCenter: function() {
+      _alignCenter() {
         document.execCommand('JustifyCenter');
-      },
+      }
 
-      _alignRight: function() {
+      _alignRight() {
         document.execCommand('JustifyRight');
-      },
+      }
 
-      _alignJustified: function() {
+      _alignJustified() {
         document.execCommand('JustifyFull');
-      },
+      }
 
-      _indent: function() {
+      _indent() {
         document.execCommand('Indent');
-      },
+      }
 
-      _outdent: function() {
+      _outdent() {
         document.execCommand('Outdent');
-      },
+      }
 
-      _handleTapLinkButton: function() {
+      _handleTapLinkButton() {
         if(this._currentSelectionIsLink) {
           var element = this._savedRange.startContainer.parentElement;
           element.outerHTML = element.innerHTML;
@@ -505,22 +515,22 @@
         } else {
           this.showLinkInput = true;
           window.setTimeout((function() {
-            this.$$('#link-input').focus();
+            this.shadowRoot.querySelector('#link-input').focus();
           }).bind(this), 40)
         }
-      },
+      }
 
-      _saveRange: function() {
+      _saveRange() {
         this._savedRange = this._getSelection().getRangeAt(0);
-      },
+      }
 
-      _getElement: function() {
+      _getElement() {
         if(!this.for) return {};
-        var elem = this.domHost.querySelector('#' + this.for);
+        var elem = this.getRootNode().querySelector('#' + this.for);
         return elem;
-      },
+      }
 
-      _linkInputFocusedChanged: function(linkInputFocused) {
+      _linkInputFocusedChanged(linkInputFocused) {
         if(linkInputFocused) {
 
           if(this._savedRange.startContainer.parentElement.classList.contains('silk-highlight')) {
@@ -533,9 +543,9 @@
           this._savedRange.surroundContents(span);
 
         }
-      },
+      }
  
-      _computeCurrentSelectionIsLink: function() {
+      _computeCurrentSelectionIsLink() {
         try {
           var isLink = this._getSelection().getRangeAt && this._getSelection()
           .getRangeAt(0)
@@ -546,13 +556,13 @@
         } catch(e) {
           return false;
         }
-      },
+      }
 
-      _toggleLink: function() {
-        this._insertLink(this.$$('#link-input').value);
-      },
+      _toggleLink() {
+        this._insertLink(this.shadowRoot.querySelector('#link-input').value);
+      }
 
-      _insertLink: function(url) {
+      _insertLink(url) {
         if(!url) return;
         var selection = this._getSelection();
         selection.removeAllRanges();
@@ -563,17 +573,19 @@
         this.set('selectedText', '');
         this.set('selectedText', selectedText);
 
-        this.$$('#link-input').value = '';
+        this.shadowRoot.querySelector('#link-input').value = '';
 
-      },
+      }
 
-      _unhighlightElements: function() {
+      _unhighlightElements() {
         var highlightedElements = Array.from(this._getElement().querySelectorAll('.silk-highlight'));
         for(var i in highlightedElements) {
           highlightedElements[i].outerHTML = highlightedElements[i].innerHTML;
         }
-      },
+      }
 
-    });
+    }
+
+    window.customElements.define(SilkEditor.is, SilkEditor);
   </script>
 </dom-module>
