@@ -97,11 +97,21 @@
 
       button {
         @apply --formatting-button;
+        display: flex;
+        align-items: center;
+        justify-content: center;
       }
 
-      iron-icon {
+      button > * {
+        display: block;
         width: var(--formatting-button-icon-size);
         height: var(--formatting-button-icon-size);
+        box-sizing: border-box;
+      }
+
+      button span {
+        font-size: 16px;
+        font-weight: 700;
       }
 
       button:hover {
@@ -183,6 +193,54 @@
         on-tap="_toggleStrikethrough"
         hidden$="[[!strikethrough]]"
       ><iron-icon icon="editor:format-strikethrough"></iron-icon>
+      </button>
+
+      <button
+        disabled$="[[!selectedText]]"
+        data-selected$="[[_currentSelectionIsH1]]"
+        on-tap="_toggleH1"
+        hidden$="[[!h1]]"
+      ><span>h1</span></iron-icon>
+      </button>
+
+      <button
+        disabled$="[[!selectedText]]"
+        data-selected$="[[_currentSelectionIsH2]]"
+        on-tap="_toggleH2"
+        hidden$="[[!h2]]"
+      ><span>h2</span></iron-icon>
+      </button>
+
+      <button
+        disabled$="[[!selectedText]]"
+        data-selected$="[[_currentSelectionIsH3]]"
+        on-tap="_toggleH3"
+        hidden$="[[!h3]]"
+      ><span>h3</span></iron-icon>
+      </button>
+
+      <button
+        disabled$="[[!selectedText]]"
+        data-selected$="[[_currentSelectionIsH4]]"
+        on-tap="_toggleH4"
+        hidden$="[[!h4]]"
+      ><span>h4</span></iron-icon>
+      </button>
+
+      <button
+        disabled$="[[!selectedText]]"
+        data-selected$="[[_currentSelectionIsH5]]"
+        on-tap="_toggleH5"
+        hidden$="[[!h5]]"
+      ><span>h5</span></iron-icon>
+      </button>
+
+      <button
+        disabled$="[[!selectedText]]"
+        data-selected$="[[_currentSelectionIsH6]]"
+        on-tap="_toggleH6"
+        hidden$="[[!h6]]"
+      ><span>h6</span></iron-icon>
       </button>
 
       <button
@@ -340,6 +398,42 @@
             reflectToAttribute: true
           },
 
+          h1: {
+            type: Boolean,
+            value: false,
+            reflectToAttribute: true
+          },
+          
+          h2: {
+            type: Boolean,
+            value: false,
+            reflectToAttribute: true
+          },
+          
+          h3: {
+            type: Boolean,
+            value: false,
+            reflectToAttribute: true
+          },
+          
+          h4: {
+            type: Boolean,
+            value: false,
+            reflectToAttribute: true
+          },
+          
+          h5: {
+            type: Boolean,
+            value: false,
+            reflectToAttribute: true
+          },
+          
+          h6: {
+            type: Boolean,
+            value: false,
+            reflectToAttribute: true
+          },
+          
           quote: {
             type: Boolean,
             value: false,
@@ -378,6 +472,36 @@
           _currentSelectionIsQuote: {
             type: Boolean,
             computed: '_computeCurrentSelectionIs(\'blockquote\', selectedText)'
+          },
+
+          _currentSelectionIsH1: {
+            type: Boolean,
+            computed: '_computeCurrentSelectionIs(\'h1\', selectedText)'
+          },
+
+          _currentSelectionIsH2: {
+            type: Boolean,
+            computed: '_computeCurrentSelectionIs(\'h2\', selectedText)'
+          },
+
+          _currentSelectionIsH3: {
+            type: Boolean,
+            computed: '_computeCurrentSelectionIs(\'h3\', selectedText)'
+          },
+
+          _currentSelectionIsH4: {
+            type: Boolean,
+            computed: '_computeCurrentSelectionIs(\'h4\', selectedText)'
+          },
+
+          _currentSelectionIsH5: {
+            type: Boolean,
+            computed: '_computeCurrentSelectionIs(\'h5\', selectedText)'
+          },
+
+          _currentSelectionIsH6: {
+            type: Boolean,
+            computed: '_computeCurrentSelectionIs(\'h6\', selectedText)'
           },
 
           _linkInputFocused: {
@@ -515,6 +639,30 @@
 
       _toggleQuote() {
         this._toggleNode('blockquote');
+      }
+
+      _toggleH1() {
+        this._toggleNode('h1');        
+      }
+
+      _toggleH2() {
+        this._toggleNode('h2');        
+      }
+
+      _toggleH3() {
+        this._toggleNode('h3');        
+      }
+
+      _toggleH4() {
+        this._toggleNode('h4');        
+      }
+
+      _toggleH5() {
+        this._toggleNode('h5');        
+      }
+
+      _toggleH6() {
+        this._toggleNode('h6');        
       }
 
       _alignLeft() {
