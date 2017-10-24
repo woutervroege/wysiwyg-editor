@@ -1,6 +1,6 @@
 # \<silk-editor\>
 
-
+Wysiwyg Editor
 
 ## Install the Polymer-CLI
 
