@@ -68,14 +68,6 @@
 
         --formatting-button-icon-size: 22px;
 
-        --silk-content: {
-          font-family: Georgia;
-          color: var(--paper-grey-800);
-          font-size: 18px;
-          line-height: 1.5;
-          outline: none;
-        }
-
         --silk-input: {
           width: 0;
           transition: 0.4s width;
@@ -121,39 +113,6 @@
 
       button[data-selected] {
         @apply --formatting-button-selected;
-      }
-
-      article {
-        @apply --silk-content;
-      }
-
-      article b,
-      article::slotted(* > b),
-      article strong,
-      article::slotted(* > strong) {
-        @apply --silk-content-bold;
-      }
-
-      article i,
-      article::slotted(* > i),
-      article em,
-      article::slotted(* > em) {
-        @apply --silk-content-italic;
-      }
-
-      article u,
-      article::slotted(* > u) {
-        @apply --silk-content-underline;
-      }
-
-      article s,
-      article::slotted(* > s) {
-        @apply --silk-content-strikethrough;
-      }
-
-      article a,
-      article::slotted(* > a) {
-        @apply --silk-content-link;
       }
 
       #formatting-bar {
@@ -285,13 +244,6 @@
 
     </section>
 
-    <article
-      contenteditable="true"
-      spellcheck="false"
-      on-focus="_handleFocus"
-      on-blur="_handleBlur"
-      on-input="_handleInput"
-    ></article>
   </template>
 
   <script>
@@ -300,10 +252,16 @@
       is: 'silk-editor',
 
       properties: {
+
+        for: {
+          type: String,
+          observer: '_initElementEvents'
+        },
         
         content: {
           type: String,
           notify: true,
+          readOnly: true
         },
 
         bold: {
@@ -403,12 +361,33 @@
 
       },
 
-      observers: [
-        '_setHTML(content, focused)'
-      ],
-
       ready: function() {
         document.addEventListener('selectionchange', this._handleSelectionChange.bind(this));
+      },
+
+      _initElementEvents: function(elementId) {
+        var element = this._getElement();
+        
+        element.addEventListener('focus', (function() {
+          this.focused = true;
+        }).bind(this));
+        
+        element.addEventListener('blur', (function() {
+          this.focused = false;
+        }).bind(this));
+        
+        element.addEventListener('input', (function(evt) {
+          this._handleInput(evt);
+        }).bind(this));
+
+        element.addEventListener('change', (function(evt) {
+          this._handleInput(evt);
+        }).bind(this));
+
+        this._observer = Polymer.dom(element).observeNodes((function() {
+          this._setContent(element.innerHTML);
+        }).bind(this));
+
       },
 
       _stateEnabled: function(state) {
@@ -470,21 +449,11 @@
 
       _handleInput: function(evt) {
         var content = evt.target.innerHTML;
-        this.content = content;
-      },
-
-      _setHTML: function(content, focused, selectedText) {
-        if(focused === true) {
-          return;
-        }
-        if(this.selection && this.selection.getRangeAt) {
-          return;
-        }
-        this._getElement().innerHTML = content;
+        this._setContent(content);
       },
 
       _getSelection: function() {
-        var element = this.shadowRoot || window;
+        var element = window;
         return element.getSelection();
       },
 
@@ -546,7 +515,9 @@
       },
 
       _getElement: function() {
-        return this.$$('article');
+        if(!this.for) return {};
+        var elem = this.domHost.querySelector('#' + this.for);
+        return elem;
       },
 
       _linkInputFocusedChanged: function(linkInputFocused) {
