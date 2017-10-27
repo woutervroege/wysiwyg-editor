@@ -1,0 +1,71 @@
+<link rel="import" href="../polymer/polymer-element.html">
+<link rel="import" href="silk-editor.html">
+
+<!--
+`silk-editor-demo`
+
+
+@demo demo/index.html
+-->
+
+<dom-module id="silk-editor-demo">
+  <template>
+    <style>
+    blockquote {
+          font-size: 24px;
+        }
+
+        blockquote:before, blockquote:after {
+          content: '"';
+        }
+    </style>
+
+    <silk-editor
+      for="article"
+      bold italic underline align-left align-center align-right link quote h1 h2 h3
+      editing="{{editing}}"
+      content="{{content}}"
+    ></silk-editor>
+
+    <article
+      id="article"
+      contenteditable="true"
+    ></article>
+  </template>
+
+  <script>
+    /**
+     * `silk-editor-demo`
+     * Demo Element
+     *
+     * @customElement
+     * @polymer
+     * @demo demo/index.html
+     */
+    class SilkEditorDemo extends Polymer.Element {
+      static get is() { return 'silk-editor-demo'; }
+      static get properties() {
+        return {
+
+          editing: {
+            type: Boolean
+          },
+
+          content: {
+            type: String,
+            observer: '_contentChanged'
+          }
+
+        }
+      }
+
+      _contentChanged(content) {
+        if(this.editing) return;
+        this.shadowRoot.querySelector('#article').innerHTML = content;
+      }
+
+    }
+
+    window.customElements.define(SilkEditorDemo.is, SilkEditorDemo);
+  </script>
+</dom-module>

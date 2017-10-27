@@ -338,6 +338,13 @@
             readOnly: true
           },
 
+          editing: {
+            type: Boolean,
+            computed: '_computeEditing(selectedText, focused)',
+            notify: true,
+            reflectToAttribute: true
+          },
+
           bold: {
             type: Boolean,
             value: false,
@@ -537,10 +544,6 @@
           this._handleInput(evt);
         }).bind(this));
 
-        this._observer = Polymer.dom(element).observeNodes((function() {
-          this._setContent(element.innerHTML);
-        }).bind(this));
-
       }
 
       _stateEnabled(state) {
@@ -725,6 +728,10 @@
           this._savedRange.surroundContents(span);
 
         }
+      }
+
+      _computeEditing(selectedText, focused) {
+        return (!!selectedText || !!focused);
       }
  
       _computeCurrentSelectionIs(node) {
