@@ -107,6 +107,7 @@
         width: var(--formatting-button-icon-size);
         height: var(--formatting-button-icon-size);
         box-sizing: border-box;
+        pointer-events: none;
       }
 
       button span {
@@ -161,6 +162,7 @@
       data-hidden$="[[!selectedText]]"
       data-show-link-input$="[[showLinkInput]]"
       data-link-input-focused$="[[_linkInputFocused]]"
+      on-tap="_handleFormattingBarTap"
       >
 
       <button
@@ -527,7 +529,7 @@
 
       _initElementEvents(elementId) {
         var element = this._getElement();
-        
+
         element.addEventListener('focus', (function() {
           this.focused = true;
         }).bind(this));
@@ -546,7 +548,7 @@
 
       }
 
-      _stateEnabled(state) {
+      _stateEnabled(state, selectedText, content) {
         return document.queryCommandState(state);
       }
 
@@ -573,6 +575,11 @@
         if(evt.which === 13) {
           this._insertLink(url);
         }
+      }
+
+      _handleFormattingBarTap() {
+        var content = this._getElement().innerHTML;
+        this._setContent(content);
       }
 
       _selectedTextChanged(selectedText) {
