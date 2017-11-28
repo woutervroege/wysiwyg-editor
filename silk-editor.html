@@ -639,9 +639,10 @@
       _toggleNode(node) {
         var selectedNode = this._getSelection().anchorNode.parentElement.nodeName.toLowerCase();
         if(selectedNode === node) {
-          var element = this._getSelection().anchorNode.parentElement;
-          element.outerHTML = window.getSelection().anchorNode.textContent;
-          this.selectedText = '';
+          this._getSelection().anchorNode.parentElement.outerHTML = this.selectedText;
+          window.requestAnimationFrame((function() {
+            this.selectedText = '';
+          }).bind(this))
         } else {
           document.execCommand('insertHTML', null, '<' + node + '>' + this.selectedText + '</' + node + '>');
         }
