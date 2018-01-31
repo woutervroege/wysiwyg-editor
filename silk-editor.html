@@ -34,6 +34,19 @@
           transform: translateY(0);
         };
 
+        --silk-formatting-bar-after: {
+          position: absolute;
+          content: '';
+          top: 100%;
+          left: 50%;
+          transform: translateX(-50%);
+          width: 0;
+          height: 0;
+          border-style: solid;
+          border-width: 9px 9px 0 9px;
+          border-color: white transparent transparent transparent;
+        }
+
         --silk-formatting-bar-hidden: {
           visibility: hidden;
           opacity: 0;
@@ -129,6 +142,10 @@
 
       #formatting-bar {
         @apply --silk-formatting-bar;
+      }
+
+      #formatting-bar:after {
+        @apply --silk-formatting-bar-after;
       }
 
       #formatting-bar[data-hidden] {
