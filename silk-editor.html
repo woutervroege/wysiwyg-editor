@@ -1,8 +1,6 @@
 <link rel="import" href="../polymer/polymer-element.html">
 <link rel="import" href="../polymer/lib/mixins/gesture-event-listeners.html">
-<link rel="import" href="../iron-icon/iron-icon.html">
-<link rel="import" href="../iron-icons/editor-icons.html">
-<link rel="import" href="../paper-styles/color.html">
+<link rel="import" href="silk-icon.html">
 
 <!--
 `silk-editor`
@@ -26,11 +24,9 @@
           opacity: 1;
           display: flex;
           align-items: center;
-          border: 1px solid var(--paper-grey-300);
-          box-shadow: 0px 2px 1px 0px var(--paper-grey-400);
           padding: 3px 6px;
           border-radius: 5px;
-          background-color: white;
+          background-color: #323232;
           transition: 0.3s 0.1s opacity, 0.1s visibility, 0.1s 0.1s transform ease-in-out;
           transform: translateY(0);
         };
@@ -45,7 +41,7 @@
           height: 0;
           border-style: solid;
           border-width: 9px 9px 0 9px;
-          border-color: white transparent transparent transparent;
+          border-color: #323232 transparent transparent transparent;
         }
 
         --silk-formatting-bar-hidden: {
@@ -62,12 +58,14 @@
           cursor: pointer;
           border: 1px solid transparent;
           border-radius: 3px;
-          margin: 5px 2px;
+          margin: 3px 0;
+          --silk-icon-fill: rgba(255, 255, 255, 0.9);
+          color: var(--silk-icon-fill, rgba(255, 255, 255, 0.9));
         };
 
         --formatting-button-hover: {
-          border-color: var(--paper-grey-300);
-          color: var(--paper-pink-500);
+          --silk-icon-fill: rgba(255, 255, 255, 1);
+          color: rgba(255, 255, 255, 1);
         }
 
         --formatting-button-disabled: {
@@ -76,9 +74,8 @@
         }
 
         --formatting-button-selected: {
-          border-color: var(--paper-pink-300);
-          color: var(--paper-pink-500);
-          background-color: var(--paper-pink-100);
+          --silk-icon-fill: #4ec2a5;
+          color: #4ec2a5;
         }
 
         --formatting-button-icon-size: 22px;
@@ -89,18 +86,21 @@
           padding: 0;
           font-size: 0;
           border: 0 solid transparent;
-          border-radius: 3px;
+          border-radius: 2px;
           outline: none;
           font-family: -apple-system, '.SFNSText-Regular', 'San Francisco', 'Roboto', 'Segoe UI', 'Helvetica Neue', 'Lucida Grande', sans-serif;
-          color: var(--paper-grey-800);
+          color: #323232;
           font-size: 13px;
           line-height: 1.5;
           outline: none;
+          padding: 6px 0;
+          box-sizing: border-box;
+          max-height: 28px;
         }
 
         --silk-input-focus: {
-          border: 1px solid var(--paper-pink-300);
           padding: 6px;
+          border: 0;
         }
 
         --silk-input-enabled: {
@@ -188,7 +188,7 @@
         data-selected$="[[_stateEnabled('Bold', selectedText, content)]]"
         on-tap="_toggleBold"
         hidden$="[[!bold]]"
-      ><iron-icon icon="editor:format-bold"></iron-icon>
+      ><silk-icon icon="format-bold"></silk-icon>
       </button>
 
       <button
@@ -196,7 +196,7 @@
         data-selected$="[[_stateEnabled('Italic', selectedText, content)]]"
         on-tap="_toggleItalic"
         hidden$="[[!italic]]"
-      ><iron-icon icon="editor:format-italic"></iron-icon>
+      ><silk-icon icon="format-italic"></silk-icon>
       </button>
 
       <button
@@ -204,7 +204,7 @@
         data-selected$="[[_stateEnabled('Underline', selectedText, content)]]"
         on-tap="_toggleUnderline"
         hidden$="[[!underline]]"
-      ><iron-icon icon="editor:format-underlined"></iron-icon>
+      ><silk-icon icon="format-underlined"></silk-icon>
       </button>
 
       <button
@@ -212,7 +212,7 @@
         data-selected$="[[_stateEnabled('Strikethrough', selectedText, content)]]"
         on-tap="_toggleStrikethrough"
         hidden$="[[!strikethrough]]"
-      ><iron-icon icon="editor:format-strikethrough"></iron-icon>
+      ><silk-icon icon="format-strikethrough"></silk-icon>
       </button>
 
       <button
@@ -220,7 +220,7 @@
         data-selected$="[[_currentSelectionIsH1]]"
         on-tap="_toggleH1"
         hidden$="[[!h1]]"
-      ><span>h1</span></iron-icon>
+      ><span>h1</span>
       </button>
 
       <button
@@ -228,7 +228,7 @@
         data-selected$="[[_currentSelectionIsH2]]"
         on-tap="_toggleH2"
         hidden$="[[!h2]]"
-      ><span>h2</span></iron-icon>
+      ><span>h2</span>
       </button>
 
       <button
@@ -236,7 +236,7 @@
         data-selected$="[[_currentSelectionIsH3]]"
         on-tap="_toggleH3"
         hidden$="[[!h3]]"
-      ><span>h3</span></iron-icon>
+      ><span>h3</span>
       </button>
 
       <button
@@ -244,7 +244,7 @@
         data-selected$="[[_currentSelectionIsH4]]"
         on-tap="_toggleH4"
         hidden$="[[!h4]]"
-      ><span>h4</span></iron-icon>
+      ><span>h4</span>
       </button>
 
       <button
@@ -252,7 +252,7 @@
         data-selected$="[[_currentSelectionIsH5]]"
         on-tap="_toggleH5"
         hidden$="[[!h5]]"
-      ><span>h5</span></iron-icon>
+      ><span>h5</span>
       </button>
 
       <button
@@ -260,7 +260,7 @@
         data-selected$="[[_currentSelectionIsH6]]"
         on-tap="_toggleH6"
         hidden$="[[!h6]]"
-      ><span>h6</span></iron-icon>
+      ><span>h6</span>
       </button>
 
       <button
@@ -268,55 +268,55 @@
         data-selected$="[[_currentSelectionIsQuote]]"
         on-tap="_toggleQuote"
         hidden$="[[!quote]]"
-      ><iron-icon icon="editor:format-quote"></iron-icon>
+      ><silk-icon icon="format-quote"></silk-icon>
       </button>
 
       <button
         data-selected$="[[_stateEnabled('JustifyLeft', selectedText, content)]]"
         on-tap="_alignLeft"
         hidden$="[[!alignLeft]]"
-      ><iron-icon icon="editor:format-align-left"></iron-icon>
+      ><silk-icon icon="format-align-left"></silk-icon>
       </button>
 
       <button
         data-selected$="[[_stateEnabled('JustifyCenter', selectedText, content)]]"
         on-tap="_alignCenter"
         hidden$="[[!alignCenter]]"
-      ><iron-icon icon="editor:format-align-center"></iron-icon>
+      ><silk-icon icon="format-align-center"></silk-icon>
       </button>
 
       <button
         data-selected$="[[_stateEnabled('JustifyRight', selectedText, content)]]"
         on-tap="_alignRight"
         hidden$="[[!alignRight]]"
-      ><iron-icon icon="editor:format-align-right"></iron-icon>
+      ><silk-icon icon="format-align-right"></silk-icon>
       </button>
 
       <button
         data-selected$="[[_stateEnabled('JustifyFull', selectedText, content)]]"
         on-tap="_alignJustified"
         hidden$="[[!alignJustified]]"
-      ><iron-icon icon="editor:format-align-justify"></iron-icon>
+      ><silk-icon icon="format-align-justify"></silk-icon>
       </button>
 
       <button
         data-selected$="[[_stateEnabled('indent', selectedText, content)]]"
         on-tap="_indent"
         hidden$="[[!indent]]"
-      ><iron-icon icon="editor:format-indent-increase"></iron-icon>
+      ><silk-icon icon="format-indent-increase"></silk-icon>
       </button>
 
       <button
         data-selected$="[[_stateEnabled('outdent', selectedText, content)]]"
         on-tap="_outdent"
         hidden$="[[!indent]]"
-      ><iron-icon icon="editor:format-indent-decrease"></iron-icon>
+      ><silk-icon icon="format-indent-decrease"></silk-icon>
       </button>
 
       <input
         type="text"
         id="link-input"
-        placeholder="Please type in a url..."
+        placeholder="http://"
         on-keypress="_handleInputKeypress"
         on-focus="_handleInputFocus"
         on-blur="_handleInputBlur"
@@ -326,7 +326,7 @@
         data-selected$="[[_currentSelectionIsLink]]"
         on-tap="_handleTapLinkButton"
         hidden$="[[!link]]"
-      ><iron-icon icon="editor:insert-link"></iron-icon>
+      ><silk-icon icon="insert-link"></silk-icon>
       </button>
 
     </section>
