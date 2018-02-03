@@ -15,7 +15,7 @@
     }
   </style>
 
-    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:x="http://www.w3.org/1999/xlink">
+    <svg viewBox="0 0 24 24" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:x="http://www.w3.org/1999/xlink">
       <defs>
         <g id="format-bold"><path d="M15.6 10.79c.97-.67 1.65-1.77 1.65-2.79 0-2.26-1.75-4-4-4H7v14h7.04c2.09 0 3.71-1.7 3.71-3.79 0-1.52-.86-2.82-2.15-3.42zM10 6.5h3c.83 0 1.5.67 1.5 1.5s-.67 1.5-1.5 1.5h-3v-3zm3.5 9H10v-3h3.5c.83 0 1.5.67 1.5 1.5s-.67 1.5-1.5 1.5z"/></g>
         <g id="format-align-center"><path d="M7 15v2h10v-2H7zm-4 6h18v-2H3v2zm0-8h18v-2H3v2zm4-6v2h10V7H7zM3 3v2h18V3H3z"/></g>
@@ -31,7 +31,7 @@
         <g id="format-indent-decrease"><path d="M11 17h10v-2H11v2zm-8-5l4 4V8l-4 4zm0 9h18v-2H3v2zM3 3v2h18V3H3zm8 6h10V7H11v2zm0 4h10v-2H11v2z"/></g>
         <g id="format-indent-increase"><path d="M3 21h18v-2H3v2zM3 8v8l4-4-4-4zm8 9h10v-2H11v2zM3 3v2h18V3H3zm8 6h10V7H11v2zm0 4h10v-2H11v2z"/></g>
       </defs>
-      <use x="0" y="0" href$="#[[icon]]"/>
+      <use x="0" y="0" xlink:href=""/>
     </svg>
 
   </template>
@@ -47,9 +47,17 @@
       static get is() { return 'silk-icon'; }
       static get properties() {
         return {
-          icon: String
+          icon: {
+            type: String,
+            observer: '_useIcon'
+          }
         }
       }
+
+      _useIcon(icon) {
+        this.shadowRoot.querySelector('use').setAttribute('xlink:href', '#' + icon);
+      }
+
     }
 
     window.customElements.define(SilkIcon.is, SilkIcon);
