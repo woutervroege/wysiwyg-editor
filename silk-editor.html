@@ -349,7 +349,6 @@
           
           for: {
             type: String,
-            observer: '_initElementEvents'
           },
           
           content: {
@@ -542,6 +541,7 @@
 
       connectedCallback() {
         super.connectedCallback();
+        this._initElementEvents();
         document.addEventListener('selectionchange', this._handleSelectionChange.bind(this));
       }
 
