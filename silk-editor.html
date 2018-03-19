@@ -547,6 +547,7 @@
 
       _initElementEvents(elementId) {
         var element = this._getElement();
+        if(!element) return;
 
         element.addEventListener('focus', (function() {
           this.focused = true;
@@ -793,6 +794,8 @@
       }
 
       _unhighlightElements() {
+        var element = this._getElement();
+        if(!element) return;
         var highlightedElements = Array.from(this._getElement().querySelectorAll('.silk-highlight'));
         for(var i in highlightedElements) {
           highlightedElements[i].outerHTML = highlightedElements[i].innerHTML;
