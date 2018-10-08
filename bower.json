@@ -1,6 +1,6 @@
 {
   "name": "silk-editor",
-  "version": "3.2.7",
+  "version": "3.3.0",
   "homepage": "https://github.com/woutervroege/silk-editor",
   "description": "Wysiwyg editor",
   "main": "silk-editor.html",
@@ -18,7 +18,7 @@
     "webcomponents"
   ],
   "dependencies": {
-    "polymer": "Polymer/polymer#2.6.1",
+    "polymer": "Polymer/polymer#2.6.1 ",
     "paper-styles": "PolymerElements/paper-styles#2.0",
     "iron-icons": "PolymerElements/iron-icons#^2.0.0",
     "iron-icon": "PolymerElements/iron-icon#^2.0.1"
