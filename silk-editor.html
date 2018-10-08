@@ -158,15 +158,15 @@
         opacity: 1;
       }
 
-      #link-input {
+      .link-input {
         @apply --silk-input;
       }
 
-      #link-input:focus {
+      .link-input:focus {
         @apply --silk-input-focus;
       }
 
-      #formatting-bar[data-show-link-input] #link-input {
+      #formatting-bar[data-show-link-input] .link-input {
         @apply --silk-input-enabled;
       }
 
@@ -315,7 +315,7 @@
 
       <input
         type="text"
-        id="link-input"
+        class="link-input"
         placeholder="http://"
         on-keypress="_handleInputKeypress"
         on-focus="_handleInputFocus"
@@ -542,28 +542,37 @@
       connectedCallback() {
         super.connectedCallback();
         this._initElementEvents();
-        document.addEventListener('selectionchange', this._handleSelectionChange.bind(this));
       }
 
-      _initElementEvents(elementId) {
+      disconnectedCallback() {
+        super.disconnectedCallback();
+        this._deinitElementEvents();
+      }
+
+      _initElementEvents() {
+
+        document.addEventListener('selectionchange', this._handleSelectionChange.bind(this));
+
         var element = this._getElement();
         if(!element) return;
 
-        element.addEventListener('focus', (function() {
-          this.focused = true;
-        }).bind(this));
-        
-        element.addEventListener('blur', (function() {
-          this.focused = false;
-        }).bind(this));
-        
-        element.addEventListener('input', (function(evt) {
-          this._handleInput(evt);
-        }).bind(this));
+        element.addEventListener('focus', this._handleFocus.bind(this));
+        element.addEventListener('blur', this._handleBlur.bind(this));
+        element.addEventListener('input', this._handleInput.bind(this));
+        element.addEventListener('change', this._handleInput.bind(this));
+      }
 
-        element.addEventListener('change', (function(evt) {
-          this._handleInput(evt);
-        }).bind(this));
+      _deinitElementEvents() {
+
+        document.removeEventListener('selectionchange', this._handleSelectionChange.bind(this));
+
+        var element = this._getElement();
+        if(!element) return;
+
+        element.removeEventListener('focus', this._handleFocus.bind(this));
+        element.removeEventListener('blur', this._handleBlur.bind(this));
+        element.removeEventListener('input', this._handleInput.bind(this));
+        element.removeEventListener('change', this._handleInput.bind(this));
 
       }
 
@@ -579,6 +588,14 @@
         
         this.selection = this._getSelection();
         this.selectedText = (this.selection) ? this.selection.toString() : '';
+      }
+
+      _handleFocus() {
+        this.focused = true;
+      }
+
+      _handleBlur() {
+        this.focused = false;
       }
 
       _handleInputFocus() {
@@ -672,27 +689,27 @@
       }
 
       _toggleH1() {
-        this._toggleNode('h1');        
+        this._toggleNode('h1');
       }
 
       _toggleH2() {
-        this._toggleNode('h2');        
+        this._toggleNode('h2');
       }
 
       _toggleH3() {
-        this._toggleNode('h3');        
+        this._toggleNode('h3');
       }
 
       _toggleH4() {
-        this._toggleNode('h4');        
+        this._toggleNode('h4');
       }
 
       _toggleH5() {
-        this._toggleNode('h5');        
+        this._toggleNode('h5');
       }
 
       _toggleH6() {
-        this._toggleNode('h6');        
+        this._toggleNode('h6');
       }
 
       _alignLeft() {
@@ -727,7 +744,7 @@
         } else {
           this.showLinkInput = true;
           window.setTimeout((function() {
-            this.shadowRoot.querySelector('#link-input').focus();
+            this.shadowRoot.querySelector('.link-input').focus();
           }).bind(this), 40)
         }
       }
@@ -775,7 +792,7 @@
       }
 
       _toggleLink() {
-        this._insertLink(this.shadowRoot.querySelector('#link-input').value);
+        this._insertLink(this.shadowRoot.querySelector('.link-input').value);
       }
 
       _insertLink(url) {
@@ -789,7 +806,7 @@
         this.set('selectedText', '');
         this.set('selectedText', selectedText);
 
-        this.shadowRoot.querySelector('#link-input').value = '';
+        this.shadowRoot.querySelector('.link-input').value = '';
 
       }
 
