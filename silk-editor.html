@@ -1,5 +1,6 @@
 <link rel="import" href="../polymer/polymer-element.html">
 <link rel="import" href="../polymer/lib/mixins/gesture-event-listeners.html">
+<link rel="import" href="../polymer/lib/elements/dom-repeat.html">
 <link rel="import" href="silk-icon.html">
 
 <!--
@@ -137,12 +138,17 @@
         @apply --formatting-button-hover;
       }
 
-      button[data-selected] {
+      button[data-enabled] {
         @apply --formatting-button-selected;
       }
 
       #formatting-bar {
         @apply --silk-formatting-bar;
+        display: none;
+      }
+
+      :host([editing]) #formatting-bar {
+        display: flex;
       }
 
       #formatting-bar:after {
@@ -151,19 +157,6 @@
 
       #formatting-bar[data-hidden] {
         @apply --silk-formatting-bar-hidden;
-      }
-
-      #formatting-bar[data-link-input-focused] {
-        visibility: visible;
-        opacity: 1;
-      }
-
-      .link-input {
-        @apply --silk-input;
-      }
-
-      .link-input:focus {
-        @apply --silk-input-focus;
       }
 
       #formatting-bar[data-show-link-input] .link-input {
@@ -175,160 +168,20 @@
       }
     </style>
 
-    <section
-      id="formatting-bar"
-      data-hidden$="[[!selectedText]]"
-      data-show-link-input$="[[showLinkInput]]"
-      data-link-input-focused$="[[_linkInputFocused]]"
-      on-tap="_handleFormattingBarTap"
-      >
-
-      <button
-        disabled$="[[!selectedText]]"
-        data-selected$="[[_stateEnabled('Bold', selectedText, content)]]"
-        on-tap="_toggleBold"
-        hidden$="[[!bold]]"
-      ><silk-icon icon="format-bold"></silk-icon>
-      </button>
-
-      <button
-        disabled$="[[!selectedText]]"
-        data-selected$="[[_stateEnabled('Italic', selectedText, content)]]"
-        on-tap="_toggleItalic"
-        hidden$="[[!italic]]"
-      ><silk-icon icon="format-italic"></silk-icon>
-      </button>
-
-      <button
-        disabled$="[[!selectedText]]"
-        data-selected$="[[_stateEnabled('Underline', selectedText, content)]]"
-        on-tap="_toggleUnderline"
-        hidden$="[[!underline]]"
-      ><silk-icon icon="format-underlined"></silk-icon>
-      </button>
-
-      <button
-        disabled$="[[!selectedText]]"
-        data-selected$="[[_stateEnabled('Strikethrough', selectedText, content)]]"
-        on-tap="_toggleStrikethrough"
-        hidden$="[[!strikethrough]]"
-      ><silk-icon icon="format-strikethrough"></silk-icon>
-      </button>
-
-      <button
-        disabled$="[[!selectedText]]"
-        data-selected$="[[_currentSelectionIsH1]]"
-        on-tap="_toggleH1"
-        hidden$="[[!h1]]"
-      ><span>h1</span>
-      </button>
-
-      <button
-        disabled$="[[!selectedText]]"
-        data-selected$="[[_currentSelectionIsH2]]"
-        on-tap="_toggleH2"
-        hidden$="[[!h2]]"
-      ><span>h2</span>
-      </button>
-
-      <button
-        disabled$="[[!selectedText]]"
-        data-selected$="[[_currentSelectionIsH3]]"
-        on-tap="_toggleH3"
-        hidden$="[[!h3]]"
-      ><span>h3</span>
-      </button>
-
-      <button
-        disabled$="[[!selectedText]]"
-        data-selected$="[[_currentSelectionIsH4]]"
-        on-tap="_toggleH4"
-        hidden$="[[!h4]]"
-      ><span>h4</span>
-      </button>
-
-      <button
-        disabled$="[[!selectedText]]"
-        data-selected$="[[_currentSelectionIsH5]]"
-        on-tap="_toggleH5"
-        hidden$="[[!h5]]"
-      ><span>h5</span>
-      </button>
-
-      <button
-        disabled$="[[!selectedText]]"
-        data-selected$="[[_currentSelectionIsH6]]"
-        on-tap="_toggleH6"
-        hidden$="[[!h6]]"
-      ><span>h6</span>
-      </button>
-
-      <button
-        disabled$="[[!selectedText]]"
-        data-selected$="[[_currentSelectionIsQuote]]"
-        on-tap="_toggleQuote"
-        hidden$="[[!quote]]"
-      ><silk-icon icon="format-quote"></silk-icon>
-      </button>
-
-      <button
-        data-selected$="[[_stateEnabled('JustifyLeft', selectedText, content)]]"
-        on-tap="_alignLeft"
-        hidden$="[[!alignLeft]]"
-      ><silk-icon icon="format-align-left"></silk-icon>
-      </button>
-
-      <button
-        data-selected$="[[_stateEnabled('JustifyCenter', selectedText, content)]]"
-        on-tap="_alignCenter"
-        hidden$="[[!alignCenter]]"
-      ><silk-icon icon="format-align-center"></silk-icon>
-      </button>
-
-      <button
-        data-selected$="[[_stateEnabled('JustifyRight', selectedText, content)]]"
-        on-tap="_alignRight"
-        hidden$="[[!alignRight]]"
-      ><silk-icon icon="format-align-right"></silk-icon>
-      </button>
-
-      <button
-        data-selected$="[[_stateEnabled('JustifyFull', selectedText, content)]]"
-        on-tap="_alignJustified"
-        hidden$="[[!alignJustified]]"
-      ><silk-icon icon="format-align-justify"></silk-icon>
-      </button>
-
-      <button
-        data-selected$="[[_stateEnabled('indent', selectedText, content)]]"
-        on-tap="_indent"
-        hidden$="[[!indent]]"
-      ><silk-icon icon="format-indent-increase"></silk-icon>
-      </button>
-
-      <button
-        data-selected$="[[_stateEnabled('outdent', selectedText, content)]]"
-        on-tap="_outdent"
-        hidden$="[[!indent]]"
-      ><silk-icon icon="format-indent-decrease"></silk-icon>
-      </button>
-
-      <input
-        type="text"
-        class="link-input"
-        placeholder="http://"
-        on-keypress="_handleInputKeypress"
-        on-focus="_handleInputFocus"
-        on-blur="_handleInputBlur"
-      >
-
-      <button
-        data-selected$="[[_currentSelectionIsLink]]"
-        on-tap="_handleTapLinkButton"
-        hidden$="[[!link]]"
-      ><silk-icon icon="insert-link"></silk-icon>
-      </button>
-
+    <section id="formatting-bar">
+      <dom-repeat items="[[buttons]]" as="button">
+        <template>
+          <button
+            data-type$="[[button.type]]"
+            data-action$="[[button.name]]"
+            on-tap="_handleButtonTap"
+            data-enabled$="[[_buttonEnabled(button.name, button.type, selectedText, content, _selectedNodeNamesTree.*)]]"
+          >
+            <silk-icon icon="format-[[button.name]]" hidden$="[[!button.icon]]"></silk-icon>
+            <span hidden$="[[button.icon]]">[[button.name]]</span>
+          </button>
+        </template>
+      </dom-repeat>
     </section>
 
   </template>
@@ -347,476 +200,230 @@
       static get properties() {
         return {
           
-          for: {
-            type: String,
-          },
-          
-          content: {
-            type: String,
-            notify: true,
-            readOnly: true
-          },
-
           editing: {
             type: Boolean,
-            computed: '_computeEditing(selectedText, focused)',
+            value: false,
+            computed: '_computeEditing(selectedText)',
             notify: true,
-            reflectToAttribute: true
+            reflectToAttribute: true,
           },
 
-          bold: {
-            type: Boolean,
-            value: false,
-            reflectToAttribute: true
+          options: {
+            type: Array,
+            value: ['bold', 'italic', 'strikethrough', 'underline', 'h1', 'h2', 'blockquote', 'justify-left', 'justify-center', 'justify-right', 'justify-full', 'indent', 'outdent', 'link']
           },
 
-          italic: {
-            type: Boolean,
-            value: false,
-            reflectToAttribute: true
-          },
-
-          underline: {
-            type: Boolean,
-            value: false,
-            reflectToAttribute: true
-          },
-
-          strikethrough: {
-            type: Boolean,
-            value: false,
-            reflectToAttribute: true
-          },
-
-          alignLeft: {
-            type: Boolean,
-            value: false,
-            reflectToAttribute: true
-          },
-          
-          alignCenter: {
-            type: Boolean,
-            value: false,
-            reflectToAttribute: true
-          },
-          
-          alignRight: {
-            type: Boolean,
-            value: false,
-            reflectToAttribute: true
-          },
-          
-          alignJustified: {
-            type: Boolean,
-            value: false,
-            reflectToAttribute: true
-          },
-          
-          indent: {
-            type: Boolean,
-            value: false,
-            reflectToAttribute: true
-          },
-          
-          link: {
-            type: Boolean,
-            value: false,
-            reflectToAttribute: true
-          },
-
-          h1: {
-            type: Boolean,
-            value: false,
-            reflectToAttribute: true
-          },
-          
-          h2: {
-            type: Boolean,
-            value: false,
-            reflectToAttribute: true
-          },
-          
-          h3: {
-            type: Boolean,
-            value: false,
-            reflectToAttribute: true
-          },
-          
-          h4: {
-            type: Boolean,
-            value: false,
-            reflectToAttribute: true
-          },
-          
-          h5: {
-            type: Boolean,
-            value: false,
-            reflectToAttribute: true
-          },
-          
-          h6: {
-            type: Boolean,
-            value: false,
-            reflectToAttribute: true
-          },
-          
-          quote: {
-            type: Boolean,
-            value: false,
-            reflectToAttribute: true
-          },
-          
-          focused: {
-            type: Boolean,
-            value: false,
-          },
-
-          selection: {
-            type: Object
+          buttons: {
+            type: Array,
+            computed: '_computeButtons(options.*)'
           },
 
           selectedText: {
             type: String,
-            value: '',
-            observer: '_selectedTextChanged'
+            value: null,
+            readOnly: true,
+            observer: '_moveFormattingBar'
           },
 
-          showLinkInput: {
-            type: Boolean,
-            value: false
+          _selectedLink: {
+            type: String,
+            value: null
           },
 
-          _savedRange: {
-            type: Object
-          },
-
-          _currentSelectionIsLink: {
-            type: Boolean,
-            computed: '_computeCurrentSelectionIs(\'a\', selectedText)'
-          },
-
-          _currentSelectionIsQuote: {
-            type: Boolean,
-            computed: '_computeCurrentSelectionIs(\'blockquote\', selectedText)'
-          },
-
-          _currentSelectionIsH1: {
-            type: Boolean,
-            computed: '_computeCurrentSelectionIs(\'h1\', selectedText)'
-          },
-
-          _currentSelectionIsH2: {
-            type: Boolean,
-            computed: '_computeCurrentSelectionIs(\'h2\', selectedText)'
-          },
-
-          _currentSelectionIsH3: {
-            type: Boolean,
-            computed: '_computeCurrentSelectionIs(\'h3\', selectedText)'
-          },
-
-          _currentSelectionIsH4: {
-            type: Boolean,
-            computed: '_computeCurrentSelectionIs(\'h4\', selectedText)'
-          },
-
-          _currentSelectionIsH5: {
-            type: Boolean,
-            computed: '_computeCurrentSelectionIs(\'h5\', selectedText)'
-          },
-
-          _currentSelectionIsH6: {
-            type: Boolean,
-            computed: '_computeCurrentSelectionIs(\'h6\', selectedText)'
-          },
-
-          _linkInputFocused: {
-            type: Boolean,
-            value: false,
-            observer: '_linkInputFocusedChanged'
+          _selectedNodeNamesTree: {
+            type: Array,
+            value: []
           }
 
-        };
+        }
       }
 
-      connectedCallback() {
-        super.connectedCallback();
-        this._initElementEvents();
-      }
-
-      disconnectedCallback() {
-        super.disconnectedCallback();
-        this._deinitElementEvents();
-      }
-
-      _initElementEvents() {
-
+      constructor() {
+        super();
         document.addEventListener('selectionchange', this._handleSelectionChange.bind(this));
-
-        var element = this._getElement();
-        if(!element) return;
-
-        element.addEventListener('focus', this._handleFocus.bind(this));
-        element.addEventListener('blur', this._handleBlur.bind(this));
-        element.addEventListener('input', this._handleInput.bind(this));
-        element.addEventListener('change', this._handleInput.bind(this));
       }
 
-      _deinitElementEvents() {
-
-        document.removeEventListener('selectionchange', this._handleSelectionChange.bind(this));
-
-        var element = this._getElement();
-        if(!element) return;
-
-        element.removeEventListener('focus', this._handleFocus.bind(this));
-        element.removeEventListener('blur', this._handleBlur.bind(this));
-        element.removeEventListener('input', this._handleInput.bind(this));
-        element.removeEventListener('change', this._handleInput.bind(this));
-
-      }
-
-      _stateEnabled(state, selectedText, content) {
-        return document.queryCommandState(state);
-      }
-
-      _handleSelectionChange(evt) {
-        if(this._linkInputFocused) return;
-
-        this._unhighlightElements();
-        this.showLinkInput = false;
-        
-        this.selection = this._getSelection();
-        this.selectedText = (this.selection) ? this.selection.toString() : '';
-      }
-
-      _handleFocus() {
-        this.focused = true;
-      }
-
-      _handleBlur() {
-        this.focused = false;
-      }
-
-      _handleInputFocus() {
-        this._linkInputFocused = true;
-      }
-
-      _handleInputBlur() {
-        this._linkInputFocused = false;
-      }
-
-      _handleInputKeypress(evt) {
-        var url = evt.target.value;
-        if(evt.which === 13) {
-          this._insertLink(url);
+      _computeButtons(optionsChange) {
+        var options = optionsChange.base || [];
+        var buttons = [];
+        for(var i in options) {
+          var optionName = options[i];
+          switch(optionName) {
+            case 'bold':
+            case 'italic':
+            case 'underline':
+            case 'strikethrough':
+              buttons.push({
+                name: optionName,
+                type: 'normal',
+                icon: true
+              })
+              break;
+            case 'indent':
+            case 'outdent':
+              buttons.push({
+                name: optionName.charAt(0).toUpperCase() + optionName.substr(1),
+                type: 'normal',
+                icon: true
+              })
+              break;
+            case 'blockquote':
+              buttons.push({
+                name: optionName,
+                type: 'block',
+                icon: true
+              })
+              break;
+            case 'justify-left':
+            case 'justify-right':
+            case 'justify-center':
+            case 'justify-full':
+              buttons.push({
+                name: optionName.replace(/(\-\w)/g, function(m){return m[1].toUpperCase();}),
+                type: 'normal',
+                icon: true
+              })
+              break;
+            case 'h1':
+            case 'h2':
+            case 'h3':
+            case 'h4':
+            case 'h5':
+            case 'h6':
+              buttons.push({
+                name: optionName,
+                type: 'block',
+                icon: false
+              })
+              break;
+            case 'link':
+              buttons.push({
+                name: optionName,
+                type: 'link',
+                icon: true
+              })
+              break;
+          }
         }
+        return buttons;
       }
 
-      _handleFormattingBarTap() {
-        var content = this._getElement().innerHTML;
-        this._setContent(content);
+      _computeEditing(selectedText) {
+        return !!selectedText;
       }
 
-      _selectedTextChanged(selectedText) {
-        if(! (this.selection && this.selection.getRangeAt) ) return;
-        if(selectedText) {
-          var range = this.selection.getRangeAt(0);
-          this.selection.addRange(range);
-          this._saveRange();
-          this._moveFormattingBar();
-          this.updateStyles();
+      _handleSelectionChange() {
+        this._setSelectedText(window.getSelection().toString() || null);
+
+        var _selectedNodeNamesTree = [];
+        this._selectedLink = null;
+
+        if(!this.selectedText) return;
+
+        var currentElement = window.getSelection().getRangeAt(0).startContainer.parentElement;
+        var nodeName = currentElement.nodeName.toLowerCase();
+
+        while(currentElement.contentEditable !== 'true') {
+          if(nodeName == 'a') { this._selectedLink = currentElement.href; }
+          _selectedNodeNamesTree.push(nodeName);
+          currentElement = currentElement.parentElement;
+          nodeName = currentElement.nodeName.toLowerCase();
         }
-      }
-
-      _moveFormattingBar() {        
-        var formattingBar = this.shadowRoot.querySelector('#formatting-bar');
-        var formattingBarBox = formattingBar.getBoundingClientRect();
-
-        var selectionBox = this._savedRange.getBoundingClientRect();
-        formattingBar.style.top = (selectionBox.top - formattingBarBox.height - 16) + 'px';
-        formattingBar.style.left = (selectionBox.left - (formattingBarBox.width/2)) + (selectionBox.width/2) + 'px';
-      }
-
-      _handleFocus() {
-        this.focused = true;
-      }
-
-      _handleBlur() {
-        this.focused = false;
-      }
-
-      _handleInput(evt) {
-        var content = evt.target.innerHTML;
-        this._setContent(content);
-      }
-
-      _getSelection() {
-        var element = window;
-        return element.getSelection();
-      }
-
-      _toggleBold(evt) {
-        document.execCommand('Bold');
-      }
-
-      _toggleItalic() {
-        document.execCommand('Italic');
-      }
-
-      _toggleUnderline() {
-        document.execCommand('Underline');
-      }
-
-      _toggleStrikethrough() {
-        document.execCommand('Strikethrough');
-      }
-
-      _toggleNode(node) {
-        var selectedNode = this._getSelection().anchorNode.parentElement.nodeName.toLowerCase();
-        if(selectedNode === node) {
-          this._getSelection().anchorNode.parentElement.outerHTML = this.selectedText;
-          window.requestAnimationFrame((function() {
-            this.selectedText = '';
-          }).bind(this))
-        } else {
-          document.execCommand('insertHTML', null, '<' + node + '>' + this.selectedText + '</' + node + '>');
-        }
-      }
-
-      _toggleQuote() {
-        this._toggleNode('blockquote');
-      }
-
-      _toggleH1() {
-        this._toggleNode('h1');
-      }
-
-      _toggleH2() {
-        this._toggleNode('h2');
-      }
-
-      _toggleH3() {
-        this._toggleNode('h3');
-      }
-
-      _toggleH4() {
-        this._toggleNode('h4');
-      }
-
-      _toggleH5() {
-        this._toggleNode('h5');
-      }
-
-      _toggleH6() {
-        this._toggleNode('h6');
-      }
-
-      _alignLeft() {
-        document.execCommand('JustifyLeft');
-      }
-
-      _alignCenter() {
-        document.execCommand('JustifyCenter');
-      }
-
-      _alignRight() {
-        document.execCommand('JustifyRight');
-      }
-
-      _alignJustified() {
-        document.execCommand('JustifyFull');
-      }
-
-      _indent() {
-        document.execCommand('Indent');
-      }
-
-      _outdent() {
-        document.execCommand('Outdent');
-      }
-
-      _handleTapLinkButton() {
-        if(this._currentSelectionIsLink) {
-          var element = this._savedRange.startContainer.parentElement;
-          element.outerHTML = element.innerHTML;
-          this.selectedText = '';
-        } else {
-          this.showLinkInput = true;
-          window.setTimeout((function() {
-            this.shadowRoot.querySelector('.link-input').focus();
-          }).bind(this), 40)
-        }
-      }
-
-      _saveRange() {
-        this._savedRange = this._getSelection().getRangeAt(0);
+        this._selectedNodeNamesTree = _selectedNodeNamesTree;
       }
 
       _getElement() {
-        if(!this.for) return {};
-        var elem = this.getRootNode().querySelector('#' + this.for);
-        return elem;
+        var currentElement = window.getSelection().getRangeAt(0).startContainer.parentElement;
+        while(currentElement.contentEditable !== 'true') {
+          currentElement = currentElement.parentElement;
+        }
+        return currentElement;
       }
 
-      _linkInputFocusedChanged(linkInputFocused) {
-        if(linkInputFocused) {
+      _buttonEnabled(state, buttonType) {
+        switch(buttonType) {
+          case 'normal':
+            return this._stateEnabled(state);
+            break;
+          case 'block':
+            return this._blockEnabled(state);
+            break;
+          case 'link':
+            return this._blockEnabled('a');
+            break;
+        }
+      }
 
-          if(this._savedRange.startContainer.parentElement.classList.contains('silk-highlight')) {
-            return;
+      _stateEnabled(state) {
+        return document.queryCommandState(state);
+      }
+
+      _blockEnabled(state) {
+        return this._selectedNodeNamesTree.indexOf(state) !== -1;
+      }
+
+      _handleButtonTap(evt) {
+        var btnElement = evt.target;
+        var type = btnElement.dataset.type;
+        var action = btnElement.dataset.action;
+        switch(type) {
+          case 'normal':
+            this._toggleState(action);
+            break;
+          case 'block':
+            this._toggleBlock(action);
+            break;
+          case 'link':
+            this._toggleLink();
+            break;
+        }
+      }
+
+      _toggleState(cmd) {
+        document.execCommand(cmd, false);
+      }
+
+      _toggleBlock(cmd) {
+        var blockType = (this._selectedNodeNamesTree.indexOf(cmd) !== -1) ? 'p' : cmd;
+        document.execCommand('formatBlock', false, blockType);
+        if(window.ShadyCSS) this._applyShadyClasses();
+      }
+
+      _applyShadyClasses() {
+        var $element = this._getElement();
+        var elementClasses = Array.from($element.classList);
+
+        var shadyClasses = elementClasses.splice(elementClasses.indexOf('style-scope'));
+        var element = window.getSelection().getRangeAt(0).startContainer.parentElement;
+
+        while(element.contentEditable !== 'true') {
+          for(var i=0;i<shadyClasses.length;i++) {
+            element.classList.add(shadyClasses[i]);
           }
-
-          var span = document.createElement('span');
-          span.className = 'silk-highlight';
-          span.style.backgroundColor = '#b2d7ff';
-          this._savedRange.surroundContents(span);
-
+          element = element.parentElement;
         }
-      }
 
-      _computeEditing(selectedText, focused) {
-        return (!!selectedText || !!focused);
-      }
- 
-      _computeCurrentSelectionIs(node) {
-        try {
-          var isLink = this._getSelection().getRangeAt && this._getSelection()
-          .getRangeAt(0)
-          .startContainer
-          .parentElement
-          .nodeName.toLowerCase() === node;
-          return isLink;
-        } catch(e) {
-          return false;
-        }
       }
 
       _toggleLink() {
-        this._insertLink(this.shadowRoot.querySelector('.link-input').value);
+        var linkUrl = window.prompt('Please type in a link', (this._selectedLink || 'https://'));
+        if(linkUrl === null) return;
+        if(linkUrl === '') return document.execCommand('unlink', false);
+        document.execCommand('createLink', false, linkUrl);
       }
 
-      _insertLink(url) {
-        if(!url) return;
-        var selection = this._getSelection();
-        selection.removeAllRanges();
-        selection.addRange(this._savedRange);
-
-        document.execCommand('CreateLink', false, url);
-        var selectedText = this.selectedText;
-        this.set('selectedText', '');
-        this.set('selectedText', selectedText);
-
-        this.shadowRoot.querySelector('.link-input').value = '';
-
-      }
-
-      _unhighlightElements() {
-        var element = this._getElement();
-        if(!element) return;
-        var highlightedElements = Array.from(this._getElement().querySelectorAll('.silk-highlight'));
-        for(var i in highlightedElements) {
-          highlightedElements[i].outerHTML = highlightedElements[i].innerHTML;
+      _moveFormattingBar() {
+        try {
+          var selectionBox = window.getSelection().getRangeAt(0).getBoundingClientRect();
+        } catch(err) {
+          return;
         }
+
+        var formattingBar = this.shadowRoot.querySelector('#formatting-bar');
+        var formattingBarBox = formattingBar.getBoundingClientRect();
+
+        formattingBar.style.top = (selectionBox.top - formattingBarBox.height - 16) + 'px';
+        formattingBar.style.left = (selectionBox.left - (formattingBarBox.width/2)) + (selectionBox.width/2) + 'px';
       }
 
     }
