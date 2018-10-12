@@ -394,11 +394,15 @@
         var elementClasses = Array.from($element.classList);
 
         var shadyClasses = elementClasses.splice(elementClasses.indexOf('style-scope'));
-        var selectedBlock = window.getSelection().getRangeAt(0).startContainer.parentElement;
+        var element = window.getSelection().getRangeAt(0).startContainer.parentElement;
 
-        for(var i in shadyClasses) {
-          selectedBlock.classList.add(shadyClasses[i]);
+        while(element.contentEditable !== 'true') {
+          for(var i=0;i<shadyClasses.length;i++) {
+            element.classList.add(shadyClasses[i]);
+          }
+          element = element.parentElement;
         }
+
       }
 
       _toggleLink() {
