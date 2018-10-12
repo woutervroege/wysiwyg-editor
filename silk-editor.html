@@ -314,10 +314,14 @@
 
       _handleSelectionChange() {
         this._setSelectedText(window.getSelection().toString() || null);
-        var currentElement = window.getSelection().getRangeAt(0).startContainer.parentElement;
-        var nodeName = currentElement.nodeName.toLowerCase();
+
         var _selectedNodeNamesTree = [];
         this._selectedLink = null;
+
+        if(!this.selectedText) return;
+
+        var currentElement = window.getSelection().getRangeAt(0).startContainer.parentElement;
+        var nodeName = currentElement.nodeName.toLowerCase();
 
         while(currentElement.contentEditable !== 'true') {
           if(nodeName == 'a') { this._selectedLink = currentElement.href; }
