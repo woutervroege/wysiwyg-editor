@@ -333,6 +333,14 @@
         this._selectedNodeNamesTree = _selectedNodeNamesTree;
       }
 
+      _getElement() {
+        var currentElement = window.getSelection().getRangeAt(0).startContainer.parentElement;
+        while(currentElement.contentEditable !== 'true') {
+          currentElement = currentElement.parentElement;
+        }
+        return currentElement;
+      }
+
       _buttonEnabled(state, buttonType) {
         switch(buttonType) {
           case 'normal':
@@ -379,6 +387,19 @@
       _toggleBlock(cmd) {
         var blockType = (this._selectedNodeNamesTree.indexOf(cmd) !== -1) ? 'p' : cmd;
         document.execCommand('formatBlock', false, blockType);
+        if(window.ShadyCSS) this._applyShadyClasses();
+      }
+
+      _applyShadyClasses() {
+        var $element = this._getElement();
+        var elementClasses = Array.from($element.classList);
+
+        var shadyClasses = elementClasses.splice(elementClasses.indexOf('style-scope'));
+        var selectedBlock = window.getSelection().getRangeAt(0).startContainer.parentElement;
+
+        for(var i in shadyClasses) {
+          selectedBlock.classList.add(shadyClasses[i]);
+        }
       }
 
       _toggleLink() {
