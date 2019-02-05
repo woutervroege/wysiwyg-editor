@@ -144,7 +144,7 @@
             data-type$="[[button.type]]"
             data-action$="[[button.name]]"
             on-tap="_handleButtonTap"
-            data-enabled$="[[_buttonEnabled(button.name, button.type, selectedText, content, _selectedNodeNamesTree.*)]]"
+            data-enabled$="[[_buttonEnabled(button.name, button.type, selectedText, content, _selectedNodeNamesTree.*, _lastButtonCmd)]]"
           >
             <silk-icon icon="format-[[button.name]]" hidden$="[[!button.icon]]"></silk-icon>
             <span hidden$="[[button.icon]]">[[button.name]]</span>
@@ -202,6 +202,10 @@
           _selectedNodeNamesTree: {
             type: Array,
             value: []
+          },
+
+          _lastButtonCmd: {
+            type: String,
           }
 
         }
@@ -346,6 +350,7 @@
             this._toggleLink();
             break;
         }
+        window.requestAnimationFrame(() => {this._lastButtonCmd = action });
       }
 
       _toggleState(cmd) {
