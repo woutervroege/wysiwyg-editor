@@ -81,33 +81,6 @@
 
         --formatting-button-icon-size: 22px;
 
-        --silk-input: {
-          width: 0;
-          transition: 0.4s width;
-          padding: 0;
-          font-size: 0;
-          border: 0 solid transparent;
-          border-radius: 2px;
-          outline: none;
-          font-family: -apple-system, '.SFNSText-Regular', 'San Francisco', 'Roboto', 'Segoe UI', 'Helvetica Neue', 'Lucida Grande', sans-serif;
-          color: #323232;
-          font-size: 13px;
-          line-height: 1.5;
-          outline: none;
-          padding: 6px 0;
-          box-sizing: border-box;
-          max-height: 28px;
-        }
-
-        --silk-input-focus: {
-          padding: 6px;
-          border: 0;
-        }
-
-        --silk-input-enabled: {
-          width: 160px;
-        }
-
       }
 
       button {
@@ -157,10 +130,6 @@
 
       #formatting-bar[data-hidden] {
         @apply --silk-formatting-bar-hidden;
-      }
-
-      #formatting-bar[data-show-link-input] .link-input {
-        @apply --silk-input-enabled;
       }
 
       [hidden] {
