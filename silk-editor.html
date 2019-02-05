@@ -179,7 +179,7 @@
 
           options: {
             type: Array,
-            value: ['bold', 'italic', 'strikethrough', 'underline', 'h1', 'h2', 'blockquote', 'justify-left', 'justify-center', 'justify-right', 'justify-full', 'indent', 'outdent', 'link']
+            value: ['bold', 'italic', 'strikethrough', 'underline', 'h1', 'h2', 'blockquote', 'justify-left', 'justify-center', 'justify-right', 'justify-full', 'indent', 'outdent', 'link', 'clear']
           },
 
           buttons: {
@@ -240,6 +240,7 @@
                 icon: true
               })
               break;
+            case 'clear':
             case 'blockquote':
               buttons.push({
                 name: optionName,
@@ -358,7 +359,7 @@
       }
 
       _toggleBlock(cmd) {
-        var blockType = (this._selectedNodeNamesTree.indexOf(cmd) !== -1) ? 'p' : cmd;
+        var blockType = (this._selectedNodeNamesTree.indexOf(cmd) !== -1 || cmd === 'clear') ? 'p' : cmd;
         document.execCommand('formatBlock', false, blockType);
         if(window.ShadyCSS) this._applyShadyClasses();
       }
