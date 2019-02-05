@@ -350,8 +350,17 @@ class SilkEditor extends GestureEventListeners(PolymerElement) {
   }
 
   _toggleBlock(cmd) {
-    var blockType = (this._selectedNodeNamesTree.indexOf(cmd) !== -1 || cmd === 'clear') ? 'p' : cmd;
-    document.execCommand('formatBlock', false, blockType);
+
+    if(cmd === 'clear') {
+      document.execCommand('formatBlock', false, 'p');
+      document.execCommand('removeFormat', false);
+    }
+    
+    else {
+      var blockType = (this._selectedNodeNamesTree.indexOf(cmd) !== -1) ? 'p' : cmd;
+      document.execCommand('formatBlock', false, blockType);
+    }
+
     if(window.ShadyCSS) this._applyShadyClasses();
   }
 
