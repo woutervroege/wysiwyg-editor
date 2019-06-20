@@ -278,6 +278,9 @@ class SilkEditor extends GestureEventListeners(PolymerElement) {
   }
 
   _handleSelectionChange() {
+    var selection = window.getSelection().toString();
+    var hasSelection = selection.replace(/\s|\r\n/g, '').length > 0;
+    if(!hasSelection) return this._setSelectedText(null);
     this._setSelectedText(window.getSelection().toString() || null);
 
     var _selectedNodeNamesTree = [];
@@ -286,12 +289,15 @@ class SilkEditor extends GestureEventListeners(PolymerElement) {
     if(!this.selectedText) return;
 
     var currentElement = window.getSelection().getRangeAt(0).startContainer.parentElement;
+    if(!currentElement) return;
+
     var nodeName = currentElement.nodeName.toLowerCase();
 
     while(currentElement.contentEditable !== 'true') {
       if(nodeName == 'a') { this._selectedLink = currentElement.href; }
       _selectedNodeNamesTree.push(nodeName);
       currentElement = currentElement.parentElement;
+      if(!currentElement) return;
       nodeName = currentElement.nodeName.toLowerCase();
     }
     this._selectedNodeNamesTree = _selectedNodeNamesTree;
