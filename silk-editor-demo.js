@@ -1,4 +1,5 @@
-import {html, PolymerElement} from '@polymer/polymer/polymer-element.js';
+import { LitElement, html, css } from 'lit-element';
+import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
 import './silk-editor.js';
 
 /**
@@ -9,36 +10,41 @@ import './silk-editor.js';
  * @polymer
  * @demo demo/slp-ui-page.html
  */
-class SilkEditorDemo extends PolymerElement {
-  static get template() {
+class SilkEditorDemo extends LitElement {
+  
+  static get styles() {
+    return css`
+      article {
+        display: inline-block;
+        outline: none;
+        font-family: sans-serif;
+      }
+
+      blockquote {
+        font-size: 24px;
+      }
+
+      blockquote:before, blockquote:after {
+        content: '"';
+      }
+    `
+  }
+  
+  render() {
     return html`
-      <style>
-          article {
-            display: inline-block;
-            outline: none;
-          }
-
-          blockquote {
-            font-size: 24px;
-          }
-
-          blockquote:before, blockquote:after {
-            content: '"';
-          }
-      </style>
-
       <silk-editor
-        editing="{{editing}}"
+        ?editing="${this.editing}"
+        @editing-changed="${(e) => this.editing = e.detail.value}"
       ></silk-editor>
 
       <article
         id="article"
         contenteditable="true"
         spellcheck="false"
-        on-input="_htmlChanged"
-        on-focus="_handleFocus"
-        on-blur="_handleBlur"
-      ></article>
+        @input="${this._htmlChanged}"
+        @focus="${this._handleFocus}"
+        @blur="${this._handleBlur}"
+      >${unsafeHTML(this.articleContents)}</article>
     `
   }
 
@@ -52,21 +58,37 @@ class SilkEditorDemo extends PolymerElement {
 
       content: {
         type: String,
-        observer: '_contentChanged'
+      },
+
+      articleContents: {
+        type: String
       },
 
       _focused: {
         type: Boolean,
-        value: false
       }
 
     }
   }
 
-  _contentChanged(content) {
+  constructor() {
+    super();
+    this._focused = false;
+  }
+
+  updated(props) {
+    if(props.has('content')) this.articleContents = this.content;
+  }
+
+  set articleContents(html) {
     if(this.editing || this._focused) return;
-    var $article = this.shadowRoot.querySelector('#article');
-    $article.innerHTML = content;
+    const oldVal = this._articleContents;
+    this._articleContents = html;
+    this.requestUpdate('articleContents', oldVal);
+  }
+
+  get articleContents() {
+    return this._articleContents;
   }
 
   _htmlChanged(evt) {

@@ -1,6 +1,4 @@
-import {html, PolymerElement} from '@polymer/polymer/polymer-element.js';
-import { GestureEventListeners } from '@polymer/polymer/lib/mixins/gesture-event-listeners.js';
-import '@polymer/polymer/lib/elements/dom-repeat.js';
+import { LitElement, html } from 'lit-element';
 import './silk-icon.js';
 
 /**
@@ -11,9 +9,9 @@ import './silk-icon.js';
  * @polymer
  * @demo demo/index.html
  */
-class SilkEditor extends GestureEventListeners(PolymerElement) {
-  static get template() {
-    return html`
+class SilkEditor extends LitElement {
+    render() {
+      return html`
       <style>
         :host {
           display: block;
@@ -119,11 +117,13 @@ class SilkEditor extends GestureEventListeners(PolymerElement) {
 
         #formatting-bar {
           @apply --silk-formatting-bar;
-          display: none;
+          display: flex;
+          visibility: hidden;
         }
 
         :host([editing]) #formatting-bar {
           display: flex;
+          visibility: visible;
         }
 
         #formatting-bar:after {
@@ -140,19 +140,21 @@ class SilkEditor extends GestureEventListeners(PolymerElement) {
       </style>
 
       <section id="formatting-bar">
-        <dom-repeat items="[[buttons]]" as="button">
-          <template>
+        
+        ${this.buttons.map(button => {
+          return html`
             <button
-              data-type$="[[button.type]]"
-              data-action$="[[button.name]]"
-              on-tap="_handleButtonTap"
-              data-enabled$="[[_buttonEnabled(button.name, button.type, selectedText, content, _selectedNodeNamesTree.*, _lastButtonCmd)]]"
+              data-type="${button.type}"
+              data-action="${button.name}"
+              @click="${this._handleButtonTap}"
+              ?data-enabled="${this._buttonEnabled(button.name, button.type)}"
             >
-              <silk-icon icon="format-[[button.name]]" hidden$="[[!button.icon]]"></silk-icon>
-              <span hidden$="[[button.icon]]">[[button.name]]</span>
+              <silk-icon icon="format-${button.name}" ?hidden="${!button.icon}"></silk-icon>
+              <span ?hidden="${button.icon}">${button.name}</span>
             </button>
-          </template>
-        </dom-repeat>
+          `
+        })}
+
       </section>
     `
   }
@@ -162,37 +164,28 @@ class SilkEditor extends GestureEventListeners(PolymerElement) {
       
       editing: {
         type: Boolean,
-        value: false,
-        computed: '_computeEditing(selectedText)',
-        notify: true,
-        reflectToAttribute: true,
+        reflect: true,
       },
 
       options: {
         type: Array,
-        value: ['bold', 'italic', 'strikethrough', 'underline', 'h1', 'h2', 'blockquote', 'justify-left', 'justify-center', 'justify-right', 'justify-full', 'indent', 'outdent', 'link', 'clear']
       },
 
       buttons: {
         type: Array,
-        computed: '_computeButtons(options.*)'
       },
 
       selectedText: {
         type: String,
-        value: null,
         readOnly: true,
-        observer: '_moveFormattingBar'
       },
 
       _selectedLink: {
         type: String,
-        value: null
       },
 
       _selectedNodeNamesTree: {
         type: Array,
-        value: []
       },
 
       _lastButtonCmd: {
@@ -204,11 +197,27 @@ class SilkEditor extends GestureEventListeners(PolymerElement) {
 
   constructor() {
     super();
+
+    this.editing = false;
+    this.options = ['bold', 'italic', 'strikethrough', 'underline', 'h1', 'h2', 'blockquote', 'justify-left', 'justify-center', 'justify-right', 'justify-full', 'indent', 'outdent', 'link', 'clear']
+    this.selectedText = null;
+    this._selectedLink = null;
+    this._selectedNodeNamesTree = [];
+
     document.addEventListener('selectionchange', this._handleSelectionChange.bind(this));
   }
 
-  _computeButtons(optionsChange) {
-    var options = optionsChange.base || [];
+  updated(props) {
+    if(props.has('editing')) this.dispatchEvent(new CustomEvent('editing-changed', {detail: {value: this.editing}}))
+    
+    if(props.has('selectedText')) {
+      this.editing = this.selectedText;
+      this._moveFormattingBar();
+    }
+  }
+
+  get buttons() {
+    var options = this.options || [];
     var buttons = [];
     for(var i in options) {
       var optionName = options[i];
@@ -273,15 +282,21 @@ class SilkEditor extends GestureEventListeners(PolymerElement) {
     return buttons;
   }
 
-  _computeEditing(selectedText) {
-    return !!selectedText;
+  get editing() {
+    return this._editing;
+  }
+
+  set editing(selectedText) {
+    const oldVal = this._editing;
+    this._editing = !!this.selectedText;
+    this.requestUpdate('editing', oldVal);
   }
 
   _handleSelectionChange() {
     var selection = window.getSelection().toString();
     var hasSelection = selection.replace(/\s|\r\n/g, '').length > 0;
-    if(!hasSelection) return this._setSelectedText(null);
-    this._setSelectedText(window.getSelection().toString() || null);
+    if(!hasSelection) return this.selectedText = null;
+    this.selectedText = window.getSelection().toString() || null;
 
     var _selectedNodeNamesTree = [];
     this._selectedLink = null;
@@ -402,9 +417,13 @@ class SilkEditor extends GestureEventListeners(PolymerElement) {
 
     var formattingBar = this.shadowRoot.querySelector('#formatting-bar');
     var formattingBarBox = formattingBar.getBoundingClientRect();
+    console.info('formattingBarBox', selectionBox, formattingBarBox)
 
-    formattingBar.style.top = (selectionBox.top - formattingBarBox.height - 16) + 'px';
-    formattingBar.style.left = (selectionBox.left - (formattingBarBox.width/2)) + (selectionBox.width/2) + 'px';
+    const top =  (selectionBox.top - formattingBarBox.height - 16) + 'px';
+    const left = (selectionBox.left - (formattingBarBox.width/2)) + (selectionBox.width/2) + 'px';
+
+    formattingBar.style.setProperty('top', top);
+    formattingBar.style.setProperty('left', left);
   }
 
 }
