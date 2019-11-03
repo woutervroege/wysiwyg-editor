@@ -10,8 +10,8 @@ import './silk-icon.js';
  * @demo demo/index.html
  */
 class SilkEditor extends LitElement {
-    render() {
-      return html`
+  render() {
+    return html`
       <style>
         :host {
           display: block;
@@ -142,7 +142,7 @@ class SilkEditor extends LitElement {
       <section id="formatting-bar">
         
         ${this.buttons.map(button => {
-          return html`
+    return html`
             <button
               data-type="${button.type}"
               data-action="${button.name}"
@@ -152,11 +152,11 @@ class SilkEditor extends LitElement {
               <silk-icon icon="format-${button.name}" ?hidden="${!button.icon}"></silk-icon>
               <span ?hidden="${button.icon}">${button.name}</span>
             </button>
-          `
-        })}
+          `;
+  })}
 
       </section>
-    `
+    `;
   }
 
   static get properties() {
@@ -192,14 +192,14 @@ class SilkEditor extends LitElement {
         type: String,
       }
 
-    }
+    };
   }
 
   constructor() {
     super();
 
     this.editing = false;
-    this.options = ['bold', 'italic', 'strikethrough', 'underline', 'h1', 'h2', 'blockquote', 'justify-left', 'justify-center', 'justify-right', 'justify-full', 'indent', 'outdent', 'link', 'clear']
+    this.options = ['bold', 'italic', 'strikethrough', 'underline', 'h1', 'h2', 'blockquote', 'justify-left', 'justify-center', 'justify-right', 'justify-full', 'indent', 'outdent', 'link', 'clear'];
     this.selectedText = null;
     this._selectedLink = null;
     this._selectedNodeNamesTree = [];
@@ -208,7 +208,7 @@ class SilkEditor extends LitElement {
   }
 
   updated(props) {
-    if(props.has('editing')) this.dispatchEvent(new CustomEvent('editing-changed', {detail: {value: this.editing}}))
+    if(props.has('editing')) this.dispatchEvent(new CustomEvent('editing-changed', {detail: {value: this.editing}}));
     
     if(props.has('selectedText')) {
       this.editing = this.selectedText;
@@ -222,61 +222,61 @@ class SilkEditor extends LitElement {
     for(var i in options) {
       var optionName = options[i];
       switch(optionName) {
-        case 'bold':
-        case 'italic':
-        case 'underline':
-        case 'strikethrough':
-          buttons.push({
-            name: optionName,
-            type: 'normal',
-            icon: true
-          })
-          break;
-        case 'indent':
-        case 'outdent':
-          buttons.push({
-            name: optionName.charAt(0).toUpperCase() + optionName.substr(1),
-            type: 'normal',
-            icon: true
-          })
-          break;
-        case 'clear':
-        case 'blockquote':
-          buttons.push({
-            name: optionName,
-            type: 'block',
-            icon: true
-          })
-          break;
-        case 'justify-left':
-        case 'justify-right':
-        case 'justify-center':
-        case 'justify-full':
-          buttons.push({
-            name: optionName.replace(/(\-\w)/g, function(m){return m[1].toUpperCase();}),
-            type: 'normal',
-            icon: true
-          })
-          break;
-        case 'h1':
-        case 'h2':
-        case 'h3':
-        case 'h4':
-        case 'h5':
-        case 'h6':
-          buttons.push({
-            name: optionName,
-            type: 'block',
-            icon: false
-          })
-          break;
-        case 'link':
-          buttons.push({
-            name: optionName,
-            type: 'link',
-            icon: true
-          })
-          break;
+      case 'bold':
+      case 'italic':
+      case 'underline':
+      case 'strikethrough':
+        buttons.push({
+          name: optionName,
+          type: 'normal',
+          icon: true
+        });
+        break;
+      case 'indent':
+      case 'outdent':
+        buttons.push({
+          name: optionName.charAt(0).toUpperCase() + optionName.substr(1),
+          type: 'normal',
+          icon: true
+        });
+        break;
+      case 'clear':
+      case 'blockquote':
+        buttons.push({
+          name: optionName,
+          type: 'block',
+          icon: true
+        });
+        break;
+      case 'justify-left':
+      case 'justify-right':
+      case 'justify-center':
+      case 'justify-full':
+        buttons.push({
+          name: optionName.replace(/(-\w)/g, function(m){return m[1].toUpperCase();}),
+          type: 'normal',
+          icon: true
+        });
+        break;
+      case 'h1':
+      case 'h2':
+      case 'h3':
+      case 'h4':
+      case 'h5':
+      case 'h6':
+        buttons.push({
+          name: optionName,
+          type: 'block',
+          icon: false
+        });
+        break;
+      case 'link':
+        buttons.push({
+          name: optionName,
+          type: 'link',
+          icon: true
+        });
+        break;
       }
     }
     return buttons;
@@ -328,15 +328,12 @@ class SilkEditor extends LitElement {
 
   _buttonEnabled(state, buttonType) {
     switch(buttonType) {
-      case 'normal':
-        return this._stateEnabled(state);
-        break;
-      case 'block':
-        return this._blockEnabled(state);
-        break;
-      case 'link':
-        return this._blockEnabled('a');
-        break;
+    case 'normal':
+      return this._stateEnabled(state);
+    case 'block':
+      return this._blockEnabled(state);
+    case 'link':
+      return this._blockEnabled('a');
     }
   }
 
@@ -353,17 +350,17 @@ class SilkEditor extends LitElement {
     var type = btnElement.dataset.type;
     var action = btnElement.dataset.action;
     switch(type) {
-      case 'normal':
-        this._toggleState(action);
-        break;
-      case 'block':
-        this._toggleBlock(action);
-        break;
-      case 'link':
-        this._toggleLink();
-        break;
+    case 'normal':
+      this._toggleState(action);
+      break;
+    case 'block':
+      this._toggleBlock(action);
+      break;
+    case 'link':
+      this._toggleLink();
+      break;
     }
-    window.requestAnimationFrame(() => {this._lastButtonCmd = action });
+    window.requestAnimationFrame(() => {this._lastButtonCmd = action; });
   }
 
   _toggleState(cmd) {
@@ -417,7 +414,6 @@ class SilkEditor extends LitElement {
 
     var formattingBar = this.shadowRoot.querySelector('#formatting-bar');
     var formattingBarBox = formattingBar.getBoundingClientRect();
-    console.info('formattingBarBox', selectionBox, formattingBarBox)
 
     const top =  (selectionBox.top - formattingBarBox.height - 16) + 'px';
     const left = (selectionBox.left - (formattingBarBox.width/2)) + (selectionBox.width/2) + 'px';

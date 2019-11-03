@@ -27,7 +27,7 @@ class SilkEditorDemo extends LitElement {
       blockquote:before, blockquote:after {
         content: '"';
       }
-    `
+    `;
   }
   
   render() {
@@ -45,7 +45,7 @@ class SilkEditorDemo extends LitElement {
         @focus="${this._handleFocus}"
         @blur="${this._handleBlur}"
       >${unsafeHTML(this.articleContents)}</article>
-    `
+    `;
   }
 
 
@@ -68,7 +68,7 @@ class SilkEditorDemo extends LitElement {
         type: Boolean,
       }
 
-    }
+    };
   }
 
   constructor() {

@@ -15,7 +15,7 @@ class SilkIcon extends LitElement {
       use {
         fill: var(--silk-icon-fill, black);
       }
-    `
+    `;
   }
 
   render() {
@@ -39,7 +39,7 @@ class SilkIcon extends LitElement {
         </defs>
         <use x="0" y="0" xlink:href=""/>
       </svg>
-    `
+    `;
   }
 
   static get properties() {
@@ -47,7 +47,7 @@ class SilkIcon extends LitElement {
       icon: {
         type: String,
       }
-    }
+    };
   }
 
   updated() {

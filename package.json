@@ -5,12 +5,28 @@
     "lit-element": "^2.1.0"
   },
   "devDependencies": {
-    "@polymer/iron-component-page": "github:PolymerElements/iron-component-page",
-    "@polymer/iron-demo-helpers": "^3.0.0-pre.19",
+    "@polymer/iron-component-page": "4.0.1",
+    "@polymer/iron-demo-helpers": "^3.1.0",
+    "@polymer/iron-test-helpers": "^3.0.1",
     "@polymer/test-fixture": "^4.0.2",
     "@webcomponents/webcomponentsjs": "^2.0.0",
     "chai": "^4.2.0",
+    "husky": "^3.0.9",
     "mocha": "^5.2.0",
-    "wct-mocha": "^1.0.0"
+    "wct-mocha": "^1.0.0",
+    "es-dev-server": "^1.5.0"
+  },
+  "scripts": {
+    "lint:eslint": "eslint --ext .js . --ignore-path .gitignore",
+    "format:eslint": "eslint --ext .js . --fix --ignore-path .gitignore",
+    "lint": "npm run lint:eslint",
+    "format": "npm run format:eslint",
+    "start": "es-dev-server --app-index index.html --node-resolve --open --watch",
+    "start:compatibility": "es-dev-server --app-index index.html --compatibility all --node-resolve --open --watch"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "npm run format"
+    }
   }
 }
