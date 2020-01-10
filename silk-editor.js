@@ -184,7 +184,7 @@ class SilkEditor extends LitElement {
         type: String,
       },
 
-      _selectedNodeNamesTree: {
+      _selectedNodesTree: {
         type: Array,
       },
 
@@ -202,7 +202,7 @@ class SilkEditor extends LitElement {
     this.options = ['bold', 'italic', 'strikethrough', 'underline', 'h1', 'h2', 'blockquote', 'justify-left', 'justify-center', 'justify-right', 'justify-full', 'indent', 'outdent', 'link', 'clear'];
     this.selectedText = null;
     this._selectedLink = null;
-    this._selectedNodeNamesTree = [];
+    this._selectedNodesTree = [];
 
     document.addEventListener('selectionchange', this._handleSelectionChange.bind(this));
   }
@@ -298,11 +298,14 @@ class SilkEditor extends LitElement {
     if(!hasSelection) return this.selectedText = null;
     this.selectedText = window.getSelection().toString() || null;
 
-    var _selectedNodeNamesTree = [];
     this._selectedLink = null;
+    this._setSelectedNodesTree();
 
+  }
+
+  _setSelectedNodesTree() {
+    var _selectedNodesTree = [];
     if(!this.selectedText) return;
-
     var currentElement = window.getSelection().getRangeAt(0).startContainer.parentElement;
     if(!currentElement) return;
 
@@ -310,16 +313,18 @@ class SilkEditor extends LitElement {
 
     while(currentElement.contentEditable !== 'true') {
       if(nodeName == 'a') { this._selectedLink = currentElement.href; }
-      _selectedNodeNamesTree.push(nodeName);
+      _selectedNodesTree.push(currentElement);
       currentElement = currentElement.parentElement;
       if(!currentElement) return;
       nodeName = currentElement.nodeName.toLowerCase();
     }
-    this._selectedNodeNamesTree = _selectedNodeNamesTree;
+    this._selectedNodesTree = _selectedNodesTree;
+
   }
 
   _getElement() {
-    var currentElement = window.getSelection().getRangeAt(0).startContainer.parentElement;
+    let currentElement = window.getSelection().getRangeAt(0).startContainer.parentElement;
+    if(!currentElement) return;
     while(currentElement.contentEditable !== 'true') {
       currentElement = currentElement.parentElement;
     }
@@ -342,7 +347,9 @@ class SilkEditor extends LitElement {
   }
 
   _blockEnabled(state) {
-    return this._selectedNodeNamesTree.indexOf(state) !== -1;
+    const selectedNames = new Set(this._selectedNodesTree.map(item => item.nodeName.toLowerCase()));
+    const blockEnabled = selectedNames.has(state);
+    return blockEnabled;
   }
 
   _handleButtonTap(evt) {
@@ -370,20 +377,36 @@ class SilkEditor extends LitElement {
   _toggleBlock(cmd) {
 
     if(cmd === 'clear') {
-      document.execCommand('formatBlock', false, 'p');
-      document.execCommand('removeFormat', false);
+      var selection = window.getSelection();
+      var range = selection.getRangeAt(0);
+
+      const selectedItem = this._selectedNodesTree[this._selectedNodesTree.length-1];
+      try {
+        range.selectNode(selectedItem);
+        range.deleteContents();
+        this._setSelectedNodesTree();  
+
+        var span = document.createElement('span');
+        span.innerText = selectedItem.innerText;
+        range.insertNode(span);
+        selection.removeAllRanges(range);
+        selection.addRange(range);
+      } catch(e) { (() => {})(); }
     }
-    
+
     else {
-      var blockType = (this._selectedNodeNamesTree.indexOf(cmd) !== -1) ? 'p' : cmd;
-      document.execCommand('formatBlock', false, blockType);
+      const selectedNames = new Set(this._selectedNodesTree.map(item => item.nodeName.toLowerCase()));
+      var blockType = selectedNames.has(cmd) ? 'p' : cmd;
+      document.execCommand('formatBlock', false, blockType);  
     }
 
     if(window.ShadyCSS) this._applyShadyClasses();
+
   }
 
   _applyShadyClasses() {
     var $element = this._getElement();
+    if(!$element) return;
     var elementClasses = Array.from($element.classList);
 
     var shadyClasses = elementClasses.splice(elementClasses.indexOf('style-scope'));
