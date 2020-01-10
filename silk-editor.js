@@ -307,7 +307,7 @@ class SilkEditor extends LitElement {
     var _selectedNodesTree = [];
     if(!this.selectedText) return;
     var currentElement = window.getSelection().getRangeAt(0).startContainer.parentElement;
-    if(!currentElement) return;
+    if(!currentElement) return this._selectedNodesTree = _selectedNodesTree;
 
     var nodeName = currentElement.nodeName.toLowerCase();
 
@@ -323,6 +323,7 @@ class SilkEditor extends LitElement {
   }
 
   _getElement() {
+    if(window.getSelection().rangeCount === 0) return;
     let currentElement = window.getSelection().getRangeAt(0).startContainer.parentElement;
     if(!currentElement) return;
     while(currentElement.contentEditable !== 'true') {
@@ -376,29 +377,33 @@ class SilkEditor extends LitElement {
 
   _toggleBlock(cmd) {
 
-    if(cmd === 'clear') {
-      var selection = window.getSelection();
-      var range = selection.getRangeAt(0);
 
-      const selectedItem = this._selectedNodesTree[this._selectedNodesTree.length-1];
-      try {
-        range.selectNode(selectedItem);
-        range.deleteContents();
-        this._setSelectedNodesTree();  
+    var selection = window.getSelection();
+    var range = selection.getRangeAt(0);
 
-        var span = document.createElement('span');
-        span.innerText = selectedItem.innerText;
-        range.insertNode(span);
-        selection.removeAllRanges(range);
-        selection.addRange(range);
-      } catch(e) { (() => {})(); }
-    }
+    this._setSelectedNodesTree();  
+    let selectedNodeNames = new Set(this._selectedNodesTree.map(item => item.nodeName.toLowerCase()));
+    let selectedItem = this._selectedNodesTree[this._selectedNodesTree.length-1];
+    if(!selectedItem) return;
 
-    else {
-      const selectedNames = new Set(this._selectedNodesTree.map(item => item.nodeName.toLowerCase()));
-      var blockType = selectedNames.has(cmd) ? 'p' : cmd;
-      document.execCommand('formatBlock', false, blockType);  
-    }
+    try {
+      range.selectNode(selectedItem);
+      range.deleteContents();
+      let newEl;
+
+      if(cmd === 'clear') {
+        document.createElement('span');
+        newEl.innerHTML = selectedItem.innerText;
+      } else {
+        const blockEnabled = selectedNodeNames.has(cmd);
+        document.createElement(blockEnabled ? 'span' : cmd);
+        newEl.innerHTML = selectedItem.innerHTML;
+      }
+
+      selection.removeAllRanges();
+      range.insertNode(newEl);
+
+    } catch(e) { (() => {})(); }
 
     if(window.ShadyCSS) this._applyShadyClasses();
 
