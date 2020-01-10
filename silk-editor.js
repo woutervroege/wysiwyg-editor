@@ -384,11 +384,10 @@ class SilkEditor extends LitElement {
     this._setSelectedNodesTree();  
     let selectedNodeNames = new Set(this._selectedNodesTree.map(item => item.nodeName.toLowerCase()));
     let selectedItem = this._selectedNodesTree[this._selectedNodesTree.length-1];
-    if(!selectedItem) return;
-
-    try {
+    if(selectedItem) {
       range.selectNode(selectedItem);
-      range.deleteContents();
+      range.deleteContents();  
+
       let newEl;
 
       if(cmd === 'clear') {
@@ -400,10 +399,16 @@ class SilkEditor extends LitElement {
         newEl.innerHTML = selectedItem.innerHTML;
       }
 
-      selection.removeAllRanges();
       range.insertNode(newEl);
 
-    } catch(e) { (() => {})(); }
+    } else {
+      if(cmd !== 'clear') {
+        const newParent = document.createElement(cmd);
+        range.surroundContents(newParent);
+      }
+    }
+
+    selection.removeAllRanges();
 
     if(window.ShadyCSS) this._applyShadyClasses();
 
