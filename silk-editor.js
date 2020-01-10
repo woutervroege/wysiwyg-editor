@@ -297,10 +297,8 @@ class SilkEditor extends LitElement {
     var hasSelection = selection.replace(/\s|\r\n/g, '').length > 0;
     if(!hasSelection) return this.selectedText = null;
     this.selectedText = window.getSelection().toString() || null;
-
     this._selectedLink = null;
     this._setSelectedNodesTree();
-
   }
 
   _setSelectedNodesTree() {
@@ -320,16 +318,6 @@ class SilkEditor extends LitElement {
     }
     this._selectedNodesTree = _selectedNodesTree;
 
-  }
-
-  _getElement() {
-    if(window.getSelection().rangeCount === 0) return;
-    let currentElement = window.getSelection().getRangeAt(0).startContainer.parentElement;
-    if(!currentElement) return;
-    while(currentElement.contentEditable !== 'true') {
-      currentElement = currentElement.parentElement;
-    }
-    return currentElement;
   }
 
   _buttonEnabled(state, buttonType) {
@@ -409,25 +397,7 @@ class SilkEditor extends LitElement {
     }
 
     selection.removeAllRanges();
-
-    if(window.ShadyCSS) this._applyShadyClasses();
-
-  }
-
-  _applyShadyClasses() {
-    var $element = this._getElement();
-    if(!$element) return;
-    var elementClasses = Array.from($element.classList);
-
-    var shadyClasses = elementClasses.splice(elementClasses.indexOf('style-scope'));
-    var element = window.getSelection().getRangeAt(0).startContainer.parentElement;
-
-    while(element.contentEditable !== 'true') {
-      for(var i=0;i<shadyClasses.length;i++) {
-        element.classList.add(shadyClasses[i]);
-      }
-      element = element.parentElement;
-    }
+    this.dispatchEvent(new CustomEvent('formatting-changed'));
 
   }
 
