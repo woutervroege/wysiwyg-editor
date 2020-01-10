@@ -392,11 +392,11 @@ class SilkEditor extends LitElement {
       let newEl;
 
       if(cmd === 'clear') {
-        document.createElement('span');
+        newEl = document.createElement('span');
         newEl.innerHTML = selectedItem.innerText;
       } else {
         const blockEnabled = selectedNodeNames.has(cmd);
-        document.createElement(blockEnabled ? 'span' : cmd);
+        newEl = document.createElement(blockEnabled ? 'span' : cmd);
         newEl.innerHTML = selectedItem.innerHTML;
       }
 
