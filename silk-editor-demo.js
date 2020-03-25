@@ -27,6 +27,10 @@ class SilkEditorDemo extends LitElement {
       blockquote:before, blockquote:after {
         content: '"';
       }
+
+      a {
+        color: inherit;
+      }
     `;
   }
   
