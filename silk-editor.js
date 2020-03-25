@@ -13,78 +13,17 @@ class SilkEditor extends LitElement {
   render() {
     return html`
       <style>
-        :host {
-          display: block;
-          padding: 0;
-          margin: 0;
-          
-          --silk-formatting-bar: {
-            position: fixed;
-            z-index: 11;
-            visibility: visible;
-            opacity: 1;
-            display: flex;
-            align-items: center;
-            padding: 3px 6px;
-            border-radius: 5px;
-            background-color: #323232;
-            transition: 0.3s 0.1s opacity, 0.1s visibility, 0.1s 0.1s transform ease-in-out;
-            transform: translateY(0);
-          };
-
-          --silk-formatting-bar-after: {
-            position: absolute;
-            content: '';
-            top: 100%;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 0;
-            height: 0;
-            border-style: solid;
-            border-width: 9px 9px 0 9px;
-            border-color: #323232 transparent transparent transparent;
-          }
-
-          --silk-formatting-bar-hidden: {
-            visibility: hidden;
-            opacity: 0;
-            transform: translateY(16px);
-            transition: 0.1s opacity, 0.1s visibility, 0.1s transform ease-in-out;
-          }
-
-          --formatting-button: {
-            background-color: transparent;
-            border: 0;
-            outline: none;
-            cursor: pointer;
-            border: 1px solid transparent;
-            border-radius: 3px;
-            margin: 3px 0;
-            --silk-icon-fill: rgba(255, 255, 255, 0.9);
-            color: var(--silk-icon-fill, rgba(255, 255, 255, 0.9));
-          };
-
-          --formatting-button-hover: {
-            --silk-icon-fill: rgba(255, 255, 255, 1);
-            color: rgba(255, 255, 255, 1);
-          }
-
-          --formatting-button-disabled: {
-            opacity: 0.5;
-            pointer-events: none;
-          }
-
-          --formatting-button-selected: {
-            --silk-icon-fill: #4ec2a5;
-            color: #4ec2a5;
-          }
-
-          --formatting-button-icon-size: 22px;
-
-        }
 
         button {
-          @apply --formatting-button;
+          background-color: transparent;
+          border: 0;
+          outline: none;
+          cursor: pointer;
+          border: 1px solid transparent;
+          border-radius: 3px;
+          margin: 3px 0;
+          --silk-icon-fill: rgba(255, 255, 255, 0.9);
+          color: var(--silk-icon-fill, rgba(255, 255, 255, 0.9));
           display: flex;
           align-items: center;
           justify-content: center;
@@ -92,31 +31,47 @@ class SilkEditor extends LitElement {
 
         button > * {
           display: block;
-          width: var(--formatting-button-icon-size);
-          height: var(--formatting-button-icon-size);
+          width: 19px;
+          height: 19px;
           box-sizing: border-box;
           pointer-events: none;
         }
 
         button span {
           font-size: 16px;
-          font-weight: 700;
+          font-weight: 600;
+          display: flex;
+          align-items: center;
+          justify-content: center;
         }
 
         button:hover {
-          @apply --formatting-button-hover;
+          --silk-icon-fill: rgba(255, 255, 255, 1);
+          color: rgba(255, 255, 255, 1);
         }
 
         button[disabled] {
-          @apply --formatting-button-hover;
+          opacity: 0.5;
+          pointer-events: none;
         }
 
         button[data-enabled] {
-          @apply --formatting-button-selected;
+          --silk-icon-fill: #4ec2a5;
+          color: #4ec2a5;
         }
 
         #formatting-bar {
-          @apply --silk-formatting-bar;
+          position: fixed;
+          z-index: 11;
+          visibility: visible;
+          opacity: 1;
+          display: flex;
+          align-items: center;
+          padding: 3px 6px;
+          border-radius: 5px;
+          background-color: #323232;
+          transition: 0.3s 0.1s opacity, 0.1s visibility, 0.1s 0.1s transform ease-in-out;
+          transform: translateY(0);
           display: flex;
           visibility: hidden;
         }
@@ -127,11 +82,23 @@ class SilkEditor extends LitElement {
         }
 
         #formatting-bar:after {
-          @apply --silk-formatting-bar-after;
+          position: absolute;
+          content: '';
+          top: 100%;
+          left: 50%;
+          transform: translateX(-50%);
+          width: 0;
+          height: 0;
+          border-style: solid;
+          border-width: 9px 9px 0 9px;
+          border-color: #323232 transparent transparent transparent;
         }
 
         #formatting-bar[data-hidden] {
-          @apply --silk-formatting-bar-hidden;
+          visibility: hidden;
+          opacity: 0;
+          transform: translateY(16px);
+          transition: 0.1s opacity, 0.1s visibility, 0.1s transform ease-in-out;
         }
 
         [hidden] {
