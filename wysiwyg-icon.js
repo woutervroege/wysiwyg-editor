@@ -1,7 +1,7 @@
 import { LitElement, html, css } from 'lit-element';
 
 /**
- * `silk-editor-demo`
+ * `wysiwyg-editor-demo`
  * 
  *
  * @customElement
@@ -13,7 +13,7 @@ class SilkIcon extends LitElement {
   static get styles() {
     return css`
       use {
-        fill: var(--silk-icon-fill, black);
+        fill: var(--wysiwyg-icon-fill, black);
       }
     `;
   }
@@ -56,4 +56,4 @@ class SilkIcon extends LitElement {
 
 }
 
-window.customElements.define('silk-icon', SilkIcon);
+window.customElements.define('wysiwyg-icon', SilkIcon);

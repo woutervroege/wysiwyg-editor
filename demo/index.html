@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes">
 
-    <title>silk-editor demo</title>
+    <title>wysiwyg-editor demo</title>
 
     <script>ShadyDOM = {force: true}</script>
     <script src="../node_modules/@webcomponents/webcomponentsjs/webcomponents-loader.js"></script>
@@ -14,20 +14,20 @@
       import '@polymer/iron-demo-helpers/demo-snippet';
     </script>
 
-    <script type="module" src="../silk-editor-demo.js"></script>
+    <script type="module" src="../wysiwyg-editor-demo.js"></script>
 
   </head>
   <body>
     <div class="vertical-section-container centered">
-      <h3>Basic silk-editor demo</h3>
+      <h3>Basic wysiwyg-editor demo</h3>
       <demo-snippet>
         <template>
           
-          <silk-editor-demo></silk-editor-demo>
+          <wysiwyg-editor-demo></wysiwyg-editor-demo>
 
           <script>
             //mimic async content load
-            document.querySelector('silk-editor-demo').content = `
+            document.querySelector('wysiwyg-editor-demo').content = `
             Stel, Rusland en Amerika zijn met elkaar in oorlog. Europa - en dus Nederland - zit er tussenin. Het wordt steeds gevaarlijker om te blijven. De situatie is uitzichtloos.&nbsp;<div class="style-scope slicesui-textbox"><br>Je besluit te vluchten naar Utopistan. Het is daar veiliger en veel Nederlanders zijn je al in hun vlucht voorgegaan.&nbsp;</div><h2><p><a href="slice://-LvPXfdHKmLaVi5Yb1Xx" class="style-scope slicesui-textbox">Op naar Utopistan</a></p></h2>
             `</script>
 

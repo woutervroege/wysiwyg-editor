@@ -1,6 +1,6 @@
 {
-  "name": "silk-editor",
-  "main": "silk-editor.js",
+  "name": "wysiwyg-editor",
+  "main": "wysiwyg-editor.js",
   "dependencies": {
     "lit-element": "^2.1.0"
   },

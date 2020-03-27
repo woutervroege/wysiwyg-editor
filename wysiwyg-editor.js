@@ -1,8 +1,8 @@
 import { LitElement, html } from 'lit-element';
-import './silk-icon.js';
+import './wysiwyg-icon.js';
 
 /**
- * `silk-editor-demo`
+ * `wysiwyg-editor-demo`
  * 
  *
  * @customElement
@@ -22,8 +22,8 @@ class SilkEditor extends LitElement {
           border: 1px solid transparent;
           border-radius: 3px;
           margin: 3px 0;
-          --silk-icon-fill: rgba(255, 255, 255, 0.9);
-          color: var(--silk-icon-fill, rgba(255, 255, 255, 0.9));
+          --wysiwyg-icon-fill: rgba(255, 255, 255, 0.9);
+          color: var(--wysiwyg-icon-fill, rgba(255, 255, 255, 0.9));
           display: flex;
           align-items: center;
           justify-content: center;
@@ -46,7 +46,7 @@ class SilkEditor extends LitElement {
         }
 
         button:hover {
-          --silk-icon-fill: rgba(255, 255, 255, 1);
+          --wysiwyg-icon-fill: rgba(255, 255, 255, 1);
           color: rgba(255, 255, 255, 1);
         }
 
@@ -56,7 +56,7 @@ class SilkEditor extends LitElement {
         }
 
         button[data-enabled] {
-          --silk-icon-fill: #4ec2a5;
+          --wysiwyg-icon-fill: #4ec2a5;
           color: #4ec2a5;
         }
 
@@ -116,7 +116,7 @@ class SilkEditor extends LitElement {
               @click="${this._handleButtonTap}"
               ?data-enabled="${this._buttonEnabled(button.name, button.type)}"
             >
-              <silk-icon icon="format-${button.name}" ?hidden="${!button.icon}"></silk-icon>
+              <wysiwyg-icon icon="format-${button.name}" ?hidden="${!button.icon}"></wysiwyg-icon>
               <span ?hidden="${button.icon}">${button.name}</span>
             </button>
           `;
@@ -394,4 +394,4 @@ class SilkEditor extends LitElement {
 
 }
 
-window.customElements.define('silk-editor', SilkEditor);
+window.customElements.define('wysiwyg-editor', SilkEditor);

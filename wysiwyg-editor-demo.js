@@ -1,9 +1,9 @@
 import { LitElement, html, css } from 'lit-element';
 import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
-import './silk-editor.js';
+import './wysiwyg-editor.js';
 
 /**
- * `silk-editor-demo`
+ * `wysiwyg-editor-demo`
  * 
  *
  * @customElement
@@ -36,10 +36,10 @@ class SilkEditorDemo extends LitElement {
   
   render() {
     return html`
-      <silk-editor
+      <wysiwyg-editor
         ?editing="${this.editing}"
         @editing-changed="${(e) => this.editing = e.detail.value}"
-      ></silk-editor>
+      ></wysiwyg-editor>
 
       <article
         id="article"
@@ -109,4 +109,4 @@ class SilkEditorDemo extends LitElement {
 
 }
 
-window.customElements.define('silk-editor-demo', SilkEditorDemo);
+window.customElements.define('wysiwyg-editor-demo', SilkEditorDemo);
