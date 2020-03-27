@@ -1,6 +1,15 @@
 {
   "name": "wysiwyg-editor",
   "main": "wysiwyg-editor.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/woutervroege/wysiwyg-editor.git"
+  },
+  "author": "Wouter Vroege",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/woutervroege/wysiwyg-editor/issues"
+  },
   "dependencies": {
     "lit-element": "^2.1.0"
   },
