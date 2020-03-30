@@ -364,7 +364,7 @@ class SilkEditor extends LitElement {
     }
 
     selection.removeAllRanges();
-    this.dispatchEvent(new CustomEvent('formatting-changed'));
+    this.dispatchEvent(new CustomEvent('format'));
 
   }
 
