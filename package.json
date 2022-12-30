@@ -23,7 +23,7 @@
     "es-dev-server": "^1.5.0",
     "husky": "^3.0.9",
     "mocha": "^5.2.0",
-    "release-it": "^13.3.0",
+    "release-it": "^13.7.2",
     "wct-mocha": "^1.0.0"
   },
   "scripts": {
